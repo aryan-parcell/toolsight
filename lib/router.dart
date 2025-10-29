@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toolsight/pages/home.dart';
 import 'package:toolsight/pages/login.dart';
+import 'package:toolsight/pages/manual.dart';
 
 enum AppRoute {
   home(path: '/', name: 'home'),
@@ -46,7 +47,7 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoute.manual.path,
         name: AppRoute.manual.name,
-        builder: (context, state) => const Text("Manual Page"),
+        builder: (context, state) => const Manual(),
       ),
       GoRoute(
         path: AppRoute.qr.path,
