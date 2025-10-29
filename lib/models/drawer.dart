@@ -3,11 +3,13 @@ class Drawer {
   final String name;
   final int present;
   final int total;
+  final Map<String, int> toolStatus;
 
   Drawer({
     required this.id,
     required this.name,
     required this.present,
     required this.total,
+    required this.toolStatus,
   });
 }

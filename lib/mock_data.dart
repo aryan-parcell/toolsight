@@ -8,9 +8,30 @@ final List<Toolbox> mockToolboxes = [
     needsAudit: true,
     needsCalibration: false,
     drawers: [
-      Drawer(id: '1', name: "Drawer #1", present: 1, total: 2),
-      Drawer(id: '2', name: "Drawer #2", present: 0, total: 0),
-      Drawer(id: '3', name: "Drawer #3", present: 2, total: 5),
+      Drawer(
+        id: '1',
+        name: "Drawer #1",
+        present: 1,
+        total: 2,
+        toolStatus: {
+          "Wrench 10mm": 0,
+          "High Precision Calipers": 1,
+        },
+      ),
+      Drawer(id: '2', name: "Drawer #2", present: 0, total: 0, toolStatus: {}),
+      Drawer(
+        id: '3',
+        name: "Drawer #3",
+        present: 2,
+        total: 5,
+        toolStatus: {
+          "Wrench 10mm": 0,
+          "High Precision Calipers": 1,
+          "Hammer": 1,
+          "Drill": 0,
+          "Soldering Iron": 0,
+        },
+      ),
     ],
   ),
   Toolbox(
@@ -19,7 +40,16 @@ final List<Toolbox> mockToolboxes = [
     needsAudit: false,
     needsCalibration: true,
     drawers: [
-      Drawer(id: '1', name: "Drawer #1", present: 2, total: 2),
+      Drawer(
+        id: '1',
+        name: "Drawer #1",
+        present: 2,
+        total: 2,
+        toolStatus: {
+          "Wrench 15mm": 1,
+          "High Precision Calipers": 1,
+        },
+      ),
     ],
   ),
   Toolbox(
@@ -28,8 +58,17 @@ final List<Toolbox> mockToolboxes = [
     needsAudit: false,
     needsCalibration: false,
     drawers: [
-      Drawer(id: '1', name: "Drawer #1", present: 0, total: 2),
-      Drawer(id: '2', name: "Drawer #2", present: 0, total: 0),
+      Drawer(
+        id: '1',
+        name: "Drawer #1",
+        present: 0,
+        total: 2,
+        toolStatus: {
+          "Drill": 0,
+          "Soldering Iron": 0,
+        },
+      ),
+      Drawer(id: '2', name: "Drawer #2", present: 0, total: 0, toolStatus: {}),
     ],
   ),
   Toolbox(
@@ -38,7 +77,7 @@ final List<Toolbox> mockToolboxes = [
     needsAudit: true,
     needsCalibration: true,
     drawers: [
-      Drawer(id: '1', name: "Drawer #1", present: 0, total: 0),
+      Drawer(id: '1', name: "Drawer #1", present: 0, total: 0, toolStatus: {}),
     ],
   ),
 ];
