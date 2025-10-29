@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toolsight/pages/home.dart';
 import 'package:toolsight/pages/login.dart';
-import 'package:toolsight/pages/manual.dart';
+import 'package:toolsight/pages/manual_entry.dart';
+import 'package:toolsight/pages/scan_toolbox.dart';
 
 enum AppRoute {
   home(path: '/', name: 'home'),
   login(path: '/login', name: 'login'),
   register(path: '/register', name: 'register'),
-  manual(path: '/manual', name: 'manual'),
-  qr(path: '/qr', name: 'qr'),
+  manualEntry(path: '/manualEntry', name: 'manualEntry'),
+  scanToolbox(path: '/scanToolbox', name: 'scanToolbox'),
   toolbox(path: '/toolbox/:toolbox_id', name: 'toolbox'),
   drawer(path: ':drawer_id', name: 'drawer'), // Sub-route
   capture(path: 'capture', name: 'capture'), // Sub-route
@@ -45,13 +46,13 @@ GoRouter createRouter() {
         builder: (context, state) => const Text("Register Page"),
       ),
       GoRoute(
-        path: AppRoute.manual.path,
-        name: AppRoute.manual.name,
-        builder: (context, state) => const Manual(),
+        path: AppRoute.manualEntry.path,
+        name: AppRoute.manualEntry.name,
+        builder: (context, state) => const ManualEntry(),
       ),
       GoRoute(
-        path: AppRoute.qr.path,
-        name: AppRoute.qr.name,
+        path: AppRoute.scanToolbox.path,
+        name: AppRoute.scanToolbox.name,
         builder: (context, state) => const Text("QR Page"),
       ),
       GoRoute(

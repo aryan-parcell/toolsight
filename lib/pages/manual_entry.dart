@@ -4,14 +4,14 @@ import 'package:toolsight/widgets/text_input_section.dart';
 import 'package:toolsight/widgets/wide_button.dart';
 import 'package:toolsight/router.dart';
 
-class Manual extends StatefulWidget {
-  const Manual({super.key});
+class ManualEntry extends StatefulWidget {
+  const ManualEntry({super.key});
 
   @override
-  State<Manual> createState() => _ManualState();
+  State<ManualEntry> createState() => _ManualEntryState();
 }
 
-class _ManualState extends State<Manual> {
+class _ManualEntryState extends State<ManualEntry> {
   final _eidController = TextEditingController();
 
   Future<void> _openToolBox() async {

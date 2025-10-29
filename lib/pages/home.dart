@@ -61,11 +61,11 @@ class _HomeState extends State<Home> {
                   children: [
                     WideButton(
                       text: "Manual Entry",
-                      onPressed: () => context.pushNamed(AppRoute.manual.name),
+                      onPressed: () => context.pushNamed(AppRoute.manualEntry.name),
                     ),
                     WideButton(
                       text: "Scan QR Code",
-                      onPressed: () => context.pushNamed(AppRoute.qr.name),
+                      onPressed: () => context.pushNamed(AppRoute.scanToolbox.name),
                     ),
                   ],
                 ),
