@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toolsight/home.dart';
-import 'package:toolsight/login.dart';
+import 'package:toolsight/pages/home.dart';
+import 'package:toolsight/pages/login.dart';
 
 enum AppRoute {
   home(path: '/', name: 'home'),
