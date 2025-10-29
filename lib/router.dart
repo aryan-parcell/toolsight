@@ -4,6 +4,7 @@ import 'package:toolsight/pages/home.dart';
 import 'package:toolsight/pages/login.dart';
 import 'package:toolsight/pages/manual_entry.dart';
 import 'package:toolsight/pages/scan_toolbox.dart';
+import 'package:toolsight/pages/toolbox_page.dart';
 
 enum AppRoute {
   home(path: '/', name: 'home'),
@@ -58,7 +59,7 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoute.toolbox.path,
         name: AppRoute.toolbox.name,
-        builder: (context, state) => Text("Toolbox: ${state.pathParameters['toolbox_id']}"),
+        builder: (context, state) => ToolboxPage(state.pathParameters['toolbox_id']!),
         routes: [
           GoRoute(
             path: AppRoute.drawer.path,
