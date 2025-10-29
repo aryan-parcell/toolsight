@@ -53,7 +53,7 @@ GoRouter createRouter() {
       GoRoute(
         path: AppRoute.scanToolbox.path,
         name: AppRoute.scanToolbox.name,
-        builder: (context, state) => const Text("QR Page"),
+        builder: (context, state) => const ScanToolbox(),
       ),
       GoRoute(
         path: AppRoute.toolbox.path,
