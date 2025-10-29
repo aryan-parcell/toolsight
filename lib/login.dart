@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toolsight/TextInputSection.dart';
-import 'package:toolsight/WideButton.dart';
+import 'package:toolsight/widgets/text_input_section.dart';
+import 'package:toolsight/widgets/wide_button.dart';
 import 'package:toolsight/router.dart';
 
 class Login extends StatefulWidget {

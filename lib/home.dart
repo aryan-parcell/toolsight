@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toolsight/WideButton.dart';
+import 'package:toolsight/widgets/wide_button.dart';
 import 'package:toolsight/models/toolbox.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/toolbox_display.dart';
