@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:toolsight/pages/drawer_page.dart';
 import 'package:toolsight/pages/home.dart';
 import 'package:toolsight/pages/login.dart';
 import 'package:toolsight/pages/manual_entry.dart';
@@ -66,7 +67,7 @@ GoRouter createRouter() {
             name: AppRoute.drawer.name,
             builder: (context, state) {
               final params = state.pathParameters;
-              return Text("Drawer: ${params['drawer_id']} in Toolbox: ${params['toolbox_id']}");
+              return DrawerPage(params['toolbox_id']!, params['drawer_id']!);
             },
             routes: [
               GoRoute(
