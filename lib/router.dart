@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:toolsight/pages/complete_session.dart';
+import 'package:toolsight/pages/drawer_capture.dart';
 import 'package:toolsight/pages/drawer_page.dart';
 import 'package:toolsight/pages/home.dart';
 import 'package:toolsight/pages/login.dart';
@@ -63,6 +65,11 @@ GoRouter createRouter() {
         builder: (context, state) => ToolboxPage(state.pathParameters['toolbox_id']!),
         routes: [
           GoRoute(
+            path: AppRoute.complete.path,
+            name: AppRoute.complete.name,
+            builder: (context, state) => Text("Complete Toolbox: ${state.pathParameters['toolbox_id']}"),
+          ),
+          GoRoute(
             path: AppRoute.drawer.path,
             name: AppRoute.drawer.name,
             builder: (context, state) {
@@ -75,15 +82,10 @@ GoRouter createRouter() {
                 name: AppRoute.capture.name,
                 builder: (context, state) {
                   final params = state.pathParameters;
-                  return Text("Capture for Drawer: ${params['drawer_id']} in Toolbox: ${params['toolbox_id']}");
+                  return DrawerCapture(params['toolbox_id']!, params['drawer_id']!);
                 },
               ),
             ],
-          ),
-          GoRoute(
-            path: AppRoute.complete.path,
-            name: AppRoute.complete.name,
-            builder: (context, state) => Text("Complete Toolbox: ${state.pathParameters['toolbox_id']}"),
           ),
         ],
       ),
