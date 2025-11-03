@@ -67,7 +67,7 @@ GoRouter createRouter() {
           GoRoute(
             path: AppRoute.complete.path,
             name: AppRoute.complete.name,
-            builder: (context, state) => Text("Complete Toolbox: ${state.pathParameters['toolbox_id']}"),
+            builder: (context, state) => CompleteSession(state.pathParameters['toolbox_id']!),
           ),
           GoRoute(
             path: AppRoute.drawer.path,
