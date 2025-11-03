@@ -59,7 +59,6 @@ class _ToolboxPageState extends State<ToolboxPage> {
                 spacing: 10,
                 children: [
                   Text(toolbox.name, style: Theme.of(context).textTheme.headlineLarge),
-                  Text("Here is some additional information.", style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
               Row(
@@ -86,7 +85,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
               Row(
                 children: [
                   WideButton(
-                    text: "Deactivate ToolBox",
+                    text: "Close ${toolbox.name}",
                     onPressed: () {
                       context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': toolbox.id});
                     },

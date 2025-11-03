@@ -42,14 +42,13 @@ class _HomeState extends State<Home> {
             spacing: 10,
             children: [
               Text("Home", style: Theme.of(context).textTheme.headlineLarge),
-              Text("Here is some additional information.", style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 10,
             children: [
-              Text("Activate New ToolBox", style: Theme.of(context).textTheme.titleLarge),
+              Text("Open New ToolBox", style: Theme.of(context).textTheme.titleLarge),
               Row(
                 spacing: 10,
                 children: [

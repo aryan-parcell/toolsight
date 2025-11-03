@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toolsight/pages/complete_session.dart';
+import 'package:toolsight/pages/serviceability.dart';
 import 'package:toolsight/pages/drawer_capture.dart';
 import 'package:toolsight/pages/drawer_page.dart';
 import 'package:toolsight/pages/home.dart';
@@ -67,7 +67,7 @@ GoRouter createRouter() {
           GoRoute(
             path: AppRoute.complete.path,
             name: AppRoute.complete.name,
-            builder: (context, state) => CompleteSession(state.pathParameters['toolbox_id']!),
+            builder: (context, state) => ServiceabilityQuestionnaire(state.pathParameters['toolbox_id']!),
           ),
           GoRoute(
             path: AppRoute.drawer.path,

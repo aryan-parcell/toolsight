@@ -77,7 +77,6 @@ class _DrawerCaptureState extends State<DrawerCapture> {
                 spacing: 10,
                 children: [
                   Text("Drawer Capture", style: Theme.of(context).textTheme.headlineLarge),
-                  Text("Here is some additional information.", style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
               Row(

@@ -61,7 +61,6 @@ class _DrawerPageState extends State<DrawerPage> {
                 spacing: 10,
                 children: [
                   Text(drawer.name, style: Theme.of(context).textTheme.headlineLarge),
-                  Text("Here is some additional information.", style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
               Row(
