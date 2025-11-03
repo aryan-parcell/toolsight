@@ -6,7 +6,6 @@ final List<Toolbox> mockToolboxes = [
     id: '1',
     name: "ToolBox #1",
     needsAudit: true,
-    needsCalibration: false,
     drawers: [
       Drawer(
         id: '1',
@@ -38,7 +37,6 @@ final List<Toolbox> mockToolboxes = [
     id: '2',
     name: "ToolBox #2",
     needsAudit: false,
-    needsCalibration: true,
     drawers: [
       Drawer(
         id: '1',
@@ -56,7 +54,6 @@ final List<Toolbox> mockToolboxes = [
     id: '3',
     name: "ToolBox #3",
     needsAudit: false,
-    needsCalibration: false,
     drawers: [
       Drawer(
         id: '1',
@@ -75,7 +72,6 @@ final List<Toolbox> mockToolboxes = [
     id: '4',
     name: "ToolBox #4",
     needsAudit: true,
-    needsCalibration: true,
     drawers: [
       Drawer(id: '1', name: "Drawer #1", present: 0, total: 0, toolStatus: {}),
     ],

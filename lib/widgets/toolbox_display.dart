@@ -27,7 +27,6 @@ class ToolBoxDisplay extends StatelessWidget {
               spacing: 5,
               children: [
                 if (toolbox.needsAudit) const Pill("Needs Audit"),
-                if (toolbox.needsCalibration) const Pill("Needs Calibration"),
               ],
             ),
           ],
