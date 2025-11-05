@@ -1,4 +1,4 @@
-package com.example.toolsight
+package com.parcell.toolsight
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "528230253135",
+    "project_id": "toolsight-teng",
+    "storage_bucket": "toolsight-teng.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:528230253135:android:643cfd07fc13767967203a",
+        "android_client_info": {
+          "package_name": "com.parcell.toolsight"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtX5aPXpQ4lsEInB29JiVPmHe2t2rjYPQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
