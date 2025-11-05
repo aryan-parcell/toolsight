@@ -1,9 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/text_input_section.dart';
 import 'package:toolsight/widgets/wide_button.dart';
-import 'package:toolsight/router.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,22 +14,53 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _auth = FirebaseAuth.instance;
 
   Future<void> _login() async {
-    // TODO implement backend
-    context.goNamed(AppRoute.home.name);
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) return;
+
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (mounted) context.goNamed(AppRoute.home.name);
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Login failed.")),
+      );
+    }
   }
 
   Future<void> _register() async {
-    // TODO implement backend
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) return;
+
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (mounted) context.goNamed(AppRoute.home.name);
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Registration failed.")),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       allowBack: false,
+      allowLogout: false,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 20,
@@ -43,9 +75,9 @@ class _LoginState extends State<Login> {
             spacing: 10,
             children: [
               TextInputSection(
-                label: "Username",
-                hintText: "Enter your username",
-                controller: _usernameController,
+                label: "Email",
+                hintText: "Enter your email",
+                controller: _emailController,
                 obscureText: false,
               ),
               TextInputSection(
