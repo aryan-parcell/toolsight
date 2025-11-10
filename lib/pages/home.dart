@@ -1,11 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toolsight/mock_data.dart';
-import 'package:toolsight/widgets/app_scaffold.dart';
-import 'package:toolsight/widgets/wide_button.dart';
-import 'package:toolsight/models/toolbox.dart';
 import 'package:toolsight/router.dart';
+import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/toolbox_display.dart';
+import 'package:toolsight/widgets/wide_button.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,19 +15,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late Future<List<Toolbox>> _toolboxesFuture;
-
-  Future<List<Toolbox>> _fetchToolboxes() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
-    return mockToolboxes;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _toolboxesFuture = _fetchToolboxes();
-  }
+  final Stream<QuerySnapshot> _checkoutStream = FirebaseFirestore.instance
+      .collection('checkouts')
+      .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .where('status', isEqualTo: 'active')
+      .snapshots();
 
   @override
   Widget build(BuildContext context) {
@@ -64,34 +56,40 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 10,
-            children: [
-              Text("Active ToolBoxes", style: Theme.of(context).textTheme.titleLarge),
-              FutureBuilder(
-                future: _toolboxesFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Text("Error loading toolboxes", style: Theme.of(context).textTheme.bodySmall);
-                  }
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text("No active toolboxes.", style: Theme.of(context).textTheme.bodySmall);
-                  }
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 10,
+              children: [
+                Text("Active ToolBoxes", style: Theme.of(context).textTheme.titleLarge),
+                StreamBuilder<QuerySnapshot>(
+                  stream: _checkoutStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Text("Error loading toolboxes", style: Theme.of(context).textTheme.bodySmall);
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Text("No active toolboxes.", style: Theme.of(context).textTheme.bodySmall);
+                    }
 
-                  final toolboxes = snapshot.data!;
-                  return Column(
-                    spacing: 10,
-                    children: [
-                      for (final toolbox in toolboxes) ToolBoxDisplay(toolbox),
-                    ],
-                  );
-                },
-              ),
-            ],
+                    return ListView.separated(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+
+                        return ToolBoxDisplay(data['toolboxId'], data['toolboxName'], data['audit']);
+                      },
+                      separatorBuilder: (context, index) => SizedBox(height: 10),
+                      itemCount: snapshot.data!.docs.length,
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),
