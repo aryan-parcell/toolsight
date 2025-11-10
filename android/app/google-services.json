@@ -7,12 +7,21 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:528230253135:android:643cfd07fc13767967203a",
+        "mobilesdk_app_id": "1:528230253135:android:f1283fb2707db63b67203a",
         "android_client_info": {
           "package_name": "com.parcell.toolsight"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "528230253135-rci700h1643ncfhbto495t136cou7fin.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.parcell.toolsight",
+            "certificate_hash": "520ccbec4ec267ae9e59d7d35f8f5906cd6b292e"
+          }
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAtX5aPXpQ4lsEInB29JiVPmHe2t2rjYPQ"
