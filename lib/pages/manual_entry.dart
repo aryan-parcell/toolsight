@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toolsight/router.dart';
@@ -16,9 +18,47 @@ class _ManualEntryState extends State<ManualEntry> {
   final _eidController = TextEditingController();
 
   Future<void> _openToolBox() async {
-    // TODO implement backend
     final eid = _eidController.text;
-    context.goNamed(AppRoute.toolbox.name, pathParameters: {'toolbox_id': eid});
+
+    final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(eid);
+    final response = await toolboxDoc.get();
+    final toolbox = response.data();
+
+    if (toolbox == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Invalid ToolBox EID")),
+        );
+      }
+      return;
+    }
+
+    if (toolbox['status'] != 'available') {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Unavailable ToolBox EID")),
+        );
+      }
+      return;
+    }
+
+    final checkoutDoc = await FirebaseFirestore.instance.collection('checkouts').add({
+      'userId': FirebaseAuth.instance.currentUser!.uid,
+      'toolboxId': eid,
+      'checkoutTime': DateTime.now(),
+      'returnTime': null,
+      'toolboxName': toolbox['name'],
+      'status': 'active',
+      'audit': false,
+    });
+
+    await toolboxDoc.update({
+      'status': 'checked-out',
+      'currentUserId': FirebaseAuth.instance.currentUser!.uid,
+      'currentCheckoutId': checkoutDoc.id,
+    });
+
+    if (mounted) context.goNamed(AppRoute.toolbox.name, pathParameters: {'toolbox_id': eid});
   }
 
   @override
