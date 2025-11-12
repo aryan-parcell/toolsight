@@ -18,41 +18,36 @@ class DrawerPage extends StatefulWidget {
 
 class _DrawerPageState extends State<DrawerPage> {
   late Map<String, dynamic> _toolbox;
-  late Future<Map<String, dynamic>> _drawerAuditFuture;
+  late DocumentReference<Map<String, dynamic>> _auditDoc;
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? _drawerAuditStream;
 
-  Future<Map<String, dynamic>> _fetchDrawerAudit() async {
+  void _fetchDrawerAudit() async {
     final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId);
     final toolboxResponse = await toolboxDoc.get();
     _toolbox = toolboxResponse.data()!;
 
     final auditId = _toolbox['lastAuditId'];
 
-    if (auditId == null) {
-      return {
-        'imageStoragePath': null,
-        'results': {},
-      };
-    }
+    _auditDoc = FirebaseFirestore.instance.collection('audits').doc(auditId);
+    _drawerAuditStream = _auditDoc.snapshots();
 
-    final auditDoc = FirebaseFirestore.instance.collection('audits').doc(auditId);
-    final auditResponse = await auditDoc.get();
-    final audit = auditResponse.data();
-
-    return audit!['drawerStates'][widget.drawerId];
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    _drawerAuditFuture = _fetchDrawerAudit();
+    _fetchDrawerAudit();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_drawerAuditStream == null) return Center(child: CircularProgressIndicator());
+
     return AppScaffold(
       allowBack: true,
-      child: FutureBuilder(
-        future: _drawerAuditFuture,
+      child: StreamBuilder(
+        stream: _drawerAuditStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -64,7 +59,7 @@ class _DrawerPageState extends State<DrawerPage> {
             return Text("Drawer not found.", style: Theme.of(context).textTheme.bodySmall);
           }
 
-          final drawerAudit = snapshot.data!;
+          final drawerAudit = snapshot.data!.data()!['drawerStates'][widget.drawerId];
 
           final drawer = _toolbox['drawers'].firstWhere((drawer) => drawer['drawerId'] == widget.drawerId);
 
