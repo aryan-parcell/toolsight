@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toolsight/pages/serviceability.dart';
@@ -28,10 +29,13 @@ enum AppRoute {
 
 GoRouter createRouter() {
   return GoRouter(
-    initialLocation: AppRoute.login.path,
     onException: (context, state, router) {
       debugPrint("Router Exception: ${state.error}");
       router.go(AppRoute.login.path);
+    },
+    redirect: (context, state) {
+      if (FirebaseAuth.instance.currentUser == null) return AppRoute.login.path;
+      return null;
     },
     routes: [
       GoRoute(
