@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:go_router/go_router.dart';
 import 'package:toolsight/router.dart';
@@ -87,8 +88,22 @@ class _ToolboxPageState extends State<ToolboxPage> {
                 children: [
                   WideButton(
                     text: "Close ${toolbox['name']}",
-                    onPressed: () {
-                      context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
+                    onPressed: () async {
+                      final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId);
+                      final checkoutDoc = FirebaseFirestore.instance.collection('checkouts').doc(toolbox['currentCheckoutId']);
+
+                      await checkoutDoc.update({
+                        'returnTime': DateTime.now(),
+                        'status': 'complete',
+                      });
+
+                      await toolboxDoc.update({
+                        'status': 'available',
+                        'currentUserId': null,
+                        'currentCheckoutId': null,
+                      });
+
+                      if (context.mounted) context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
                     },
                   ),
                 ],
