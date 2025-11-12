@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:go_router/go_router.dart';
-import 'package:toolsight/models/drawer.dart';
-import 'package:toolsight/models/toolbox.dart';
 import 'package:toolsight/router.dart';
 
 class DrawerDisplay extends StatelessWidget {
-  final Toolbox toolbox;
-  final Drawer drawer;
+  final String toolboxId;
+  final String drawerId;
+  final String drawerName;
 
-  const DrawerDisplay(this.toolbox, this.drawer, {super.key});
+  const DrawerDisplay(this.toolboxId, this.drawerId, this.drawerName, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,7 @@ class DrawerDisplay extends StatelessWidget {
       onTap: () {
         context.pushNamed(
           AppRoute.drawer.name,
-          pathParameters: {'toolbox_id': toolbox.id, 'drawer_id': drawer.id},
+          pathParameters: {'toolbox_id': toolboxId, 'drawer_id': drawerId},
         );
       },
       child: Container(
@@ -28,8 +27,8 @@ class DrawerDisplay extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(drawer.name, style: Theme.of(context).textTheme.labelLarge),
-            Text('${drawer.present}/${drawer.total}', style: Theme.of(context).textTheme.labelLarge),
+            Text(drawerName, style: Theme.of(context).textTheme.labelLarge),
+            // Text('${drawer.present}/${drawer.total}', style: Theme.of(context).textTheme.labelLarge),
           ],
         ),
       ),

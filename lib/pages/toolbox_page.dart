@@ -1,7 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:go_router/go_router.dart';
-import 'package:toolsight/mock_data.dart';
-import 'package:toolsight/models/toolbox.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/drawer_display.dart';
@@ -17,12 +16,14 @@ class ToolboxPage extends StatefulWidget {
 }
 
 class _ToolboxPageState extends State<ToolboxPage> {
-  late Future<Toolbox> _toolboxFuture;
+  late Future<Map<String, dynamic>> _toolboxFuture;
 
-  Future<Toolbox> _fetchToolbox() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
-    return mockToolboxes.firstWhere((toolbox) => toolbox.id == widget.toolboxId);
+  Future<Map<String, dynamic>> _fetchToolbox() async {
+    final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId);
+    final response = await toolboxDoc.get();
+    final toolbox = response.data();
+
+    return toolbox!;
   }
 
   @override
@@ -58,7 +59,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 10,
                 children: [
-                  Text(toolbox.name, style: Theme.of(context).textTheme.headlineLarge),
+                  Text(toolbox['name'], style: Theme.of(context).textTheme.headlineLarge),
                 ],
               ),
               Row(
@@ -68,7 +69,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
                     onPressed: () {
                       context.pushNamed(
                         AppRoute.capture.name,
-                        pathParameters: {'toolbox_id': toolbox.id, 'drawer_id': '1'},
+                        pathParameters: {'toolbox_id': widget.toolboxId, 'drawer_id': '1'},
                       );
                     },
                   ),
@@ -78,16 +79,16 @@ class _ToolboxPageState extends State<ToolboxPage> {
               Column(
                 spacing: 10,
                 children: [
-                  for (final drawer in toolbox.drawers) DrawerDisplay(toolbox, drawer),
+                  for (final drawer in toolbox['drawers']) DrawerDisplay(widget.toolboxId, drawer['drawerId'], drawer['drawerName']),
                 ],
               ),
               Divider(),
               Row(
                 children: [
                   WideButton(
-                    text: "Close ${toolbox.name}",
+                    text: "Close ${toolbox['name']}",
                     onPressed: () {
-                      context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': toolbox.id});
+                      context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
                     },
                   ),
                 ],
