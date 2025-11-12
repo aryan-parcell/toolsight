@@ -143,7 +143,20 @@ class _DrawerPageState extends State<DrawerPage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(tool['toolName']),
-        Text(toolStatus),
+        DropdownButton(
+          value: toolStatus,
+          isDense: true,
+          alignment: Alignment.centerRight,
+          underline: SizedBox.shrink(),
+          items: [
+            DropdownMenuItem(value: 'present', child: Text('Present')),
+            DropdownMenuItem(value: 'absent', child: Text('Absent')),
+            DropdownMenuItem(value: 'unserviceable', child: Text('Unserviceable')),
+          ],
+          onChanged: (val) {
+            _auditDoc.update({'drawerStates.${widget.drawerId}.results.$toolId': val});
+          },
+        ),
       ],
     );
   }
