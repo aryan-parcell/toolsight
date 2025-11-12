@@ -1,7 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:go_router/go_router.dart';
-import 'package:toolsight/mock_data.dart';
-import 'package:toolsight/models/drawer.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/wide_button.dart';
@@ -17,20 +17,34 @@ class DrawerPage extends StatefulWidget {
 }
 
 class _DrawerPageState extends State<DrawerPage> {
-  late Future<Drawer> _drawerFuture;
+  late Map<String, dynamic> _toolbox;
+  late Future<Map<String, dynamic>> _drawerAuditFuture;
 
-  Future<Drawer> _fetchDrawer() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
-    final toolbox = mockToolboxes.firstWhere((toolbox) => toolbox.id == widget.toolboxId);
-    final drawer = toolbox.drawers.firstWhere((drawer) => drawer.id == widget.drawerId);
-    return drawer;
+  Future<Map<String, dynamic>> _fetchDrawerAudit() async {
+    final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId);
+    final toolboxResponse = await toolboxDoc.get();
+    _toolbox = toolboxResponse.data()!;
+
+    final auditId = _toolbox['lastAuditId'];
+
+    if (auditId == null) {
+      return {
+        'imageStoragePath': null,
+        'results': {},
+      };
+    }
+
+    final auditDoc = FirebaseFirestore.instance.collection('audits').doc(auditId);
+    final auditResponse = await auditDoc.get();
+    final audit = auditResponse.data();
+
+    return audit!['drawerStates'][widget.drawerId];
   }
 
   @override
   void initState() {
     super.initState();
-    _drawerFuture = _fetchDrawer();
+    _drawerAuditFuture = _fetchDrawerAudit();
   }
 
   @override
@@ -38,7 +52,7 @@ class _DrawerPageState extends State<DrawerPage> {
     return AppScaffold(
       allowBack: true,
       child: FutureBuilder(
-        future: _drawerFuture,
+        future: _drawerAuditFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -50,7 +64,9 @@ class _DrawerPageState extends State<DrawerPage> {
             return Text("Drawer not found.", style: Theme.of(context).textTheme.bodySmall);
           }
 
-          final drawer = snapshot.data!;
+          final drawerAudit = snapshot.data!;
+
+          final drawer = _toolbox['drawers'].firstWhere((drawer) => drawer['drawerId'] == widget.drawerId);
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +76,7 @@ class _DrawerPageState extends State<DrawerPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 10,
                 children: [
-                  Text(drawer.name, style: Theme.of(context).textTheme.headlineLarge),
+                  Text(drawer['drawerName'], style: Theme.of(context).textTheme.headlineLarge),
                 ],
               ),
               Row(
@@ -76,18 +92,14 @@ class _DrawerPageState extends State<DrawerPage> {
                   ),
                 ],
               ),
-              Container(
-                width: 312,
-                height: 200,
-                color: Colors.grey,
-              ),
+              imageDisplay(drawerAudit['imageStoragePath']),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 10,
                 children: [
                   Text("Results", style: Theme.of(context).textTheme.labelLarge),
-                  if (drawer.toolStatus.isEmpty) Text("No results found.", style: Theme.of(context).textTheme.bodySmall),
-                  for (final entry in drawer.toolStatus.entries) toolDisplay(entry.key, entry.value),
+                  if (drawerAudit['results'].isEmpty) Text("No results found.", style: Theme.of(context).textTheme.bodySmall),
+                  for (final entry in drawerAudit['results'].entries) resultDisplay(entry),
                 ],
               ),
               Row(
@@ -105,13 +117,38 @@ class _DrawerPageState extends State<DrawerPage> {
     );
   }
 
-  Widget toolDisplay(String name, int value) {
-    final values = ['Absent', 'Present'];
+  Widget imageDisplay(String? imageStoragePath) {
+    final blankImage = Container(width: double.infinity, height: 200, color: Colors.grey);
+
+    if (imageStoragePath == null) return blankImage;
+
+    return FutureBuilder(
+      future: FirebaseStorage.instance.ref().child(imageStoragePath).getDownloadURL(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
+        if (snapshot.hasError || !snapshot.hasData) return blankImage;
+
+        return Image.network(
+          snapshot.data!,
+          height: 200,
+          width: double.infinity,
+          fit: BoxFit.contain,
+        );
+      },
+    );
+  }
+
+  Widget resultDisplay(MapEntry<String, dynamic> result) {
+    final toolId = result.key;
+    final toolStatus = result.value;
+
+    final tool = _toolbox['tools'].firstWhere((tool) => tool['toolId'] == toolId);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(name),
-        Text(values[value]),
+        Text(tool['toolName']),
+        Text(toolStatus),
       ],
     );
   }
