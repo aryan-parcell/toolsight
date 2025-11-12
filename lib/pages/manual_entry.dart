@@ -58,7 +58,7 @@ class _ManualEntryState extends State<ManualEntry> {
       'currentCheckoutId': checkoutDoc.id,
     });
 
-    if (mounted) context.goNamed(AppRoute.toolbox.name, pathParameters: {'toolbox_id': eid});
+    if (mounted) context.pushReplacementNamed(AppRoute.toolbox.name, pathParameters: {'toolbox_id': eid});
   }
 
   @override
