@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart' hide Drawer;
-import 'package:toolsight/mock_data.dart';
-import 'package:toolsight/models/toolbox.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/wide_button.dart';
 
@@ -15,33 +15,40 @@ class DrawerCapture extends StatefulWidget {
 }
 
 class _DrawerCaptureState extends State<DrawerCapture> {
-  late Future<Toolbox> _toolboxFuture;
   int _currentIndex = 0;
+  late Map<String, dynamic> _toolbox;
+  late DocumentReference<Map<String, dynamic>> _auditDoc;
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? _drawerAuditStream;
 
-  Future<Toolbox> _fetchToolboxAndSetInitialIndex() async {
-    // Simulate network fetch
-    await Future.delayed(const Duration(seconds: 1));
+  void _fetchDrawerAudit() async {
+    final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId);
+    final toolboxResponse = await toolboxDoc.get();
+    _toolbox = toolboxResponse.data()!;
 
-    final toolbox = mockToolboxes.firstWhere((tb) => tb.id == widget.toolboxId);
+    final auditId = _toolbox['lastAuditId'];
 
-    final initialIndex = toolbox.drawers.indexWhere((d) => d.id == widget.drawerId);
-    if (initialIndex != -1) _currentIndex = initialIndex;
+    _auditDoc = FirebaseFirestore.instance.collection('audits').doc(auditId);
+    _drawerAuditStream = _auditDoc.snapshots();
 
-    return toolbox;
+    _currentIndex = _toolbox['drawers'].indexWhere((drawer) => drawer['drawerId'] == widget.drawerId);
+
+    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    _toolboxFuture = _fetchToolboxAndSetInitialIndex();
+    _fetchDrawerAudit();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_drawerAuditStream == null) return Center(child: CircularProgressIndicator());
+
     return AppScaffold(
       allowBack: true,
-      child: FutureBuilder<Toolbox>(
-        future: _toolboxFuture,
+      child: StreamBuilder(
+        stream: _drawerAuditStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -52,21 +59,17 @@ class _DrawerCaptureState extends State<DrawerCapture> {
           if (!snapshot.hasData) {
             return Text("Drawer not found.", style: Theme.of(context).textTheme.bodySmall);
           }
-
-          final toolbox = snapshot.data!;
-
-          if (toolbox.drawers.isEmpty) {
+          if (_toolbox['drawers'].isEmpty) {
             return Text("This toolbox has no drawers.", style: Theme.of(context).textTheme.bodySmall);
           }
 
-          if (_currentIndex >= toolbox.drawers.length) {
-            _currentIndex = toolbox.drawers.length - 1;
-          }
-
-          final drawer = toolbox.drawers[_currentIndex];
+          final numDrawers = _toolbox['drawers'].length;
+          final drawer = _toolbox['drawers'][_currentIndex];
+          final drawerId = drawer['drawerId'];
+          final drawerAudit = snapshot.data!.data()!['drawerStates'][drawerId];
 
           final canGoBack = _currentIndex > 0;
-          final canGoForward = _currentIndex < toolbox.drawers.length - 1;
+          final canGoForward = _currentIndex < numDrawers - 1;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,18 +89,14 @@ class _DrawerCaptureState extends State<DrawerCapture> {
                     icon: const Icon(Icons.chevron_left),
                     onPressed: canGoBack ? () => setState(() => _currentIndex--) : null,
                   ),
-                  Text(drawer.name, style: Theme.of(context).textTheme.labelLarge),
+                  Text(drawer['drawerName'], style: Theme.of(context).textTheme.labelLarge),
                   IconButton(
                     icon: const Icon(Icons.chevron_right),
                     onPressed: canGoForward ? () => setState(() => _currentIndex++) : null,
                   ),
                 ],
               ),
-              Container(
-                width: 312,
-                height: 200,
-                color: Colors.grey,
-              ),
+              imageDisplay(drawerAudit['imageStoragePath']),
               Row(
                 children: [
                   WideButton(
@@ -110,6 +109,27 @@ class _DrawerCaptureState extends State<DrawerCapture> {
           );
         },
       ),
+    );
+  }
+
+  Widget imageDisplay(String? imageStoragePath) {
+    final blankImage = Container(width: double.infinity, height: 200, color: Colors.grey);
+
+    if (imageStoragePath == null) return blankImage;
+
+    return FutureBuilder(
+      future: FirebaseStorage.instance.ref().child(imageStoragePath).getDownloadURL(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
+        if (snapshot.hasError || !snapshot.hasData) return blankImage;
+
+        return Image.network(
+          snapshot.data!,
+          height: 200,
+          width: double.infinity,
+          fit: BoxFit.contain,
+        );
+      },
     );
   }
 }
