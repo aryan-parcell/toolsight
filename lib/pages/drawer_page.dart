@@ -100,8 +100,12 @@ class _DrawerPageState extends State<DrawerPage> {
               Row(
                 children: [
                   WideButton(
-                    text: "Confirm Results",
-                    onPressed: () => context.pop(),
+                    text: drawerAudit['drawerStatus'] == 'user-validated' ? "Confirmed Results" : "Confirm Results",
+                    onPressed: () {
+                      _auditDoc.update({'drawerStates.${widget.drawerId}.drawerStatus': 'user-validated'});
+
+                      context.pop();
+                    },
                   ),
                 ],
               ),
