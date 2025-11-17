@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart' hide Drawer;
+import 'package:image_picker/image_picker.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/wide_button.dart';
 
@@ -39,6 +42,22 @@ class _DrawerCaptureState extends State<DrawerCapture> {
   void initState() {
     super.initState();
     _fetchDrawerAudit();
+  }
+
+  Future<void> _captureAndUploadImage(String drawerId) async {
+    final image = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (image == null) return;
+
+    final auditId = _toolbox['lastAuditId'];
+    final extension = image.path.split('.').last;
+    final imageStoragePath = 'audits/$auditId/$drawerId.$extension';
+
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef = storageRef.child(imageStoragePath);
+
+    await imageRef.putFile(File(image.path));
+
+    _auditDoc.update({'drawerStates.$drawerId.imageStoragePath': imageStoragePath});
   }
 
   @override
@@ -101,7 +120,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
                 children: [
                   WideButton(
                     text: "Capture Drawer Image",
-                    onPressed: () {},
+                    onPressed: () => _captureAndUploadImage(drawerId),
                   ),
                 ],
               ),
@@ -125,7 +144,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
 
         return Image.network(
           snapshot.data!,
-          height: 200,
+          height: MediaQuery.of(context).size.height * 0.5,
           width: double.infinity,
           fit: BoxFit.contain,
         );
