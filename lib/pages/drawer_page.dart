@@ -81,7 +81,8 @@ class _DrawerPageState extends State<DrawerPage> {
                     onPressed: () {
                       context.pushNamed(
                         AppRoute.capture.name,
-                        pathParameters: {'toolbox_id': widget.toolboxId, 'drawer_id': widget.drawerId},
+                        pathParameters: {'toolbox_id': widget.toolboxId},
+                        extra: widget.drawerId
                       );
                     },
                   ),

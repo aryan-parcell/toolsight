@@ -70,7 +70,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
                     onPressed: () {
                       context.pushNamed(
                         AppRoute.capture.name,
-                        pathParameters: {'toolbox_id': widget.toolboxId, 'drawer_id': '1'},
+                        pathParameters: {'toolbox_id': widget.toolboxId},
                       );
                     },
                   ),

@@ -17,9 +17,9 @@ enum AppRoute {
   manualEntry(path: '/manualEntry', name: 'manualEntry'),
   scanToolbox(path: '/scanToolbox', name: 'scanToolbox'),
   toolbox(path: '/toolbox/:toolbox_id', name: 'toolbox'),
-  drawer(path: ':drawer_id', name: 'drawer'), // Sub-route
   capture(path: 'capture', name: 'capture'), // Sub-route
-  complete(path: 'complete', name: 'complete'); // Sub-route
+  complete(path: 'complete', name: 'complete'), // Sub-route
+  drawer(path: ':drawer_id', name: 'drawer'); // Sub-route
 
   final String path;
   final String name;
@@ -69,6 +69,16 @@ GoRouter createRouter() {
         builder: (context, state) => ToolboxPage(state.pathParameters['toolbox_id']!),
         routes: [
           GoRoute(
+            path: AppRoute.capture.path,
+            name: AppRoute.capture.name,
+            builder: (context, state) {
+              final toolboxId = state.pathParameters['toolbox_id']!;
+              final drawerId = state.extra as String?;
+
+              return DrawerCapture(toolboxId, drawerId);
+            },
+          ),
+          GoRoute(
             path: AppRoute.complete.path,
             name: AppRoute.complete.name,
             builder: (context, state) => ServiceabilityQuestionnaire(state.pathParameters['toolbox_id']!),
@@ -80,16 +90,6 @@ GoRouter createRouter() {
               final params = state.pathParameters;
               return DrawerPage(params['toolbox_id']!, params['drawer_id']!);
             },
-            routes: [
-              GoRoute(
-                path: AppRoute.capture.path,
-                name: AppRoute.capture.name,
-                builder: (context, state) {
-                  final params = state.pathParameters;
-                  return DrawerCapture(params['toolbox_id']!, params['drawer_id']!);
-                },
-              ),
-            ],
           ),
         ],
       ),

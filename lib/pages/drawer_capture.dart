@@ -9,7 +9,7 @@ import 'package:toolsight/widgets/wide_button.dart';
 
 class DrawerCapture extends StatefulWidget {
   final String toolboxId;
-  final String drawerId;
+  final String? drawerId;
 
   const DrawerCapture(this.toolboxId, this.drawerId, {super.key});
 
@@ -33,7 +33,9 @@ class _DrawerCaptureState extends State<DrawerCapture> {
     _auditDoc = FirebaseFirestore.instance.collection('audits').doc(auditId);
     _drawerAuditStream = _auditDoc.snapshots();
 
-    _currentIndex = _toolbox['drawers'].indexWhere((drawer) => drawer['drawerId'] == widget.drawerId);
+    if (widget.drawerId != null) {
+      _currentIndex = _toolbox['drawers'].indexWhere((drawer) => drawer['drawerId'] == widget.drawerId);
+    }
 
     setState(() {});
   }
