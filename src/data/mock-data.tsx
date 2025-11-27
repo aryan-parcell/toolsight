@@ -40,6 +40,7 @@ export const CALIBRATION = [
 
 export const toolboxes = [
   {
+    id: "8yFz8Oi4LJrwcO2djQkx",
     name: 'ToolBox #1',
     organization_id: '1',
     drawers: [
@@ -50,12 +51,13 @@ export const toolboxes = [
       { toolId: 't0', drawerId: 'd0', toolName: 'Wrench 10mm' },
       { toolId: 't1', drawerId: 'd1', toolName: 'Hammer' }
     ],
-    status: 'available',
+    status: 'maintenance',
     currentUserId: null,
     currentCheckoutId: null,
     lastAuditId: null
   },
   {
+    id: "Jo6vk514hs1VEmEu0vyz",
     name: 'ToolBox #2',
     organization_id: '1',
     drawers: [
@@ -71,6 +73,7 @@ export const toolboxes = [
     lastAuditId: null
   },
   {
+    id: "Aai0ibIHCOehDNdtjykm",
     name: 'ToolBox #3',
     organization_id: '1',
     drawers: [
