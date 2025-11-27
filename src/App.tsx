@@ -1,31 +1,56 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-
-import { Shell } from "./components/Shell";
-import { Dashboard } from "./features/Dashboard";
-import { ShadowboardSetup } from "./features/Shadowboard";
-import { AuditScheduling } from "./features/AuditScheduling";
+import Dashboard from "./features/Dashboard";
+import { useState } from "react";
+import Layout from "./components/Layout";
+import ToolboxWizard from "./features/ToolboxWizard";
+import TemplateBuilder from "./features/TemplateBuilder";
 import { Reports } from "./features/Reports";
-import { Serviceability } from "./features/Serviceability";
+import { Settings } from "./features/Settings";
+import { CalibrationManagement } from "./features/CalibrationManagement";
+
+export enum AppView {
+    TOOLBOX_OVERVIEW = 'TOOLBOX_OVERVIEW',
+    TOOLBOX_WIZARD = 'TOOLBOX_WIZARD',
+    TEMPLATE_BUILDER = 'TEMPLATE_BUILDER',
+    CALIBRATION = 'CALIBRATION',
+    INVENTORY = 'INVENTORY',
+    REPORTS = 'REPORTS',
+    SETTINGS = 'SETTINGS',
+}
+
+const PlaceholderView = () => (
+    <div className="flex flex-col items-center justify-center h-full animate-in fade-in text-center max-w-md mx-auto">
+        <h2 className="text-2xl font-bold dark:text-white">Placeholder View</h2>
+        <p>This module is currently under development.</p>
+    </div>
+);
 
 export default function App() {
-  return (
-    <Shell>
-      <Tabs defaultValue="dashboard">
-        <TabsList className="grid grid-cols-5 w-full">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="setup">Shadowboard</TabsTrigger>
-          <TabsTrigger value="audits">Audits</TabsTrigger>
-          <TabsTrigger value="serviceability">Serviceability</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-        </TabsList>
-        <div className="mt-4 space-y-6">
-          <TabsContent value="dashboard"><Dashboard /></TabsContent>
-          <TabsContent value="setup"><ShadowboardSetup /></TabsContent>
-          <TabsContent value="audits"><AuditScheduling /></TabsContent>
-          <TabsContent value="serviceability"><Serviceability /></TabsContent>
-          <TabsContent value="reports"><Reports /></TabsContent>
-        </div>
-      </Tabs>
-    </Shell>
-  );
+    const [currentView, setCurrentView] = useState<AppView>(AppView.TOOLBOX_OVERVIEW);
+
+    const renderContent = () => {
+        switch (currentView) {
+            case AppView.TOOLBOX_OVERVIEW:
+                return <Dashboard onNavigate={setCurrentView} />;
+            case AppView.TOOLBOX_WIZARD:
+                return <ToolboxWizard onNavigate={setCurrentView} />;
+            case AppView.TEMPLATE_BUILDER:
+                return <TemplateBuilder />;
+            case AppView.CALIBRATION:
+                return <CalibrationManagement />;
+            case AppView.INVENTORY:
+                return <PlaceholderView />;
+            case AppView.REPORTS:
+                return <Reports />;
+            case AppView.SETTINGS:
+                return <Settings />;
+            default:
+                return <Dashboard onNavigate={setCurrentView} />;
+        }
+    };
+
+    return (
+        <Layout currentView={currentView} onNavigate={setCurrentView}>
+            {renderContent()}
+        </Layout>
+    );
 }
