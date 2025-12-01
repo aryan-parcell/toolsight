@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronRight, Settings, ChevronLeft, ChevronDown } from 'lucide-react';
-import { AppView } from '../types';
+import { AppView, type Drawer, type DrawerState, type Tool, type ToolBox } from '../types';
+import { db } from '../firebase';
+import { collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 
 interface ToolboxWizardProps {
     onNavigate: (view: AppView) => void;
@@ -17,6 +19,7 @@ const foamColors = [
 const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
     const [step, setStep] = useState(1);
     const [activeDrawer, setActiveDrawer] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         eid: '',
@@ -30,10 +33,83 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
     const nextStep = () => setStep(s => Math.min(s + 1, 3));
     const prevStep = () => setStep(s => Math.max(s - 1, 1));
 
-    const handleCreate = () => {
-        console.log("Creating toolbox:", formData);
+    const createToolboxFromFormData = () => {
+        // Construct drawers and tools based on form data
+        const drawers: Drawer[] = Array.from({ length: formData.drawers }).map((_, i) => ({
+            drawerId: `d${i}`,
+            drawerName: `Drawer #${i + 1}`
+        }));
 
-        onNavigate(AppView.TOOLBOX_OVERVIEW);
+        const tools: Tool[] = formData.toolCounts.flatMap((toolCount, drawerIndex) =>
+            Array.from({ length: toolCount }).map((_, toolIndex) => ({
+                toolId: `t${drawerIndex}-${toolIndex}`,
+                drawerId: `d${drawerIndex}`,
+                toolName: `Tool ${toolIndex + 1} in Drawer ${drawerIndex + 1}`
+            }))
+        );
+
+        return {
+            organization_id: '1',
+            name: formData.name,
+            drawers: drawers,
+            tools: tools,
+            status: 'available',
+            currentUserId: null,
+            currentCheckoutId: null,
+            lastAuditId: null,
+        }
+    }
+
+    const createInitialAuditFromToolbox = (tb: ToolBox) => {
+        // Use drawer and tool data to create initial audit state
+        const drawerStates: Record<string, DrawerState> = {};
+        tb.drawers.forEach((drawer: Drawer) => {
+            drawerStates[drawer.drawerId] = {
+                drawerStatus: "user-validated",
+                imageStoragePath: null,
+                results: {}
+            };
+        });
+        tb.tools.forEach((tool: Tool) => {
+            drawerStates[tool.drawerId].results![tool.toolId] = 'present';
+        });
+
+        return {
+            checkoutId: null,
+            startTime: serverTimestamp(),
+            endTime: serverTimestamp(),
+            drawerStates: drawerStates,
+        };
+    }
+
+    const handleCreate = async () => {
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+
+        try {
+            const newToolbox: ToolBox = createToolboxFromFormData();
+            const initialAudit = createInitialAuditFromToolbox(newToolbox);
+
+            const batch = writeBatch(db);
+            
+            const newToolboxRef = doc(db, 'toolboxes', formData.eid);
+            const newAuditRef = doc(collection(db, 'audits'));
+
+            newToolbox.lastAuditId = newAuditRef.id;
+
+            batch.set(newAuditRef, initialAudit);
+            batch.set(newToolboxRef, newToolbox);
+
+            await batch.commit();
+            console.log("Toolbox created successfully");
+            onNavigate(AppView.TOOLBOX_OVERVIEW);
+
+        } catch (error) {
+            console.error("Error creating toolbox:", error);
+            alert("Failed to create toolbox. Please check your connection.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const updateDrawerCounts = (newDrawerCount: number) => {

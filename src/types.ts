@@ -1,3 +1,5 @@
+import type { Timestamp } from "firebase/firestore";
+
 export interface Drawer {
   drawerId: string;
   drawerName: string;
@@ -15,10 +17,26 @@ export interface ToolBox {
   organization_id: string;
   drawers: Drawer[];
   tools: Tool[];
-  status: 'maintenance' | 'available' | 'checked_out' | string; 
+  status: 'maintenance' | 'available' | 'checked_out' | string;
   currentUserId: string | null;
   currentCheckoutId: string | null;
   lastAuditId: string | null;
+}
+
+export type ToolPresence = 'present' | 'missing' | 'unserviceable';
+
+export interface DrawerState {
+  drawerStatus: 'pending' | 'ai-completed' | 'user-validated';
+  imageStoragePath: string | null;
+  results: Record<string, ToolPresence> | null;
+}
+
+export interface Audit {
+  id?: string;
+  checkoutId: string | null;
+  startTime: Timestamp;
+  endTime: Timestamp | null;
+  drawerStates: Record<string, DrawerState>;
 }
 
 export enum AppView {
@@ -51,7 +69,7 @@ export interface ToolPosition {
   status: "present" | "missing";
   angle?: number;
   shapeType?: 'rectangle' | 'circle' | 'polygon';
-  points?: {x: number, y: number}[];
+  points?: { x: number, y: number }[];
   cx?: number; // center x for circle
   cy?: number; // center y for circle
   radius?: number;
