@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TOOLBOXES } from "@/data/mock-data";
 
 export function Reports() {
     return (
@@ -32,15 +31,6 @@ export function Reports() {
                     <CardTitle className="flex items-center gap-2"><ClipboardList className="h-5 w-5" /> Filters</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                    <div className="flex items-center gap-2">
-                        <Label className="w-24">Toolbox</Label>
-                        <Select>
-                            <SelectTrigger className="w-48"><SelectValue placeholder="All" /></SelectTrigger>
-                            <SelectContent>
-                                {TOOLBOXES.map((t) => <SelectItem key={t.id} value={t.id}>{t.id}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-                    </div>
                     <div className="flex items-center gap-2">
                         <Label className="w-24">Tray type</Label>
                         <Select>
