@@ -314,7 +314,8 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
                 <button
                     type="button"
                     onClick={step === 3 ? handleCreate : nextStep}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-axiom-cyan text-black font-bold hover:opacity-80 transition-opacity"
+                    disabled={formData.name.trim().length === 0 || formData.eid.trim().length === 0}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-axiom-cyan text-black font-bold hover:opacity-80 transition-opacity disabled:opacity-50"
                 >
                     {step === 3 ? 'Create Toolbox' : 'Next'}
                     {step !== 3 && <ChevronRight />}
