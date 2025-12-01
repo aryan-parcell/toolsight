@@ -36,6 +36,15 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
         onNavigate(AppView.TOOLBOX_OVERVIEW);
     };
 
+    const updateDrawerCounts = (newDrawerCount: number) => {
+        const newCounts = Array(newDrawerCount).fill(0);
+        for (let i = 0; i < Math.min(formData.toolCounts.length, newDrawerCount); i++) {
+            newCounts[i] = formData.toolCounts[i];
+        }
+
+        setFormData({ ...formData, drawers: newDrawerCount, toolCounts: newCounts })
+    }
+
     const updateToolCount = (drawerIndex: number, count: number) => {
         const newCounts = [...formData.toolCounts];
         newCounts[drawerIndex] = count;
@@ -138,7 +147,7 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
                                 min="1"
                                 max="10"
                                 value={formData.drawers}
-                                onChange={e => setFormData({ ...formData, drawers: parseInt(e.target.value) })}
+                                onChange={e => updateDrawerCounts(parseInt(e.target.value))}
                                 className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-axiom-cyan"
                             />
                         </div>
