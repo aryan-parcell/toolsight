@@ -1,35 +1,24 @@
-export interface Toolbox {
-  id: string;
+export interface Drawer {
+  drawerId: string;
+  drawerName: string;
+}
+
+export interface Tool {
+  toolId: string;
+  drawerId: string;
+  toolName: string;
+}
+
+export interface ToolBox {
+  id?: string;
   name: string;
-  eid: string;
-  status: 'active' | 'maintenance' | 'critical' | 'setup_complete' | 'calibration_pending';
-  location: string;
-  lastScan: string;
-  itemCount: number;
-}
-
-export interface BoundingBox {
-  id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  label: string;
-}
-
-export interface Template {
-  id: string;
-  name: string;
-  imageUrl: string;
-  tools: BoundingBox[];
-  createdAt: string;
-}
-
-export interface DashboardStats {
-  totalToolboxes: number;
-  activeCheckouts: number;
-  criticalDiscrepancies: number;
-  recentActivity: { time: string; action: string; user: string }[];
+  organization_id: string;
+  drawers: Drawer[];
+  tools: Tool[];
+  status: 'maintenance' | 'available' | 'checked_out' | string; 
+  currentUserId: string | null;
+  currentCheckoutId: string | null;
+  lastAuditId: string | null;
 }
 
 export enum AppView {
