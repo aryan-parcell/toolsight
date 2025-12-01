@@ -63,7 +63,7 @@ export function AuditScheduling() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"> KPIs</CardTitle>
+                    <CardTitle className="flex items-center gap-2">Upcoming Audits</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-3">

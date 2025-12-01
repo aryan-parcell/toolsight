@@ -7,11 +7,13 @@ import { Reports } from "./features/Reports";
 import { Settings } from "./features/Settings";
 import { CalibrationManagement } from "./features/CalibrationManagement";
 import { ShadowboardSetup } from "./features/Shadowboard";
+import { AuditScheduling } from "./features/AuditScheduling";
 
 export enum AppView {
     TOOLBOX_OVERVIEW = 'TOOLBOX_OVERVIEW',
     TOOLBOX_WIZARD = 'TOOLBOX_WIZARD',
     SHADOWBOARD = 'SHADOWBOARD',
+    AUDIT_SCHEDULING = 'AUDIT_SCHEDULING',
     TEMPLATE_BUILDER = 'TEMPLATE_BUILDER',
     CALIBRATION = 'CALIBRATION',
     INVENTORY = 'INVENTORY',
@@ -39,6 +41,8 @@ export default function App() {
                 return <ShadowboardSetup />;
             case AppView.TEMPLATE_BUILDER:
                 return <TemplateBuilder />;
+            case AppView.AUDIT_SCHEDULING:
+                return <AuditScheduling />;
             case AppView.CALIBRATION:
                 return <CalibrationManagement />;
             case AppView.INVENTORY:

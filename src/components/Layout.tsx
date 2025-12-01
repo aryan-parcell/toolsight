@@ -11,7 +11,8 @@ import {
     Sun,
     Moon,
     Hammer,
-    Layers
+    Layers,
+    Calendar
 } from 'lucide-react';
 import { AppView } from '../App';
 
@@ -89,6 +90,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) =>
             <NavItem view={AppView.SHADOWBOARD} icon={Layers} label="Shadowboard" />
             <NavItem view={AppView.TEMPLATE_BUILDER} icon={Hammer} label="Template Builder" />
             <NavItem view={AppView.INVENTORY} icon={Package} label="Template Inventory" />
+            <NavItem view={AppView.AUDIT_SCHEDULING} icon={Calendar} label="Audit Scheduling" />
             <NavItem view={AppView.CALIBRATION} icon={Target} label="Calibration" />
             <NavItem view={AppView.REPORTS} icon={FileText} label="Reports" />
             <NavItem view={AppView.SETTINGS} icon={Settings} label="Settings" />
