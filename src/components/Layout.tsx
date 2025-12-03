@@ -5,15 +5,11 @@ import {
     Menu,
     X,
     LogOut,
-    Target,
     Package,
     FileText,
     Sun,
     Moon,
-    Hammer,
-    Layers,
-    Calendar
-} from 'lucide-react';
+    Hammer} from 'lucide-react';
 import { AppView } from '../App';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -89,11 +85,11 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) =>
     const NavItems = () => (
         <div className="flex flex-col">
             <NavItem view={AppView.TOOLBOX_OVERVIEW} icon={LayoutGrid} label="Toolbox Overview" />
-            <NavItem view={AppView.SHADOWBOARD} icon={Layers} label="Shadowboard" />
+            {/* <NavItem view={AppView.SHADOWBOARD} icon={Layers} label="Shadowboard" /> */}
             <NavItem view={AppView.TEMPLATE_BUILDER} icon={Hammer} label="Template Builder" />
             <NavItem view={AppView.INVENTORY} icon={Package} label="Template Inventory" />
-            <NavItem view={AppView.AUDIT_SCHEDULING} icon={Calendar} label="Audit Scheduling" />
-            <NavItem view={AppView.CALIBRATION} icon={Target} label="Calibration" />
+            {/* <NavItem view={AppView.AUDIT_SCHEDULING} icon={Calendar} label="Audit Scheduling" /> */}
+            {/* <NavItem view={AppView.CALIBRATION} icon={Target} label="Calibration" /> */}
             <NavItem view={AppView.REPORTS} icon={FileText} label="Reports" />
             <NavItem view={AppView.SETTINGS} icon={Settings} label="Settings" />
         </div>
