@@ -1,13 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, User } from 'lucide-react';
-import { AppView } from '../App';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { db } from '../firebase';
-import { collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { Input } from '@/components/ui/input';
 import type { ToolBox } from '@/types';
 import { DialogTrigger } from '@radix-ui/react-dialog';
-import { Input } from '@/components/ui/input';
+import { collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { ChevronDown, Plus, User } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { AppView } from '../App';
+import { db } from '../firebase';
+
+const foamColors = [
+    { name: 'Black', value: 'Black', hex: '#18181B' },
+    { name: 'Red', value: 'Red', hex: '#DC2626' },
+    { name: 'Blue', value: 'Blue', hex: '#2563EB' },
+    { name: 'Grey', value: 'Grey', hex: '#4B5563' },
+    { name: 'Yellow', value: 'Yellow', hex: '#CA8A04' },
+];
 
 interface DashboardProps {
     onNavigate: (view: AppView) => void;
@@ -71,9 +79,8 @@ const AutosaveInput: React.FC<{
     );
 };
 
-
 const ToolboxCard: React.FC<ToolBox> = (toolbox) => {
-    const { id, name, drawers, tools, status } = toolbox;
+    const { id, name, drawers, tools, status, type, foamColors: toolboxFoamColors, auditFrequencyInHours } = toolbox;
 
     const toolboxRef = doc(db, 'toolboxes', id as string);
 
@@ -81,19 +88,19 @@ const ToolboxCard: React.FC<ToolBox> = (toolbox) => {
     const drawerCount = drawers?.length || 0;
     const toolCount = tools?.length || 0;
 
-    const handleUpdateToolboxName = async (newName: string) => {
-        if (newName.trim().length === 0) return;
+    const getHexColor = (colorName: string) => {
+        return foamColors.find(c => c.value === colorName)?.hex || '#000000';
+    };
 
+    const handleUpdateToolbox = async (fields: Partial<ToolBox>) => {
         try {
-            await updateDoc(toolboxRef, { name: newName });
+            await updateDoc(toolboxRef, fields);
         } catch (error) {
-            console.error("Error updating toolbox name:", error);
+            console.error("Error updating toolbox:", error);
         }
     };
 
     const handleUpdateToolName = async (toolId: string, newName: string) => {
-        if (newName.trim().length === 0) return;
-
         try {
             // Firestore requires us to write back the entire array to update an object inside it
             const updatedTools = tools.map(t =>
@@ -145,21 +152,87 @@ const ToolboxCard: React.FC<ToolBox> = (toolbox) => {
                 <DialogTitle className="text-xl font-bold dark:text-white">Edit Toolbox</DialogTitle>
 
                 <div className="space-y-5">
-                    <div className="flex justify-between items-center bg-gray-200 dark:bg-gray-700 p-5 rounded-lg">
-                        <label className="w-full font-medium text-axiom-textLight dark:text-axiom-textDark">Toolbox Name</label>
-                        <AutosaveInput
-                            value={name}
-                            onSave={handleUpdateToolboxName}
-                        />
+                    <div className="bg-gray-200 dark:bg-gray-700 p-5 rounded-lg space-y-4">
+                        <div>
+                            <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Toolbox Name</label>
+                            <AutosaveInput value={name} onSave={(val) => handleUpdateToolbox({ name: val })} />
+                        </div>
+
+                        <div>
+                            <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Toolbox Type</label>
+                            <select
+                                value={type}
+                                onChange={e => handleUpdateToolbox({ type: e.target.value })}
+                                className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
+                            >
+                                <option>Rolling Tool Cart</option>
+                                <option>Dispatchable Toolbox</option>
+                                <option>Handheld Toolbox</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Audit Frequency</label>
+                            <select
+                                value={auditFrequencyInHours || 4}
+                                onChange={e => handleUpdateToolbox({ auditFrequencyInHours: parseInt(e.target.value) })}
+                                className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
+                            >
+                                <option value={2}>Every 2 hours</option>
+                                <option value={4}>Every 4 hours</option>
+                                <option value={6}>Every 6 hours</option>
+                                <option value={8}>Every 8 hours</option>
+                            </select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Primary Color</label>
+                                <div className="relative">
+                                    <select
+                                        value={toolboxFoamColors.primary}
+                                        onChange={e => handleUpdateToolbox({ foamColors: { ...toolboxFoamColors, primary: e.target.value } })}
+                                        className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
+                                    >
+                                        {foamColors.map(c => (
+                                            <option key={c.value} value={c.value}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getHexColor(toolboxFoamColors.primary) }} />
+                                        <ChevronDown className="text-gray-400" size={14} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Secondary Color</label>
+                                <div className="relative">
+                                    <select
+                                        value={toolboxFoamColors.secondary}
+                                        onChange={e => handleUpdateToolbox({ foamColors: { ...toolboxFoamColors, secondary: e.target.value } })}
+                                        className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
+                                    >
+                                        {foamColors.map(c => (
+                                            <option key={c.value} value={c.value}>{c.name}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getHexColor(toolboxFoamColors.secondary) }} />
+                                        <ChevronDown className="text-gray-400" size={14} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="border-t border-gray-200 dark:border-gray-700" />
 
-                    {drawers?.map((drawer, index) => {
+                    {drawers?.map((drawer) => {
                         const drawerTools = tools?.filter(tool => tool.drawerId === drawer.drawerId) || [];
 
                         return (
-                            <div key={index} className="bg-gray-200 dark:bg-gray-700 mt-5 p-5 space-y-5 rounded-lg">
+                            <div key={drawer.drawerId} className="bg-gray-200 dark:bg-gray-700 mt-5 p-5 space-y-5 rounded-lg">
                                 <div className="flex items-center justify-between">
                                     <h4 className="font-medium text-axiom-textLight dark:text-axiom-textDark">{drawer.drawerName}</h4>
                                     <span className="text-xs text-gray-400">{drawerTools.length} items</span>
