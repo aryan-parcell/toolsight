@@ -15,6 +15,8 @@ import {
     Calendar
 } from 'lucide-react';
 import { AppView } from '../App';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const ParcellLogo = () => (
     <svg width="32" height="32" viewBox="0 0 1113.57 1295.11" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-axiom-headingLight dark:text-white">
@@ -124,7 +126,13 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) =>
                                 <div className="text-xs opacity-70">Parcell</div>
                             </div>
                         </div>
-                        <LogOut className="ml-auto opacity-50 hover:opacity-100" />
+                        <button 
+                            onClick={() => signOut(auth)}
+                            className="ml-auto opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+                            title="Sign out"
+                        >
+                            <LogOut />
+                        </button>
                     </div>
                 </div>
             </div>

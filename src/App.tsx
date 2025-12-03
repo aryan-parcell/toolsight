@@ -1,5 +1,5 @@
 import Dashboard from "./features/Dashboard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "./components/Layout";
 import ToolboxWizard from "./features/ToolboxWizard";
 import TemplateBuilder from "./features/TemplateBuilder";
@@ -8,6 +8,9 @@ import { Settings } from "./features/Settings";
 import { CalibrationManagement } from "./features/CalibrationManagement";
 import { ShadowboardSetup } from "./features/Shadowboard";
 import { AuditScheduling } from "./features/AuditScheduling";
+import { Login } from "./features/Login";
+import { auth } from "./firebase";
+import type { User } from "firebase/auth";
 
 export enum AppView {
     TOOLBOX_OVERVIEW = 'TOOLBOX_OVERVIEW',
@@ -30,6 +33,17 @@ const PlaceholderView = () => (
 
 export default function App() {
     const [currentView, setCurrentView] = useState<AppView>(AppView.TOOLBOX_OVERVIEW);
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+            setUser(currentUser);
+            setLoading(false);
+        });
+
+        return unsubscribe;
+    }, []);
 
     const renderContent = () => {
         switch (currentView) {
@@ -57,8 +71,18 @@ export default function App() {
     };
 
     return (
-        <Layout currentView={currentView} onNavigate={setCurrentView}>
-            {renderContent()}
-        </Layout>
+        <>
+            {loading ? (
+                <div className="min-h-screen flex items-center justify-center bg-axiom-light dark:bg-axiom-dark">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-axiom-cyan"></div>
+                </div>
+            ) : user ? (
+                <Layout currentView={currentView} onNavigate={setCurrentView}>
+                    {renderContent()}
+                </Layout>
+            ) : (
+                <Login onLoginSuccess={() => setUser(auth.currentUser)} />
+            )}
+        </>
     );
 }
