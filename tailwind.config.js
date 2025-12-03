@@ -22,16 +22,17 @@ export default {
 			},
 			colors: {
 				axiom: {
-					cyan: '#00E5FF',
-					dark: '#09090B',
-					surfaceDark: '#18181B',
-					borderDark: '#27272A',
-					textDark: '#A1A1AA',
 					light: '#FFFFFF',
+					dark: '#090909',
+					cyan: '#00E5FF',
 					surfaceLight: '#FAFAFA',
+					surfaceDark: '#222222',
 					borderLight: '#EAEAEA',
-					textLight: '#444444',
-					headingLight: '#111111'
+					borderDark: '#272727',
+					textLight: '#000000',
+					textDark: '#FFFFFF',
+					headingLight: '#111111',
+					headingDark: '#F5F5F5',
 				}
 			}
 		}
