@@ -4,7 +4,7 @@ import { AppView } from '../App';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { db } from '../firebase';
-import { collection, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import type { ToolBox } from '@/types';
 import { DialogTrigger } from '@radix-ui/react-dialog';
 import { Input } from '@/components/ui/input';
@@ -106,6 +106,14 @@ const ToolboxCard: React.FC<ToolBox> = (toolbox) => {
         }
     };
 
+    const handleDeleteToolbox = async () => {
+        try {
+            await deleteDoc(toolboxRef);
+        } catch (error) {
+            console.error("Error deleting toolbox:", error);
+        }
+    };
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -176,6 +184,17 @@ const ToolboxCard: React.FC<ToolBox> = (toolbox) => {
                             </div>
                         );
                     })}
+
+                    <div className="border-t border-gray-200 dark:border-gray-700" />
+
+                    <button
+                        onClick={() => {
+                            if (confirm('Are you sure you want to delete this toolbox?')) handleDeleteToolbox();
+                        }}
+                        className="w-full px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                    >
+                        Delete Toolbox
+                    </button>
                 </div>
             </DialogContent>
         </Dialog>
