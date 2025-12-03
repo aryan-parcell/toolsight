@@ -21,6 +21,12 @@ export interface ToolBox {
   currentUserId: string | null;
   currentCheckoutId: string | null;
   lastAuditId: string | null;
+  type: string;
+  auditFrequencyInHours: number;
+  foamColors: {
+    primary: string;
+    secondary: string;
+  };
 }
 
 export type ToolPresence = 'present' | 'missing' | 'unserviceable';

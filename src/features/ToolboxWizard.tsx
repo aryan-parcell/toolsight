@@ -28,6 +28,7 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
         secondaryColor: 'Red',
         drawers: 5,
         toolCounts: Array(5).fill(0),
+        auditFrequencyInHours: 4,
     });
 
     const nextStep = () => setStep(s => Math.min(s + 1, 3));
@@ -53,6 +54,12 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
             name: formData.name,
             drawers: drawers,
             tools: tools,
+            type: formData.type,
+            auditFrequencyInHours: formData.auditFrequencyInHours,
+            foamColors: {
+                primary: formData.primaryColor,
+                secondary: formData.secondaryColor,
+            },
             status: 'available',
             currentUserId: null,
             currentCheckoutId: null,
@@ -91,7 +98,7 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
             const initialAudit = createInitialAuditFromToolbox(newToolbox);
 
             const batch = writeBatch(db);
-            
+
             const newToolboxRef = doc(db, 'toolboxes', formData.eid);
             const newAuditRef = doc(collection(db, 'audits'));
 
@@ -226,6 +233,27 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
                                 onChange={e => updateDrawerCounts(parseInt(e.target.value))}
                                 className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-axiom-cyan"
                             />
+                        </div>
+
+                        <div>
+                            <label className="block mb-2">Periodic Audit Frequency</label>
+                            <div className="relative z-20">
+                                <select
+                                    value={formData.auditFrequencyInHours}
+
+                                    onChange={e => setFormData({ ...formData, auditFrequencyInHours: parseInt(e.target.value) })}
+                                    className="w-full rounded-lg p-4 border transition-all dark:bg-black/20 dark:border-axiom-borderDark dark:text-white appearance-none cursor-pointer"
+                                >
+                                    <option value={2}>Every 2 hours</option>
+                                    <option value={4}>Every 4 hours</option>
+                                    <option value={6}>Every 6 hours</option>
+                                    <option value={8}>Every 8 hours</option>
+                                </select>
+
+                                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-2">
+                                    <ChevronDown className="text-gray-400" size={16} />
+                                </div>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -369,6 +397,10 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
                                     <div className="w-3 h-3 border border-gray-500" style={{ backgroundColor: getHexColor(formData.secondaryColor) }}></div>
                                     <p className="dark:text-white">{formData.secondaryColor}</p>
                                 </div>
+                            </div>
+                            <div className="md:col-span-2">
+                                <p className="text-gray-400 text-sm">Audit Frequency</p>
+                                <p className="dark:text-white">{formData.auditFrequencyInHours} hours</p>
                             </div>
                             <div className="md:col-span-2">
                                 <p className="text-gray-400 text-sm mb-2">Tool Configuration</p>
