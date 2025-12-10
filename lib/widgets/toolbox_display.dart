@@ -6,9 +6,9 @@ import 'package:toolsight/widgets/pill.dart';
 class ToolBoxDisplay extends StatelessWidget {
   final String id;
   final String name;
-  final bool needsAudit;
+  final String auditStatus;
 
-  const ToolBoxDisplay(this.id, this.name, this.needsAudit, {super.key});
+  const ToolBoxDisplay(this.id, this.name, this.auditStatus, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,8 @@ class ToolBoxDisplay extends StatelessWidget {
             Row(
               spacing: 5,
               children: [
-                if (needsAudit) const Pill("Needs Audit"),
+                if (auditStatus == 'pending') const Pill("Pending Audit"),
+                if (auditStatus == 'overdue') const Pill("Audit Overdue"),
               ],
             ),
           ],

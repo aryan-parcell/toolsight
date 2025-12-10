@@ -17,6 +17,29 @@ class ManualEntry extends StatefulWidget {
 class _ManualEntryState extends State<ManualEntry> {
   final _eidController = TextEditingController();
 
+  Map<String, dynamic> createAuditDrawerStatesFromToolbox(Map<String, dynamic> toolbox) {
+    final Map<String, dynamic> drawerStates = {};
+
+    // Initialize drawer states
+    for (final drawer in toolbox['drawers']) {
+      final drawerId = drawer['drawerId'];
+      drawerStates[drawerId] = {
+        'drawerStatus': 'pending',
+        'imageStoragePath': null,
+        'results': {},
+      };
+    }
+
+    // Populate tool results
+    for (final tool in toolbox['tools']) {
+      final drawerId = tool['drawerId'];
+      final toolId = tool['toolId'];
+      drawerStates[drawerId]['results'][toolId] = 'absent';
+    }
+
+    return drawerStates;
+  }
+
   Future<void> _openToolBox() async {
     final eid = _eidController.text;
 
@@ -42,20 +65,39 @@ class _ManualEntryState extends State<ManualEntry> {
       return;
     }
 
-    final checkoutDoc = await FirebaseFirestore.instance.collection('checkouts').add({
+    final auditDoc = FirebaseFirestore.instance.collection('audits').doc();
+    final checkoutDoc = FirebaseFirestore.instance.collection('checkouts').doc();
+
+    await auditDoc.set({
+      'checkoutId': checkoutDoc.id,
+      'startTime': DateTime.now(),
+      'endTime': null,
+      'drawerStates': createAuditDrawerStatesFromToolbox(toolbox),
+      'status': 'active',
+    });
+
+    await checkoutDoc.set({
       'userId': FirebaseAuth.instance.currentUser!.uid,
       'toolboxId': eid,
       'checkoutTime': DateTime.now(),
       'returnTime': null,
-      'toolboxName': toolbox['name'],
+      // denormalized
       'status': 'active',
-      'audit': false,
+      'toolboxName': toolbox['name'],
+      'auditFrequencyInHours': toolbox['auditFrequencyInHours'],
+      // audit scheduling
+      'lastAuditTime': DateTime.now(),
+      'nextAuditDue': DateTime.now().add(Duration(hours: toolbox['auditFrequencyInHours'])),
+      // audit info
+      'currentAuditId': auditDoc.id,
+      'auditStatus': 'pending',
     });
 
     await toolboxDoc.update({
       'status': 'checked-out',
       'currentUserId': FirebaseAuth.instance.currentUser!.uid,
       'currentCheckoutId': checkoutDoc.id,
+      'lastAuditId': auditDoc.id,
     });
 
     if (mounted) context.pushReplacementNamed(AppRoute.toolbox.name, pathParameters: {'toolbox_id': eid});

@@ -81,7 +81,7 @@ class _HomeState extends State<Home> {
                       itemBuilder: (context, index) {
                         final data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
 
-                        return ToolBoxDisplay(data['toolboxId'], data['toolboxName'], data['audit']);
+                        return ToolBoxDisplay(data['toolboxId'], data['toolboxName'], data['auditStatus']);
                       },
                       separatorBuilder: (context, index) => SizedBox(height: 10),
                       itemCount: snapshot.data!.docs.length,
