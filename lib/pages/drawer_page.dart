@@ -59,7 +59,8 @@ class _DrawerPageState extends State<DrawerPage> {
             return Text("Drawer not found.", style: Theme.of(context).textTheme.bodySmall);
           }
 
-          final drawerAudit = snapshot.data!.data()!['drawerStates'][widget.drawerId];
+          final audit = snapshot.data!.data()!;
+          final drawerAudit = audit['drawerStates'][widget.drawerId];
 
           final drawer = _toolbox['drawers'].firstWhere((drawer) => drawer['drawerId'] == widget.drawerId);
 
@@ -82,7 +83,7 @@ class _DrawerPageState extends State<DrawerPage> {
                       context.pushNamed(
                         AppRoute.capture.name,
                         pathParameters: {'toolbox_id': widget.toolboxId},
-                        extra: widget.drawerId
+                        extra: widget.drawerId,
                       );
                     },
                   ),
@@ -102,10 +103,26 @@ class _DrawerPageState extends State<DrawerPage> {
                 children: [
                   WideButton(
                     text: drawerAudit['drawerStatus'] == 'user-validated' ? "Confirmed Results" : "Confirm Results",
-                    onPressed: () {
-                      _auditDoc.update({'drawerStates.${widget.drawerId}.drawerStatus': 'user-validated'});
+                    onPressed: () async {
+                      await _auditDoc.update({'drawerStates.${widget.drawerId}.drawerStatus': 'user-validated'});
 
-                      context.pop();
+                      final isAuditComplete = audit['drawerStates'].entries.every(
+                        (entry) => entry.value['drawerStatus'] == 'user-validated' || entry.key == widget.drawerId,
+                      );
+
+                      if (isAuditComplete) {
+                        await _auditDoc.update({'status': 'complete', 'endTime': DateTime.now()});
+
+                        final checkoutRef = FirebaseFirestore.instance.collection('checkouts').doc(audit['checkoutId']);
+                        checkoutRef.update({
+                          'currentAuditId': null,
+                          'auditStatus': 'complete',
+                          'lastAuditTime': DateTime.now(),
+                          'nextAuditDue': DateTime.now().add(Duration(hours: _toolbox['auditFrequencyInHours'])),
+                        });
+                      }
+
+                      if (context.mounted) context.pop();
                     },
                   ),
                 ],
