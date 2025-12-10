@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/drawer_display.dart';
@@ -29,6 +29,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
           if (!snapshot.hasData) return Text("Toolbox not found.");
 
           final toolbox = snapshot.data!;
+          final currentCheckoutId = toolbox['currentCheckoutId'];
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,6 +40,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
                 spacing: 10,
                 children: [
                   Text(toolbox['name'], style: Theme.of(context).textTheme.headlineLarge),
+                  if (currentCheckoutId != null) CheckoutBanner(checkoutId: currentCheckoutId),
                 ],
               ),
               Row(
@@ -90,6 +92,65 @@ class _ToolboxPageState extends State<ToolboxPage> {
           );
         },
       ),
+    );
+  }
+}
+
+class CheckoutBanner extends StatelessWidget {
+  final String checkoutId;
+
+  const CheckoutBanner({super.key, required this.checkoutId});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance.collection('checkouts').doc(checkoutId).snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || !snapshot.data!.exists) return const SizedBox.shrink();
+
+        final data = snapshot.data!.data() as Map<String, dynamic>;
+        final auditStatus = data['auditStatus'] as String;
+        final currentAuditId = data['currentAuditId'];
+        final nextDue = data['nextAuditDue'] as Timestamp;
+
+        String nextDueText = DateFormat("h:mm a").format(nextDue.toDate());
+
+        Color bgColor = Colors.blue.shade50;
+        Color textColor = Colors.blue.shade900;
+        IconData icon = Icons.info_outline;
+        String message = "Next Audit: $nextDueText";
+
+        if (auditStatus == 'overdue') {
+          bgColor = Colors.red.shade50;
+          textColor = Colors.red.shade900;
+          icon = Icons.warning_amber_rounded;
+          message = "AUDIT OVERDUE: $nextDueText";
+        } else if (currentAuditId != null) {
+          bgColor = Colors.orange.shade50;
+          textColor = Colors.orange.shade900;
+          icon = Icons.pending_actions;
+          message = "Active Audit Due: $nextDueText";
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: textColor),
+          ),
+          child: Row(
+            spacing: 10,
+            children: [
+              Icon(icon, color: textColor, size: 20),
+              Text(
+                message,
+                style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
