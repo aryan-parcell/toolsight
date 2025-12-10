@@ -72,6 +72,17 @@ class _ToolboxPageState extends State<ToolboxPage> {
                       final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId);
                       final checkoutDoc = FirebaseFirestore.instance.collection('checkouts').doc(toolbox['currentCheckoutId']);
 
+                      final checkout = (await checkoutDoc.get()).data()!;
+
+                      if (checkout['auditStatus'] != 'complete') {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Please complete the audit first.")),
+                          );
+                        }
+                        return;
+                      }
+
                       await checkoutDoc.update({
                         'returnTime': DateTime.now(),
                         'status': 'complete',
