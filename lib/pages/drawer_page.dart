@@ -49,15 +49,9 @@ class _DrawerPageState extends State<DrawerPage> {
       child: StreamBuilder(
         stream: _drawerAuditStream,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Text("Error loading drawer", style: Theme.of(context).textTheme.bodySmall);
-          }
-          if (!snapshot.hasData) {
-            return Text("Drawer not found.", style: Theme.of(context).textTheme.bodySmall);
-          }
+          if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
+          if (snapshot.hasError) return Text("Error loading drawer");
+          if (!snapshot.hasData) return Text("Drawer not found.");
 
           final audit = snapshot.data!.data()!;
           final drawerAudit = audit['drawerStates'][widget.drawerId];

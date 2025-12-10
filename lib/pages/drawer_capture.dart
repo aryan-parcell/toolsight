@@ -71,18 +71,11 @@ class _DrawerCaptureState extends State<DrawerCapture> {
       child: StreamBuilder(
         stream: _drawerAuditStream,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Text("Error loading drawer capture.", style: Theme.of(context).textTheme.bodySmall);
-          }
-          if (!snapshot.hasData) {
-            return Text("Drawer not found.", style: Theme.of(context).textTheme.bodySmall);
-          }
-          if (_toolbox['drawers'].isEmpty) {
-            return Text("This toolbox has no drawers.", style: Theme.of(context).textTheme.bodySmall);
-          }
+          if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
+          if (snapshot.hasError) return Text("Error loading drawer capture.");
+          if (!snapshot.hasData) return Text("Drawer not found.");
+
+          if (_toolbox['drawers'].isEmpty) return Text("This toolbox has no drawers.");
 
           final numDrawers = _toolbox['drawers'].length;
           final drawer = _toolbox['drawers'][_currentIndex];

@@ -17,38 +17,16 @@ class ToolboxPage extends StatefulWidget {
 }
 
 class _ToolboxPageState extends State<ToolboxPage> {
-  late Future<Map<String, dynamic>> _toolboxFuture;
-
-  Future<Map<String, dynamic>> _fetchToolbox() async {
-    final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId);
-    final response = await toolboxDoc.get();
-    final toolbox = response.data();
-
-    return toolbox!;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _toolboxFuture = _fetchToolbox();
-  }
-
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       allowBack: true,
-      child: FutureBuilder(
-        future: _toolboxFuture,
+      child: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId).snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Text("Error loading toolbox", style: Theme.of(context).textTheme.bodySmall);
-          }
-          if (!snapshot.hasData) {
-            return Text("Toolbox not found.", style: Theme.of(context).textTheme.bodySmall);
-          }
+          if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
+          if (snapshot.hasError) return Text("Error loading toolbox");
+          if (!snapshot.hasData) return Text("Toolbox not found.");
 
           final toolbox = snapshot.data!;
 

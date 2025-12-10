@@ -65,15 +65,9 @@ class _HomeState extends State<Home> {
                 StreamBuilder<QuerySnapshot>(
                   stream: _checkoutStream,
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (snapshot.hasError) {
-                      return Text("Error loading toolboxes", style: Theme.of(context).textTheme.bodySmall);
-                    }
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return Text("No active toolboxes.", style: Theme.of(context).textTheme.bodySmall);
-                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
+                    if (snapshot.hasError) return Text("Error loading toolboxes");
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) return Text("No active toolboxes.");
 
                     return ListView.separated(
                       padding: EdgeInsets.zero,
