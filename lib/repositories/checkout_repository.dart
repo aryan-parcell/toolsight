@@ -12,18 +12,33 @@ class CheckoutRepository {
     final toolboxDoc = _toolboxesCollection.doc(toolboxId);
     final checkoutDoc = _checkoutsCollection.doc(checkoutId);
 
-    final checkout = (await checkoutDoc.get()).data()!;
-    if (checkout['auditStatus'] != 'complete') throw 'Please complete the audit first.';
+    await FirebaseFirestore.instance.runTransaction((t) async {
+      final checkoutSnapshot = await t.get(checkoutDoc);
+      if (!checkoutSnapshot.exists) throw StateError('Invalid Checkout ID');
 
-    await checkoutDoc.update({
-      'returnTime': DateTime.now(),
-      'status': 'complete',
-    });
+      final checkout = checkoutSnapshot.data()!;
+      if (checkout['auditStatus'] != 'complete') throw StateError('Please complete the audit first.');
 
-    await toolboxDoc.update({
-      'status': 'available',
-      'currentUserId': null,
-      'currentCheckoutId': null,
+      final profile = checkout['auditProfile'];
+      if (profile['requireOnReturn']) {
+        final lastAuditTimestamp = checkout['lastAuditTime'] as Timestamp?;
+        if (lastAuditTimestamp == null) throw StateError('Final audit required.');
+
+        final lastAuditDate = lastAuditTimestamp.toDate();
+        final diff = DateTime.now().difference(lastAuditDate).inMinutes;
+        if (diff > 15) throw StateError('Final audit required (Last check was ${diff}m ago).');
+      }
+
+      t.update(checkoutDoc, {
+        'status': 'complete',
+        'returnTime': FieldValue.serverTimestamp(),
+      });
+
+      t.update(toolboxDoc, {
+        'status': 'available',
+        'currentUserId': null,
+        'currentCheckoutId': null,
+      });
     });
   }
 }

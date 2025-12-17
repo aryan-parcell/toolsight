@@ -114,7 +114,9 @@ class CheckoutBanner extends StatelessWidget {
         final data = snapshot.data!.data() as Map<String, dynamic>;
         final auditStatus = data['auditStatus'] as String;
         final currentAuditId = data['currentAuditId'];
-        final nextDue = data['nextAuditDue'] as Timestamp;
+        final nextDue = data['nextAuditDue'] as Timestamp?;
+
+        if (nextDue == null) return SizedBox.shrink();
 
         String nextDueText = DateFormat("h:mm a").format(nextDue.toDate());
 

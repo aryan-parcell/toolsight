@@ -41,45 +41,65 @@ class ToolboxRepository {
 
   Future<void> checkOutToolbox(String eid) async {
     final toolboxDoc = _toolboxesCollection.doc(eid);
-    final response = await toolboxDoc.get();
-    final toolbox = response.data();
-
-    if (toolbox == null) throw 'Invalid ToolBox EID';
-    if (toolbox['status'] != 'available') throw 'Unavailable ToolBox EID';
-
     final auditDoc = _auditsCollection.doc();
     final checkoutDoc = _checkoutsCollection.doc();
 
-    await auditDoc.set({
-      'checkoutId': checkoutDoc.id,
-      'startTime': DateTime.now(),
-      'endTime': null,
-      'drawerStates': _createAuditDrawerStatesFromToolbox(toolbox),
-      'status': 'active',
-    });
+    await FirebaseFirestore.instance.runTransaction((t) async {
+      final toolboxSnapshot = await t.get(toolboxDoc);
+      if (!toolboxSnapshot.exists) throw Exception('Invalid ToolBox EID');
 
-    await checkoutDoc.set({
-      'userId': _auth.currentUser!.uid,
-      'toolboxId': eid,
-      'checkoutTime': DateTime.now(),
-      'returnTime': null,
-      // denormalized
-      'status': 'active',
-      'toolboxName': toolbox['name'],
-      'auditFrequencyInHours': toolbox['auditFrequencyInHours'],
-      // audit scheduling
-      'lastAuditTime': DateTime.now(),
-      'nextAuditDue': DateTime.now().add(Duration(hours: toolbox['auditFrequencyInHours'])),
-      // audit info
-      'currentAuditId': auditDoc.id,
-      'auditStatus': 'pending',
-    });
+      final toolbox = toolboxSnapshot.data()!;
+      if (toolbox['status'] != 'available') throw Exception('Unavailable ToolBox EID');
 
-    await toolboxDoc.update({
-      'status': 'checked-out',
-      'currentUserId': _auth.currentUser!.uid,
-      'currentCheckoutId': checkoutDoc.id,
-      'lastAuditId': auditDoc.id,
+      final profile = toolbox['auditProfile'];
+
+      String? initialAuditId;
+      String auditStatus = 'complete';
+      Timestamp? nextDue;
+
+      if (profile['shiftAuditType'] == 'periodic') {
+        nextDue = Timestamp.fromDate(DateTime.now().add(Duration(hours: profile['periodicFrequencyHours'])));
+      }
+
+      if (profile['requireOnCheckout']) {
+        initialAuditId = auditDoc.id;
+        auditStatus = 'active';
+        nextDue = Timestamp.fromDate(DateTime.now().add(Duration(minutes: 15)));
+
+        t.set(auditDoc, {
+          'checkoutId': checkoutDoc.id,
+          'startTime': FieldValue.serverTimestamp(),
+          'endTime': null,
+          'drawerStates': _createAuditDrawerStatesFromToolbox(toolbox),
+          'status': 'active',
+        });
+      }
+
+      // Create Checkout
+      t.set(checkoutDoc, {
+        'userId': _auth.currentUser!.uid,
+        'toolboxId': eid,
+        'checkoutTime': FieldValue.serverTimestamp(),
+        'returnTime': null,
+        // denormalized
+        'status': 'active',
+        'toolboxName': toolbox['name'],
+        'auditProfile': profile,
+        // audit scheduling
+        'lastAuditTime': null,
+        'nextAuditDue': nextDue,
+        // audit info
+        'currentAuditId': initialAuditId,
+        'auditStatus': auditStatus,
+      });
+
+      // Update Toolbox
+      t.update(toolboxDoc, {
+        'status': 'checked-out',
+        'currentUserId': _auth.currentUser!.uid,
+        'currentCheckoutId': checkoutDoc.id,
+        if (initialAuditId != null) 'lastAuditId': initialAuditId,
+      });
     });
   }
 }
