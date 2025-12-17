@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:go_router/go_router.dart';
+import 'package:toolsight/repositories/audit_repository.dart';
+import 'package:toolsight/repositories/toolbox_repository.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/wide_button.dart';
@@ -17,20 +18,15 @@ class DrawerPage extends StatefulWidget {
 }
 
 class _DrawerPageState extends State<DrawerPage> {
+  final _auditRepository = AuditRepository();
+  final _toolboxRepository = ToolboxRepository();
+
   late Map<String, dynamic> _toolbox;
-  late DocumentReference<Map<String, dynamic>> _auditDoc;
   Stream<DocumentSnapshot<Map<String, dynamic>>>? _drawerAuditStream;
 
   void _fetchDrawerAudit() async {
-    final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId);
-    final toolboxResponse = await toolboxDoc.get();
-    _toolbox = toolboxResponse.data()!;
-
-    final auditId = _toolbox['lastAuditId'];
-
-    _auditDoc = FirebaseFirestore.instance.collection('audits').doc(auditId);
-    _drawerAuditStream = _auditDoc.snapshots();
-
+    _toolbox = await _toolboxRepository.getToolbox(widget.toolboxId);
+    _drawerAuditStream = _auditRepository.getAuditStream(_toolbox['lastAuditId']);
     setState(() {});
   }
 
@@ -54,6 +50,7 @@ class _DrawerPageState extends State<DrawerPage> {
           if (!snapshot.hasData) return Text("Drawer not found.");
 
           final audit = snapshot.data!.data()!;
+          final auditId = snapshot.data!.id;
           final drawerAudit = audit['drawerStates'][widget.drawerId];
 
           final drawer = _toolbox['drawers'].firstWhere((drawer) => drawer['drawerId'] == widget.drawerId);
@@ -90,7 +87,7 @@ class _DrawerPageState extends State<DrawerPage> {
                 children: [
                   Text("Results", style: Theme.of(context).textTheme.labelLarge),
                   if (drawerAudit['results'].isEmpty) Text("No results found.", style: Theme.of(context).textTheme.bodySmall),
-                  for (final entry in drawerAudit['results'].entries) resultDisplay(entry),
+                  for (final entry in drawerAudit['results'].entries) resultDisplay(entry, auditId),
                 ],
               ),
               Row(
@@ -98,24 +95,7 @@ class _DrawerPageState extends State<DrawerPage> {
                   WideButton(
                     text: drawerAudit['drawerStatus'] == 'user-validated' ? "Confirmed Results" : "Confirm Results",
                     onPressed: () async {
-                      await _auditDoc.update({'drawerStates.${widget.drawerId}.drawerStatus': 'user-validated'});
-
-                      final isAuditComplete = audit['drawerStates'].entries.every(
-                        (entry) => entry.value['drawerStatus'] == 'user-validated' || entry.key == widget.drawerId,
-                      );
-
-                      if (isAuditComplete) {
-                        await _auditDoc.update({'status': 'complete', 'endTime': DateTime.now()});
-
-                        final checkoutRef = FirebaseFirestore.instance.collection('checkouts').doc(audit['checkoutId']);
-                        checkoutRef.update({
-                          'currentAuditId': null,
-                          'auditStatus': 'complete',
-                          'lastAuditTime': DateTime.now(),
-                          'nextAuditDue': DateTime.now().add(Duration(hours: _toolbox['auditFrequencyInHours'])),
-                        });
-                      }
-
+                      await _auditRepository.confirmDrawerResults(auditId, widget.drawerId, audit, _toolbox);
                       if (context.mounted) context.pop();
                     },
                   ),
@@ -134,7 +114,7 @@ class _DrawerPageState extends State<DrawerPage> {
     if (imageStoragePath == null) return blankImage;
 
     return FutureBuilder(
-      future: FirebaseStorage.instance.ref().child(imageStoragePath).getDownloadURL(),
+      future: _auditRepository.getImageUrl(imageStoragePath),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
         if (snapshot.hasError || !snapshot.hasData) return blankImage;
@@ -149,7 +129,7 @@ class _DrawerPageState extends State<DrawerPage> {
     );
   }
 
-  Widget resultDisplay(MapEntry<String, dynamic> result) {
+  Widget resultDisplay(MapEntry<String, dynamic> result, String auditId) {
     final toolId = result.key;
     final toolStatus = result.value;
 
@@ -169,9 +149,7 @@ class _DrawerPageState extends State<DrawerPage> {
             DropdownMenuItem(value: 'absent', child: Text('Absent')),
             DropdownMenuItem(value: 'unserviceable', child: Text('Unserviceable')),
           ],
-          onChanged: (val) {
-            _auditDoc.update({'drawerStates.${widget.drawerId}.results.$toolId': val});
-          },
+          onChanged: (val) => _auditRepository.updateToolStatus(auditId, widget.drawerId, toolId, val as String),
         ),
       ],
     );

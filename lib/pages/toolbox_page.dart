@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:toolsight/repositories/checkout_repository.dart';
+import 'package:toolsight/repositories/toolbox_repository.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/drawer_display.dart';
@@ -17,18 +19,21 @@ class ToolboxPage extends StatefulWidget {
 }
 
 class _ToolboxPageState extends State<ToolboxPage> {
+  final _toolboxRepository = ToolboxRepository();
+  final _checkoutRepository = CheckoutRepository();
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       allowBack: true,
       child: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId).snapshots(),
+        stream: _toolboxRepository.getToolboxStream(widget.toolboxId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
           if (snapshot.hasError) return Text("Error loading toolbox");
           if (!snapshot.hasData) return Text("Toolbox not found.");
 
-          final toolbox = snapshot.data!;
+          final toolbox = snapshot.data!.data()!;
           final currentCheckoutId = toolbox['currentCheckoutId'];
 
           return Column(
@@ -69,32 +74,18 @@ class _ToolboxPageState extends State<ToolboxPage> {
                   WideButton(
                     text: "Close ${toolbox['name']}",
                     onPressed: () async {
-                      final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId);
-                      final checkoutDoc = FirebaseFirestore.instance.collection('checkouts').doc(toolbox['currentCheckoutId']);
-
-                      final checkout = (await checkoutDoc.get()).data()!;
-
-                      if (checkout['auditStatus'] != 'complete') {
+                      try {
+                        await _checkoutRepository.closeToolbox(widget.toolboxId, currentCheckoutId);
+                        if (context.mounted) {
+                          context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
+                        }
+                      } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Please complete the audit first.")),
+                            SnackBar(content: Text(e.toString())),
                           );
                         }
-                        return;
                       }
-
-                      await checkoutDoc.update({
-                        'returnTime': DateTime.now(),
-                        'status': 'complete',
-                      });
-
-                      await toolboxDoc.update({
-                        'status': 'available',
-                        'currentUserId': null,
-                        'currentCheckoutId': null,
-                      });
-
-                      if (context.mounted) context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
                     },
                   ),
                 ],
@@ -109,13 +100,14 @@ class _ToolboxPageState extends State<ToolboxPage> {
 
 class CheckoutBanner extends StatelessWidget {
   final String checkoutId;
+  final _checkoutRepository = CheckoutRepository();
 
-  const CheckoutBanner({super.key, required this.checkoutId});
+  CheckoutBanner({super.key, required this.checkoutId});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('checkouts').doc(checkoutId).snapshots(),
+      stream: _checkoutRepository.getCheckoutStream(checkoutId),
       builder: (context, snapshot) {
         if (!snapshot.hasData || !snapshot.data!.exists) return const SizedBox.shrink();
 
