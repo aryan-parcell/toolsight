@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:toolsight/utils.dart';
 
 class CheckoutRepository {
   final _checkoutsCollection = FirebaseFirestore.instance.collection('checkouts');
@@ -9,29 +10,6 @@ class CheckoutRepository {
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getCheckoutStream(String checkoutId) {
     return _checkoutsCollection.doc(checkoutId).snapshots();
-  }
-
-  Map<String, dynamic> _createAuditDrawerStatesFromToolbox(Map<String, dynamic> toolbox) {
-    final Map<String, dynamic> drawerStates = {};
-
-    // Initialize drawer states
-    for (final drawer in toolbox['drawers']) {
-      final drawerId = drawer['drawerId'];
-      drawerStates[drawerId] = {
-        'drawerStatus': 'pending',
-        'imageStoragePath': null,
-        'results': {},
-      };
-    }
-
-    // Populate tool results
-    for (final tool in toolbox['tools']) {
-      final drawerId = tool['drawerId'];
-      final toolId = tool['toolId'];
-      drawerStates[drawerId]['results'][toolId] = 'absent';
-    }
-
-    return drawerStates;
   }
 
   Future<void> checkOutToolbox(String eid) async {
@@ -65,7 +43,7 @@ class CheckoutRepository {
           'checkoutId': checkoutDoc.id,
           'startTime': FieldValue.serverTimestamp(),
           'endTime': null,
-          'drawerStates': _createAuditDrawerStatesFromToolbox(toolbox),
+          'drawerStates': createAuditDrawerStatesFromToolbox(toolbox),
           'status': 'active',
         });
       }
