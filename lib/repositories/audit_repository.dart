@@ -1,12 +1,54 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:toolsight/utils.dart';
 
 class AuditRepository {
   final _auditsCollection = FirebaseFirestore.instance.collection('audits');
   final _checkoutsCollection = FirebaseFirestore.instance.collection('checkouts');
+  final _toolboxesCollection = FirebaseFirestore.instance.collection('toolboxes');
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getAuditStream(String auditId) {
     return _auditsCollection.doc(auditId).snapshots();
+  }
+
+  Future<String> ensureActiveAudit(String toolboxId, String checkoutId) async {
+    final auditDoc = _auditsCollection.doc();
+    final toolboxDoc = _toolboxesCollection.doc(toolboxId);
+    final checkoutDoc = _checkoutsCollection.doc(checkoutId);
+
+    return FirebaseFirestore.instance.runTransaction((t) async {
+      final toolboxSnap = await t.get(toolboxDoc);
+      final checkoutSnap = await t.get(checkoutDoc);
+      if (!checkoutSnap.exists || !toolboxSnap.exists) throw "Invalid checkout or toolbox.";
+
+      // If an audit is already active, return its ID
+      final currentAuditId = checkoutSnap.data()?['currentAuditId'];
+      if (currentAuditId != null) return currentAuditId;
+
+      // If not, start a new "At-Will" audit
+      t.set(auditDoc, {
+        'checkoutId': checkoutId,
+        'startTime': FieldValue.serverTimestamp(),
+        'endTime': null,
+        'drawerStates': createAuditDrawerStatesFromToolbox(toolboxSnap.data()!),
+        'status': 'active',
+      });
+
+      t.update(checkoutDoc, {
+        // audit scheduling
+        'lastAuditTime': null,
+        'nextAuditDue': Timestamp.fromDate(DateTime.now().add(Duration(minutes: 15))),
+        // audit info
+        'currentAuditId': auditDoc.id,
+        'auditStatus': 'pending',
+      });
+
+      t.update(toolboxDoc, {
+        'lastAuditId': auditDoc.id,
+      });
+
+      return auditDoc.id;
+    });
   }
 
   Future<String> getImageUrl(String path) {

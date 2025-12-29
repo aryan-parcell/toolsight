@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:toolsight/repositories/audit_repository.dart';
 import 'package:toolsight/repositories/checkout_repository.dart';
 import 'package:toolsight/repositories/toolbox_repository.dart';
 import 'package:toolsight/router.dart';
@@ -21,6 +22,7 @@ class ToolboxPage extends StatefulWidget {
 class _ToolboxPageState extends State<ToolboxPage> {
   final _toolboxRepository = ToolboxRepository();
   final _checkoutRepository = CheckoutRepository();
+  final _auditRepository = AuditRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +54,16 @@ class _ToolboxPageState extends State<ToolboxPage> {
                 children: [
                   WideButton(
                     text: "Capture Drawer Images",
-                    onPressed: () {
-                      context.pushNamed(
-                        AppRoute.capture.name,
-                        pathParameters: {'toolbox_id': widget.toolboxId},
-                      );
+                    onPressed: () async {
+                      final auditId = await _auditRepository.ensureActiveAudit(widget.toolboxId, currentCheckoutId);
+
+                      if (context.mounted) {
+                        context.pushNamed(
+                          AppRoute.capture.name,
+                          pathParameters: {'toolbox_id': widget.toolboxId},
+                          extra: auditId,
+                        );
+                      }
                     },
                   ),
                 ],
