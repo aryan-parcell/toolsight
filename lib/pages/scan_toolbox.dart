@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:toolsight/repositories/toolbox_repository.dart';
+import 'package:toolsight/repositories/checkout_repository.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/wide_button.dart';
@@ -19,11 +19,11 @@ class _ScanToolboxState extends State<ScanToolbox> {
   bool detected = false;
   String eid = "";
   Timer? detectedTimer;
-  final _toolboxRepository = ToolboxRepository();
+  final _checkoutRepository = CheckoutRepository();
 
   Future<void> _openToolBox() async {
     try {
-      await _toolboxRepository.checkOutToolbox(eid);
+      await _checkoutRepository.checkOutToolbox(eid);
       if (mounted) context.pushReplacementNamed(AppRoute.toolbox.name, pathParameters: {'toolbox_id': eid});
     } catch (e) {
       if (mounted) {

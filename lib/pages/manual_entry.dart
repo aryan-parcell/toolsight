@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toolsight/repositories/toolbox_repository.dart';
+import 'package:toolsight/repositories/checkout_repository.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/text_input_section.dart';
@@ -15,13 +15,13 @@ class ManualEntry extends StatefulWidget {
 
 class _ManualEntryState extends State<ManualEntry> {
   final _eidController = TextEditingController();
-  final _toolboxRepository = ToolboxRepository();
+  final _checkoutRepository = CheckoutRepository();
 
   Future<void> _openToolBox() async {
     final eid = _eidController.text;
 
     try {
-      await _toolboxRepository.checkOutToolbox(eid);
+      await _checkoutRepository.checkOutToolbox(eid);
       if (mounted) context.pushReplacementNamed(AppRoute.toolbox.name, pathParameters: {'toolbox_id': eid});
     } catch (e) {
       if (mounted) {
