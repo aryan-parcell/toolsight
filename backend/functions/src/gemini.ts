@@ -214,7 +214,7 @@ export async function analyzeToolImage(
         if (
           error.error.code === 429 ||
           error.error.status === "RESOURCE_EXHAUSTED"
-        ) isRateLimit = true; 
+        ) isRateLimit = true;
 
         if (error.error.message && (
           String(error.error.message).includes("429") ||
