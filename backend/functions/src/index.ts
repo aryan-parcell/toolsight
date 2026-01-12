@@ -25,7 +25,7 @@ import * as path from "path";
 import {analyzeToolImage} from "./gemini";
 import {
   AuditToolStatus, Detection, Tool, ToolBox, VisualDetection,
-} from "./types";
+} from "@shared/types";
 
 // For cost control, you can set the maximum number of containers that can be
 // running at the same time

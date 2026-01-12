@@ -1,4 +1,4 @@
-import {Detection, Tool} from "./types";
+import type {Detection, Tool} from "@shared/types";
 
 /**
  * Cleans a JSON string that may be wrapped in markdown code blocks
