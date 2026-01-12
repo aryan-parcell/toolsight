@@ -85,7 +85,8 @@
 
 ## **5. Linting & TypeScript**
 
-* Run `npm run lint` to fix common errors/warnings.
+* Run `npm run lint`
+* Run `npx eslint --ext .ts . --fix` to fix common errors/warnings.
 * Avoid `any` types where possible; use proper TypeScript typing.
 * Use `tsconfig.json` compatible with Firebase Functions:
 
