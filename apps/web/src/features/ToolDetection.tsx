@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import type { ToolPosition } from "../types";
+import type { Detection } from "@shared/types";
 
 interface ToolDetectionProps {
-  toolPositions: ToolPosition[];
+  toolPositions: Detection[];
   isEditMode?: boolean;
   onToolMoved?: (index: number, newX: number, newY: number) => void;
   onToolResized?: (index: number, newWidth: number, newHeight: number) => void;
@@ -96,13 +96,13 @@ export default function ToolDetection({
     if (isResizing && resizeDirection && dragIndex !== null) {
       const currentTool = toolPositions[dragIndex];
 
-      if (resizeDirection === 'circle' && onCircleResized) {
-        const centerX = currentTool.cx || 50;
-        const centerY = currentTool.cy || 50;
-        const newRadius = Math.sqrt(Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2));
-        onCircleResized(dragIndex, Math.max(2, newRadius));
-        return;
-      }
+      // if (resizeDirection === 'circle' && onCircleResized) {
+      //   const centerX = currentTool.cx || 50;
+      //   const centerY = currentTool.cy || 50;
+      //   const newRadius = Math.sqrt(Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2));
+      //   onCircleResized(dragIndex, Math.max(2, newRadius));
+      //   return;
+      // }
 
       if (onToolResized) {
         let newWidth = currentTool.width;
@@ -189,7 +189,7 @@ export default function ToolDetection({
       </div>
 
       {showOverlay && toolPositions.map((tool, index) => {
-        const shapeType = tool.shapeType || 'rectangle';
+        // const shapeType = tool.shapeType || 'rectangle';
         const isSelected = (isDragging && dragIndex === index) || (selectedToolId === index);
 
         return (
@@ -202,7 +202,7 @@ export default function ToolDetection({
               left: `${tool.x}%`,
               width: `${tool.width}%`,
               height: `${tool.height}%`,
-              transform: `rotate(${tool.angle || 0}deg)`,
+              // transform: `rotate(${tool.angle || 0}deg)`,
               transformOrigin: 'center',
               zIndex: isSelected ? 25 : 20,
               transition: isDragging && dragIndex === index ? 'none' : 'all 0.1s ease',
@@ -211,11 +211,11 @@ export default function ToolDetection({
             onMouseDown={(e) => handleMouseDown(e, index)}
           >
             {/* Shape rendering */}
-            <div
+            {/* <div
               className={`w-full h-full border-2 transition-colors ${
                 isSelected 
                     ? "border-axiom-cyan bg-axiom-cyan/20" 
-                    : tool.status === "missing" 
+                    : tool.status === "absent" 
                         ? "border-red-500 bg-red-500/20 hover:bg-red-500/30" 
                         : "border-green-500 bg-green-500/10 hover:bg-green-500/20"
               }`}
@@ -235,74 +235,74 @@ export default function ToolDetection({
                   const polygonHeight = maxY - minY;
                   
                   return (
-                    <svg 
-                      width="100%" 
-                      height="100%" 
-                      viewBox={`${minX} ${minY} ${polygonWidth} ${polygonHeight}`} 
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                    >
-                      <polygon
-                        points={tool.points.map(p => `${p.x},${p.y}`).join(' ')}
-                        stroke={isSelected ? "#00E5FF" : (tool.status === "missing" ? "#ef4444" : "#22c55e")}
-                        strokeWidth="1"
-                        fill={isSelected ? "rgba(0, 229, 255, 0.2)" : (tool.status === "missing" ? "rgba(239, 68, 68, 0.2)" : "rgba(34, 197, 94, 0.1)")}
-                        style={{ vectorEffect: 'non-scaling-stroke' }}
-                      />
-                      {/* Add interactive vertex handles in edit mode */}
-                      {isEditMode && isSelected && tool.points.map((point, idx) => (
-                        <g key={`vertex-${idx}`}>
-                          <circle
-                            cx={point.x}
-                            cy={point.y}
-                            r="1.5"
-                            fill="#00E5FF"
-                            stroke="white"
-                            strokeWidth="1"
-                            style={{ 
-                              vectorEffect: 'non-scaling-stroke',
-                              cursor: 'move'
-                            }}
-                            onMouseDown={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setIsVertexDragging(true);
-                              setVertexDragInfo({toolIndex: index, vertexIndex: idx});
+                    // <svg 
+                    //   width="100%" 
+                    //   height="100%" 
+                    //   viewBox={`${minX} ${minY} ${polygonWidth} ${polygonHeight}`} 
+                    //   preserveAspectRatio="xMidYMid meet"
+                    //   style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                    // >
+                    //   <polygon
+                    //     points={tool.points.map(p => `${p.x},${p.y}`).join(' ')}
+                    //     stroke={isSelected ? "#00E5FF" : (tool.status === "missing" ? "#ef4444" : "#22c55e")}
+                    //     strokeWidth="1"
+                    //     fill={isSelected ? "rgba(0, 229, 255, 0.2)" : (tool.status === "missing" ? "rgba(239, 68, 68, 0.2)" : "rgba(34, 197, 94, 0.1)")}
+                    //     style={{ vectorEffect: 'non-scaling-stroke' }}
+                    //   />
+                    //    {isEditMode && isSelected && tool.points.map((point, idx) => (
+                    //     <g key={`vertex-${idx}`}>
+                    //       <circle
+                    //         cx={point.x}
+                    //         cy={point.y}
+                    //         r="1.5"
+                    //         fill="#00E5FF"
+                    //         stroke="white"
+                    //         strokeWidth="1"
+                    //         style={{ 
+                    //           vectorEffect: 'non-scaling-stroke',
+                    //           cursor: 'move'
+                    //         }}
+                    //         onMouseDown={(e) => {
+                    //           e.preventDefault();
+                    //           e.stopPropagation();
+                    //           setIsVertexDragging(true);
+                    //           setVertexDragInfo({toolIndex: index, vertexIndex: idx});
                               
-                              const containerRect = e.currentTarget.closest('.relative')?.getBoundingClientRect();
-                              if (!containerRect) return;
+                    //           const containerRect = e.currentTarget.closest('.relative')?.getBoundingClientRect();
+                    //           if (!containerRect) return;
                               
-                              const handleMouseMove = (moveE: MouseEvent) => {
-                                moveE.preventDefault();
-                                const rect = containerRect;
-                                const mouseX = ((moveE.clientX - rect.left) / rect.width) * 100;
-                                const mouseY = ((moveE.clientY - rect.top) / rect.height) * 100;
+                    //           const handleMouseMove = (moveE: MouseEvent) => {
+                    //             moveE.preventDefault();
+                    //             const rect = containerRect;
+                    //             const mouseX = ((moveE.clientX - rect.left) / rect.width) * 100;
+                    //             const mouseY = ((moveE.clientY - rect.top) / rect.height) * 100;
                                 
-                                if (onPolygonVertexMoved) {
-                                  onPolygonVertexMoved(index, idx, mouseX, mouseY);
-                                }
-                              };
+                    //             if (onPolygonVertexMoved) {
+                    //               onPolygonVertexMoved(index, idx, mouseX, mouseY);
+                    //             }
+                    //           };
                               
-                              const handleMouseUp = (upE: MouseEvent) => {
-                                upE.preventDefault();
-                                upE.stopPropagation();
-                                document.removeEventListener('mousemove', handleMouseMove);
-                                document.removeEventListener('mouseup', handleMouseUp);
-                                setIsVertexDragging(false);
-                                setVertexDragInfo(null);
-                              };
+                    //           const handleMouseUp = (upE: MouseEvent) => {
+                    //             upE.preventDefault();
+                    //             upE.stopPropagation();
+                    //             document.removeEventListener('mousemove', handleMouseMove);
+                    //             document.removeEventListener('mouseup', handleMouseUp);
+                    //             setIsVertexDragging(false);
+                    //             setVertexDragInfo(null);
+                    //           };
                               
-                              document.addEventListener('mousemove', handleMouseMove);
-                              document.addEventListener('mouseup', handleMouseUp);
-                            }}
-                          />
-                        </g>
-                      ))}
-                    </svg>
+                    //           document.addEventListener('mousemove', handleMouseMove);
+                    //           document.addEventListener('mouseup', handleMouseUp);
+                    //         }}
+                    //       />
+                    //     </g>
+                    //   ))}
+                    // </svg>
                   );
                 })()
-              )}
-            </div>
+              )
+              }
+            </div> */}
 
             {/* Label */}
             <div className={`absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs px-1.5 py-0.5 rounded font-medium shadow-sm whitespace-nowrap ${isSelected ? 'bg-axiom-cyan text-black' : 'bg-black/80 text-white hidden group-hover:block'}`}>
@@ -310,7 +310,7 @@ export default function ToolDetection({
             </div>
 
             {/* Handles */}
-            {isEditMode && isSelected && (
+            {/* {isEditMode && isSelected && (
               <>
                 {shapeType !== 'circle' && (
                   <div
@@ -328,7 +328,7 @@ export default function ToolDetection({
                 <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white border border-gray-500 rounded-full cursor-ne-resize z-30" onMouseDown={(e) => handleResizeStart(e, index, 'ne')} />
                 <div className="absolute -top-1 -left-1 w-2.5 h-2.5 bg-white border border-gray-500 rounded-full cursor-nw-resize z-30" onMouseDown={(e) => handleResizeStart(e, index, 'nw')} />
               </>
-            )}
+            )} */}
           </div>
         );
       })}

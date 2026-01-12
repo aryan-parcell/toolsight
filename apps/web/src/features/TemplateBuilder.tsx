@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { Upload, Save, Scan, ArrowRight, Trash2, Target, Crosshair, Plus, Image as ImageIcon, Camera, X } from 'lucide-react';
 import ToolDetection from './ToolDetection';
 import AnchorPointOverlay from './AnchorPointManager';
-import type { ToolPosition, AnchorPoint } from '../types';
+import type { Detection, AnchorPoint } from '@shared/types';
 
 // Workflow Steps
 enum BuilderStep {
@@ -18,7 +18,7 @@ const TemplateBuilder: React.FC = () => {
     const [image, setImage] = useState<string | null>(null);
 
     // Data State
-    const [tools, setTools] = useState<ToolPosition[]>([]);
+    const [tools, setTools] = useState<Detection[]>([]);
     const [anchors, setAnchors] = useState<AnchorPoint[]>([]);
 
     // Editor State
@@ -125,7 +125,7 @@ const TemplateBuilder: React.FC = () => {
         try {
             // Call robust Gemini utility
             // const detectedTools = await analyzeToolImage(image);
-            const detectedTools: ToolPosition[] = []; // Placeholder for Gemini response
+            const detectedTools: Detection[] = []; // Placeholder for Gemini response
 
             if (detectedTools.length > 0) {
                 setTools(detectedTools);
@@ -156,26 +156,26 @@ const TemplateBuilder: React.FC = () => {
         setTools(updated);
     };
 
-    const handleToolRotated = (index: number, angle: number) => {
-        const updated = [...tools];
-        updated[index] = { ...updated[index], angle };
-        setTools(updated);
-    };
+    // const handleToolRotated = (index: number, angle: number) => {
+    //     const updated = [...tools];
+    //     updated[index] = { ...updated[index], angle };
+    //     setTools(updated);
+    // };
 
-    const handleAddTool = (x: number = 50, y: number = 50) => {
-        const newTool: ToolPosition = {
-            name: `New Tool ${tools.length + 1}`,
-            position: 'Unknown',
-            x: x - 5,
-            y: y - 5,
-            width: 10,
-            height: 10,
-            status: 'present',
-            shapeType: 'rectangle'
-        };
-        setTools([...tools, newTool]);
-        setSelectedToolIndex(tools.length);
-    };
+    // const handleAddTool = (x: number = 50, y: number = 50) => {
+    //     const newTool: Detection = {
+    //         name: `New Tool ${tools.length + 1}`,
+    //         position: 'Unknown',
+    //         x: x - 5,
+    //         y: y - 5,
+    //         width: 10,
+    //         height: 10,
+    //         status: 'present',
+    //         shapeType: 'rectangle'
+    //     };
+    //     setTools([...tools, newTool]);
+    //     setSelectedToolIndex(tools.length);
+    // };
 
     const handleAddAnchor = (x: number, y: number) => {
         if (anchors.length >= 4) return;
@@ -371,13 +371,13 @@ const TemplateBuilder: React.FC = () => {
                                         Edit Anchors
                                     </button>
                                 </div>
-                                <div className="flex gap-2">
+                                {/* <div className="flex gap-2">
                                     {editorMode === 'tools' && (
                                         <button onClick={() => handleAddTool()} className="bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 text-sm hover:bg-gray-700 flex items-center">
                                             <Plus size={16} className="mr-1" /> Add Tool
                                         </button>
                                     )}
-                                </div>
+                                </div> */}
                             </div>
 
                             {/* Canvas */}
@@ -397,7 +397,7 @@ const TemplateBuilder: React.FC = () => {
                                                 isEditMode={editorMode === 'tools'}
                                                 onToolMoved={handleToolMoved}
                                                 onToolResized={handleToolResized}
-                                                onToolRotated={handleToolRotated}
+                                                // onToolRotated={handleToolRotated}
                                                 selectedToolId={selectedToolIndex}
                                                 onSelectTool={setSelectedToolIndex}
                                                 // Pass dynamic classes to control stacking context. 
@@ -473,7 +473,7 @@ const TemplateBuilder: React.FC = () => {
                                                     className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white text-sm"
                                                 />
                                             </div>
-                                            <div>
+                                            {/* <div>
                                                 <label className="block text-xs text-gray-500 mb-1">Position ID</label>
                                                 <input
                                                     type="text"
@@ -485,7 +485,7 @@ const TemplateBuilder: React.FC = () => {
                                                     }}
                                                     className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white text-sm"
                                                 />
-                                            </div>
+                                            </div> */}
                                             <button
                                                 onClick={() => {
                                                     const upd = tools.filter((_, i) => i !== selectedToolIndex);

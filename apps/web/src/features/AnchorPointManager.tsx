@@ -1,5 +1,5 @@
 import React from 'react';
-import type { AnchorPoint } from '../types';
+import type { AnchorPoint } from '@shared/types';
 
 interface AnchorPointOverlayProps {
   anchorPoints: AnchorPoint[];
