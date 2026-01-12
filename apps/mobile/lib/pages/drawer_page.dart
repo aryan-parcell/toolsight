@@ -80,7 +80,7 @@ class _DrawerPageState extends State<DrawerPage> {
                   ),
                 ],
               ),
-              imageDisplay(drawerAudit['imageStoragePath']),
+              imageDisplay(drawerAudit['imageStoragePath'], drawerAudit),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 10,
@@ -108,7 +108,10 @@ class _DrawerPageState extends State<DrawerPage> {
     );
   }
 
-  Widget imageDisplay(String? imageStoragePath) {
+  Widget imageDisplay(String? imageStoragePath, Map<String, dynamic> drawerAudit) {
+    final visualResults = drawerAudit['visualResults'] as Map<String, dynamic>? ?? {};
+    final isProcessing = drawerAudit['drawerStatus'] == 'pending' && imageStoragePath != null;
+
     final blankImage = Container(width: double.infinity, height: 200, color: Colors.grey);
 
     if (imageStoragePath == null) return blankImage;
@@ -119,10 +122,44 @@ class _DrawerPageState extends State<DrawerPage> {
         if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
         if (snapshot.hasError || !snapshot.hasData) return blankImage;
 
-        return Image.network(
-          snapshot.data!,
-          width: double.infinity,
-          fit: BoxFit.contain,
+        return Stack(
+          children: [
+            Image.network(
+              snapshot.data!,
+              width: double.infinity,
+              fit: BoxFit.fitWidth,
+            ),
+
+            if (visualResults.isNotEmpty)
+              Positioned.fill(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return BoundingBoxOverlay(
+                      visualResults: visualResults,
+                      imageWidth: constraints.biggest.width,
+                      imageHeight: constraints.biggest.height,
+                    );
+                  },
+                ),
+              ),
+
+            if (isProcessing)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black26,
+                  child: const Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 10,
+                      children: [
+                        CircularProgressIndicator(color: Colors.white),
+                        Text("AI Analyzing...", style: TextStyle(color: Colors.white)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+          ],
         );
       },
     );
@@ -153,6 +190,62 @@ class _DrawerPageState extends State<DrawerPage> {
           onChanged: (val) => _auditRepository.updateToolStatus(auditId, widget.drawerId, toolId, val as String),
         ),
       ],
+    );
+  }
+}
+
+class BoundingBoxOverlay extends StatelessWidget {
+  final Map<String, dynamic> visualResults;
+  final double imageWidth;
+  final double imageHeight;
+
+  const BoundingBoxOverlay({
+    super.key,
+    required this.visualResults,
+    required this.imageWidth,
+    required this.imageHeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: visualResults.entries.map((entry) {
+        final data = entry.value;
+        final box = data['boundingBox'];
+
+        if (box == null) return const SizedBox.shrink();
+
+        // Convert 0-100% coordinates to pixels
+        final double top = (box['y'] / 100) * imageHeight;
+        final double left = (box['x'] / 100) * imageWidth;
+        final double width = (box['width'] / 100) * imageWidth;
+        final double height = (box['height'] / 100) * imageHeight;
+
+        return Positioned(
+          top: top,
+          left: left,
+          width: width,
+          height: height,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.greenAccent, width: 2),
+              color: Colors.greenAccent.withAlpha(64),
+            ),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                color: Colors.black54,
+                padding: const EdgeInsets.all(2),
+                child: Text(
+                  data['name'] ?? 'Unknown',
+                  style: const TextStyle(color: Colors.white, fontSize: 10),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }
