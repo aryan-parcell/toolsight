@@ -47,7 +47,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
   }
 
   Future<void> _captureAndUploadImage(String drawerId) async {
-    final image = await ImagePicker().pickImage(source: ImageSource.camera);
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image == null) return;
 
     final auditId = _toolbox['lastAuditId'];
