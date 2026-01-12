@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronRight, Settings, ChevronLeft, ChevronDown } from 'lucide-react';
-import { AppView, type Drawer, type DrawerState, type Tool, type ToolBox } from '../types';
+import type { Drawer, ToolBox, Tool, DrawerState } from '@shared/types';
+import { AppView } from '../types';
 import { db } from '../firebase';
 import { collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 
@@ -28,7 +29,9 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
         secondaryColor: 'Red',
         drawers: 5,
         toolCounts: Array(5).fill(0),
-        auditFrequencyInHours: 4,
+        auditOnCheckout: false,
+        auditOnReturn: false,
+        auditFrequencyHours: 4,
     });
 
     const nextStep = () => setStep(s => Math.min(s + 1, 3));
@@ -55,10 +58,15 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
             drawers: drawers,
             tools: tools,
             type: formData.type,
-            auditFrequencyInHours: formData.auditFrequencyInHours,
             foamColors: {
                 primary: formData.primaryColor,
                 secondary: formData.secondaryColor,
+            },
+            auditProfile: {
+                requireOnCheckout: formData.auditOnCheckout,
+                requireOnReturn: formData.auditOnReturn,
+                shiftAuditType: formData.auditFrequencyHours === 0 ? 'at-will' : 'periodic',
+                periodicFrequencyHours: formData.auditFrequencyHours,
             },
             status: 'available',
             currentUserId: null,
@@ -235,27 +243,6 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
                             />
                         </div>
 
-                        <div>
-                            <label className="block mb-2">Periodic Audit Frequency</label>
-                            <div className="relative z-20">
-                                <select
-                                    value={formData.auditFrequencyInHours}
-
-                                    onChange={e => setFormData({ ...formData, auditFrequencyInHours: parseInt(e.target.value) })}
-                                    className="w-full rounded-lg p-4 border transition-all dark:bg-black/20 dark:border-axiom-borderDark dark:text-white appearance-none cursor-pointer"
-                                >
-                                    <option value={2}>Every 2 hours</option>
-                                    <option value={4}>Every 4 hours</option>
-                                    <option value={6}>Every 6 hours</option>
-                                    <option value={8}>Every 8 hours</option>
-                                </select>
-
-                                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-2">
-                                    <ChevronDown className="text-gray-400" size={16} />
-                                </div>
-                            </div>
-                        </div>
-
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="block mb-2">Primary Foam Color</label>
@@ -294,6 +281,55 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
 
                                     <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-2">
                                         <div className="w-4 h-4 rounded-full" style={{ backgroundColor: getHexColor(formData.secondaryColor) }}></div>
+                                        <ChevronDown className="text-gray-400" size={16} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block mb-2">General Audit Options</label>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button
+                                        onClick={() => setFormData({ ...formData, auditOnCheckout: !formData.auditOnCheckout })}
+                                        className={`
+                                            rounded-lg p-4 border transition-all cursor-pointer
+                                            ${formData.auditOnCheckout ? 'bg-blue-500 text-white' : 'bg-white dark:bg-black/20 dark:border-axiom-borderDark dark:text-white'}
+                                        `}
+                                    >
+                                        Audit on Checkout
+                                    </button>
+
+                                    <button
+                                        onClick={() => setFormData({ ...formData, auditOnReturn: !formData.auditOnReturn })}
+                                        className={`
+                                            rounded-lg p-4 border transition-all cursor-pointer
+                                            ${formData.auditOnReturn ? 'bg-blue-500 text-white' : 'bg-white dark:bg-black/20 dark:border-axiom-borderDark dark:text-white'}
+                                        `}
+                                    >
+                                        Audit on Return
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block mb-2">Shift Audit Options</label>
+                                <div className="relative z-20">
+                                    <select
+                                        value={formData.auditFrequencyHours}
+                                        onChange={e => setFormData({ ...formData, auditFrequencyHours: parseInt(e.target.value) })}
+                                        className="w-full rounded-lg p-4 border transition-all dark:bg-black/20 dark:border-axiom-borderDark dark:text-white appearance-none cursor-pointer"
+                                    >
+                                        <option value={0}>No Period (At Will)</option>
+                                        <option value={2}>Every 2 hours</option>
+                                        <option value={4}>Every 4 hours</option>
+                                        <option value={6}>Every 6 hours</option>
+                                        <option value={8}>Every 8 hours</option>
+                                    </select>
+
+                                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-2">
                                         <ChevronDown className="text-gray-400" size={16} />
                                     </div>
                                 </div>
@@ -361,7 +397,6 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
                     </div>
                 )}
 
-
                 {/* Step 3: Review */}
                 {step === 3 && (
                     <div className="space-y-10 animate-in fade-in">
@@ -399,8 +434,21 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
                                 </div>
                             </div>
                             <div className="md:col-span-2">
-                                <p className="text-gray-400 text-sm">Audit Frequency</p>
-                                <p className="dark:text-white">{formData.auditFrequencyInHours} hours</p>
+                                <p className="text-gray-400 text-sm">Audit Profile</p>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <div className="text-center p-2 rounded-md bg-gray-200 dark:bg-gray-700">
+                                        <div className="text-xs dark:text-white">On Check-out</div>
+                                        <div className="font-bold dark:text-white">{formData.auditOnCheckout ? 'Yes' : 'No'}</div>
+                                    </div>
+                                    <div className="text-center p-2 rounded-md bg-gray-200 dark:bg-gray-700">
+                                        <div className="text-xs dark:text-white">On Return</div>
+                                        <div className="font-bold dark:text-white">{formData.auditOnReturn ? 'Yes' : 'No'}</div>
+                                    </div>
+                                    <div className="text-center p-2 rounded-md bg-gray-200 dark:bg-gray-700">
+                                        <div className="text-xs dark:text-white">Shift Audit</div>
+                                        <div className="font-bold dark:text-white">{formData.auditFrequencyHours === 0 ? 'At Will' : `Periodic (${formData.auditFrequencyHours}h)`}</div>
+                                    </div>
+                                </div>
                             </div>
                             <div className="md:col-span-2">
                                 <p className="text-gray-400 text-sm mb-2">Tool Configuration</p>

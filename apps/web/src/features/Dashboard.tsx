@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import type { ToolBox } from '@/types';
+import type { ToolBox } from '@shared/types';
 import { DialogTrigger } from '@radix-ui/react-dialog';
 import { collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { ChevronDown, Plus, User } from 'lucide-react';
@@ -113,7 +113,7 @@ const ToolboxDetailView = forwardRef<HTMLDivElement, { toolbox: ToolBox }>(({ to
 });
 
 const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
-    const { id, name, drawers, tools, type, foamColors: toolboxFoamColors, auditFrequencyInHours } = toolbox;
+    const { id, name, drawers, tools, type, foamColors: toolboxFoamColors, auditProfile } = toolbox;
 
     const toolboxRef = doc(db, 'toolboxes', id as string);
 
@@ -174,20 +174,6 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
                         </select>
                     </div>
 
-                    <div>
-                        <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Audit Frequency</label>
-                        <select
-                            value={auditFrequencyInHours || 4}
-                            onChange={e => handleUpdateToolbox({ auditFrequencyInHours: parseInt(e.target.value) })}
-                            className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
-                        >
-                            <option value={2}>Every 2 hours</option>
-                            <option value={4}>Every 4 hours</option>
-                            <option value={6}>Every 6 hours</option>
-                            <option value={8}>Every 8 hours</option>
-                        </select>
-                    </div>
-
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Primary Color</label>
@@ -224,6 +210,57 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
                                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getHexColor(toolboxFoamColors.secondary) }} />
                                     <ChevronDown className="text-gray-400" size={14} />
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-gray-200 dark:bg-gray-700 p-5 rounded-lg space-y-4">
+                    <div>
+                        <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">General Audit Options</label>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <button
+                                onClick={() => handleUpdateToolbox({ auditProfile: { ...auditProfile, requireOnCheckout: !auditProfile.requireOnCheckout } })}
+                                className={`p-2 rounded-lg text-sm transition-colors 
+                                    ${auditProfile.requireOnCheckout ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-600 dark:text-gray-300'}`}
+                            >
+                                Audit on Checkout
+                            </button>
+                            <button
+                                onClick={() => handleUpdateToolbox({ auditProfile: { ...auditProfile, requireOnReturn: !auditProfile.requireOnReturn } })}
+                                className={`p-2 rounded-lg text-sm transition-colors 
+                                    ${auditProfile.requireOnReturn ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-600 dark:text-gray-300 '}`}
+                            >
+                                Audit on Return
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Shift Audit Options</label>
+
+                        <div className="relative">
+                            <select
+                                value={auditProfile.periodicFrequencyHours || 0}
+                                onChange={e => handleUpdateToolbox({
+                                    auditProfile: {
+                                        ...auditProfile,
+                                        shiftAuditType: parseInt(e.target.value) === 0 ? 'at-will' : 'periodic',
+                                        periodicFrequencyHours: parseInt(e.target.value)
+                                    }
+                                })}
+                                className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
+                            >
+                                <option value={0}>No Period (At Will)</option>
+                                <option value={2}>Every 2 hours</option>
+                                <option value={4}>Every 4 hours</option>
+                                <option value={6}>Every 6 hours</option>
+                                <option value={8}>Every 8 hours</option>
+                            </select>
+
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-2">
+                                <ChevronDown className="text-gray-400" size={14} />
                             </div>
                         </div>
                     </div>
