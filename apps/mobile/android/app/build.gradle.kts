@@ -37,6 +37,13 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    // Force the activity version
+    configurations.all {
+        resolutionStrategy {
+            force("androidx.activity:activity:1.10.1")
+        }
+    }
 }
 
 flutter {
