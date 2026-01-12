@@ -121,7 +121,6 @@ class _DrawerPageState extends State<DrawerPage> {
 
         return Image.network(
           snapshot.data!,
-          height: 200,
           width: double.infinity,
           fit: BoxFit.contain,
         );
