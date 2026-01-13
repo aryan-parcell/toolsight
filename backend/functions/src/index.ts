@@ -26,6 +26,7 @@ import {analyzeToolImage} from "./gemini";
 import {
   AuditToolStatus, Detection, Tool, ToolBox, VisualDetection,
 } from "@shared/types";
+import {auditScheduler} from "./auditScheduler";
 
 // For cost control, you can set the maximum number of containers that can be
 // running at the same time
@@ -159,3 +160,6 @@ export const onDrawerImageUpload = onObjectFinalized(async (event) => {
     });
   }
 });
+
+export {auditScheduler};
+
