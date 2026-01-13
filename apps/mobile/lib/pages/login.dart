@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:toolsight/repositories/user_repository.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/text_input_section.dart';
@@ -17,6 +18,7 @@ class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
+  final _userRepo = UserRepository();
 
   Future<void> _login() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) return;
@@ -26,6 +28,9 @@ class _LoginState extends State<Login> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
+      // Sync user data & token before navigating home
+      _userRepo.syncCurrentUser();
 
       if (mounted) context.goNamed(AppRoute.home.name);
     } on FirebaseAuthException catch (e) {
@@ -45,6 +50,9 @@ class _LoginState extends State<Login> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
+      // Sync user data & token before navigating home
+      _userRepo.syncCurrentUser();
 
       if (mounted) context.goNamed(AppRoute.home.name);
     } on FirebaseAuthException catch (e) {
