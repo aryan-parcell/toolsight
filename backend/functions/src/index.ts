@@ -18,7 +18,6 @@
  */
 
 import {setGlobalOptions} from "firebase-functions/v2";
-import * as admin from "firebase-admin";
 import {auditScheduler} from "./auditScheduler";
 import {aiAuditer} from "./aiAuditer";
 
@@ -26,7 +25,4 @@ import {aiAuditer} from "./aiAuditer";
 // running at the same time
 setGlobalOptions({maxInstances: 10});
 
-admin.initializeApp();
-
 export {auditScheduler, aiAuditer};
-

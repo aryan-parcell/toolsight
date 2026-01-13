@@ -1,10 +1,9 @@
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
-import {Checkout, ToolBox} from "@shared/types";
-import {createDrawerStates, sendPushNotification} from "./utils";
 import {DocumentSnapshot} from "firebase-functions/firestore";
-
-const db = admin.firestore();
+import {Checkout, ToolBox} from "@shared/types";
+import {db} from "./firebase";
+import {createDrawerStates, sendPushNotification} from "./utils";
 
 /**
  * Creates and issues a new periodic audit for a given checkout.

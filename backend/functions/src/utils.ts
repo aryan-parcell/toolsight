@@ -1,10 +1,7 @@
-import * as admin from "firebase-admin";
 import {
   Tool, Drawer, ToolBox, AuditToolStatus, DrawerState, Detection,
 } from "@shared/types";
-
-const db = admin.firestore();
-const messaging = admin.messaging();
+import {db, messaging} from "./firebase";
 
 /**
  * Finds the best matching AI detection for a given expected tool.

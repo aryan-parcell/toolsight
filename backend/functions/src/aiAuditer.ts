@@ -1,12 +1,10 @@
 import {onObjectFinalized} from "firebase-functions/v2/storage";
-import * as admin from "firebase-admin";
 import {getStorage} from "firebase-admin/storage";
 import * as path from "path";
-import {analyzeToolImage} from "./gemini";
 import {AuditToolStatus, ToolBox, VisualDetection} from "@shared/types";
+import {db} from "./firebase";
+import {analyzeToolImage} from "./gemini";
 import {findMatchingDetection} from "./utils";
-
-const db = admin.firestore();
 
 export const aiAuditer = onObjectFinalized(async (event) => {
   const fileBucket = event.data.bucket;
