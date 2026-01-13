@@ -102,7 +102,7 @@ export const aiAuditer = onObjectFinalized(async (event) => {
   } catch (error) {
     console.error("Pipeline Failed:", error);
     await db.collection("audits").doc(auditId).update({
-      [`drawerStates.${drawerId}.drawerStatus`]: "pending",
+      [`drawerStates.${drawerId}.drawerStatus`]: "ai-failed",
     });
   }
 });
