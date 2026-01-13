@@ -16,6 +16,10 @@ leveraging advanced AI technologies to revolutionize toolbox inventory managemen
 - **Backend**: Firebase
 - **AI / ML**: Gemini
 
+## Developer Setup
+- Run `flutter pub get` to download packages
+- Run `flutterfire configure` to generate `firebase_options.dart`
+
 ## 📱 Usage
 
 1. Login with your credentials
