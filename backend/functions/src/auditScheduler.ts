@@ -16,6 +16,10 @@ async function issuePeriodicAudit(checkoutDoc: DocumentSnapshot, now: Date) {
   const checkout = checkoutDoc.data() as Checkout;
 
   await db.runTransaction(async (t) => {
+    // 0. Re-fetch checkout inside transaction
+    const checkoutSnap = await t.get(checkoutDoc.ref);
+    const checkout = checkoutSnap.data() as Checkout;
+
     // 1. Fetch Toolbox to generate accurate drawer states
     const toolboxRef = db.collection("toolboxes").doc(checkout.toolboxId);
     const toolboxSnap = await t.get(toolboxRef);
