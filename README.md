@@ -1,73 +1,47 @@
-# React + TypeScript + Vite
+# ToolSight
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ToolSight is a full-stack application to manage, track, and audit toolboxes across organizations. It provides an admin web console for toolbox management and a mobile app for maintainers to check out and audit toolboxes in the field.
 
-Currently, two official plugins are available:
+## Components
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Mobile app (maintainers):** Flutter app used by maintainers to check out toolboxes, perform audits, and submit reports.
+- **Web app (admins):** React + TypeScript admin UI where toolboxes, organizations, and audit requirements are created and managed.
+- **Backend:** Firebase (Firestore, Storage, Cloud Functions) driving data, images, and server-side logic.
 
-## React Compiler
+## High-level workflows
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Admins create and configure toolboxes in the web app. Each toolbox document contains its inventory, organization association, and audit requirements.
+- Maintainers open the mobile app and check out toolboxes by entering a toolbox ID. A maintainer can check out multiple toolboxes at once, but a single toolbox can only be checked out by one person at a time.
+- While checked out, maintainers can perform audits defined by the toolbox's specification where they capture drawer images, run AI-assisted tool detection, review and confirm AI results, and submit an audit report. 
 
-## Expanding the ESLint configuration
+## Key constraints and business rules
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Checkout concurrency: Toolbox checkout is exclusive — Firestore transactions or server-side checks prevent two users from simultaneously checking out the same toolbox.
+- Organization scoping: Toolboxes are scoped to organizations. Maintainers can only check out toolboxes that belong to their organization.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Technology Stack
+- **Frontend**: 
+  - Mobile: Flutter
+  - Web: React, TypeScript, Vite
+- **Backend**: Firebase (Firestore, Storage, Cloud Functions)
+- **AI/ML**: Gemini for advanced tool recognition and analysis
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Developer Setup
+1. **Mobile App**:
+   - Navigate to the mobile app directory: `cd apps/mobile`
+   - Run `flutter pub get` to install dependencies.
+   - Run `flutterfire configure` to generate `firebase_options.dart`.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. **Web App**:
+   - Navigate to the web app directory: `cd apps/web`
+   - Run `npm install` to install dependencies.
+   - Start the development server with `npm run dev`.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. **Backend**:
+   - Navigate to the backend functions directory: `cd backend/functions`
+   - Run `npm install` to install dependencies.
+   - Deploy functions with `npm run deploy`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Built for the United States Air Force aircraft maintenance community** ✈️
