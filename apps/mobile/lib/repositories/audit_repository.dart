@@ -25,22 +25,22 @@ class AuditRepository {
       final currentAuditId = checkoutSnap.data()?['currentAuditId'];
       if (currentAuditId != null) return currentAuditId;
 
+      final now = DateTime.now();
+
       // If not, start a new "At-Will" audit
       t.set(auditDoc, {
         'checkoutId': checkoutId,
-        'startTime': FieldValue.serverTimestamp(),
+        'startTime': now,
         'endTime': null,
         'drawerStates': createAuditDrawerStatesFromToolbox(toolboxSnap.data()!),
-        'status': 'active',
       });
 
       t.update(checkoutDoc, {
         // audit scheduling
-        'lastAuditTime': null,
-        'nextAuditDue': Timestamp.fromDate(DateTime.now().add(Duration(minutes: 15))),
+        'nextAuditDue': now,
         // audit info
         'currentAuditId': auditDoc.id,
-        'auditStatus': 'pending',
+        'auditStatus': 'active',
       });
 
       t.update(toolboxDoc, {
