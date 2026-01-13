@@ -1,10 +1,35 @@
 import * as admin from "firebase-admin";
 import {
-  Drawer, ToolBox, AuditToolStatus, DrawerState,
+  Tool, Drawer, ToolBox, AuditToolStatus, DrawerState, Detection,
 } from "@shared/types";
 
 const db = admin.firestore();
 const messaging = admin.messaging();
+
+/**
+ * Finds the best matching AI detection for a given expected tool.
+ *
+ * @param {Tool} tool Expected tool definition
+ * @param {Detection[]} detections AI-detected tools
+ * @return {Detection | undefined} Matching detection or undefined if none found
+ */
+export function findMatchingDetection(
+  tool: Tool,
+  detections: Detection[]
+): Detection | undefined {
+  // 1. Prefer ID match (High Confidence)
+  const idMatch = detections.find((d) => d.toolId === tool.toolId);
+  if (idMatch) return idMatch;
+
+  // 2. Fallback to Name fuzzy match
+  const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const target = normalize(tool.toolName);
+
+  return detections.find((d) => {
+    const candidate = normalize(d.name || "");
+    return candidate.includes(target) || target.includes(candidate);
+  });
+}
 
 /**
  * Creates initial drawer states for a new audit based on the toolbox.
