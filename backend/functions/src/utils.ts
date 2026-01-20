@@ -90,9 +90,26 @@ export async function sendPushNotification(
         title: title,
         body: body,
       },
-      // data: {
-      //   click_action: "FLUTTER_NOTIFICATION_CLICK",
-      // }
+      android: {
+        priority: "high",
+        notification: {
+          channelId: "toolsight_mobile_notifs",
+          priority: "max",
+          defaultSound: true,
+          visibility: "public",
+        },
+      },
+      apns: {
+        headers: {
+          "apns-priority": "10",
+        },
+        payload: {
+          aps: {
+            sound: "default",
+            contentAvailable: true,
+          },
+        },
+      },
     });
   } catch (error) {
     console.error(`Failed to send notification to ${userId}`, error);
