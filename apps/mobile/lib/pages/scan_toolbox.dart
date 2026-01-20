@@ -25,10 +25,10 @@ class _ScanToolboxState extends State<ScanToolbox> {
     try {
       await _checkoutRepository.checkOutToolbox(eid);
       if (mounted) context.pushReplacementNamed(AppRoute.toolbox.name, pathParameters: {'toolbox_id': eid});
-    } catch (e) {
+    } on StateError catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
+          SnackBar(content: Text(e.message)),
         );
       }
     }

@@ -19,10 +19,10 @@ class CheckoutRepository {
 
     await FirebaseFirestore.instance.runTransaction((t) async {
       final toolboxSnapshot = await t.get(toolboxDoc);
-      if (!toolboxSnapshot.exists) throw Exception('Invalid ToolBox EID');
+      if (!toolboxSnapshot.exists) throw StateError('Invalid ToolBox EID');
 
       final toolbox = toolboxSnapshot.data()!;
-      if (toolbox['status'] != 'available') throw Exception('Unavailable ToolBox EID');
+      if (toolbox['status'] != 'available') throw StateError('Unavailable ToolBox EID');
 
       final profile = toolbox['auditProfile'];
 

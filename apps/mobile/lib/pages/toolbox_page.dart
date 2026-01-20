@@ -85,10 +85,10 @@ class _ToolboxPageState extends State<ToolboxPage> {
                         if (context.mounted) {
                           context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
                         }
-                      } catch (e) {
+                      } on StateError catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString())),
+                            SnackBar(content: Text(e.message)),
                           );
                         }
                       }
