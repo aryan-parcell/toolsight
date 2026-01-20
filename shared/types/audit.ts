@@ -1,6 +1,10 @@
 export type AuditToolStatus = "present" | "absent" | "unserviceable";
 
-export type AuditDrawerStatus = 'pending' | 'ai-completed' | 'ai-failed' | 'user-validated';
+export type AuditDrawerStatus = 
+    | 'pending' 
+    | 'ai-completed' 
+    | 'ai-failed' 
+    | 'user-validated';
 
 export interface DrawerState {
     drawerStatus: AuditDrawerStatus;
