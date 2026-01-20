@@ -1,5 +1,3 @@
-import type { AuditToolStatus } from "./audit";
-
 export interface Detection {
     name: string;
     toolId: string;
@@ -10,6 +8,8 @@ export interface Detection {
     width: number;
     height: number;
 }
+
+export type AuditToolStatus = "present" | "absent" | "unserviceable";
 
 export interface BoundingBox {
     x: number;
