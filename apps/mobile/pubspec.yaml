@@ -38,8 +38,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/logo.png
+    - assets/
 
 flutter_icons:
     android: "launcher_icon"
-    image_path: "assets/logo.png"
+    image_path: "assets/launcher.png"
