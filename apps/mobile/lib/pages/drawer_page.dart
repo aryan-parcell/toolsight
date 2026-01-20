@@ -52,6 +52,7 @@ class _DrawerPageState extends State<DrawerPage> {
           final audit = snapshot.data!.data()!;
           final auditId = snapshot.data!.id;
           final drawerAudit = audit['drawerStates'][widget.drawerId];
+          final isAuditActive = audit['endTime'] == null;
 
           final drawer = _toolbox['drawers'].firstWhere((drawer) => drawer['drawerId'] == widget.drawerId);
 
@@ -66,20 +67,21 @@ class _DrawerPageState extends State<DrawerPage> {
                   Text(drawer['drawerName'], style: Theme.of(context).textTheme.headlineLarge),
                 ],
               ),
-              Row(
-                children: [
-                  WideButton(
-                    text: "Retake Drawer Images",
-                    onPressed: () {
-                      context.pushNamed(
-                        AppRoute.capture.name,
-                        pathParameters: {'toolbox_id': widget.toolboxId},
-                        extra: widget.drawerId,
-                      );
-                    },
-                  ),
-                ],
-              ),
+              if (isAuditActive)
+                Row(
+                  children: [
+                    WideButton(
+                      text: "Retake Drawer Images",
+                      onPressed: () {
+                        context.pushNamed(
+                          AppRoute.capture.name,
+                          pathParameters: {'toolbox_id': widget.toolboxId},
+                          extra: widget.drawerId,
+                        );
+                      },
+                    ),
+                  ],
+                ),
               imageDisplay(drawerAudit['imageStoragePath'], drawerAudit),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +89,7 @@ class _DrawerPageState extends State<DrawerPage> {
                 children: [
                   Text("Results", style: Theme.of(context).textTheme.labelLarge),
                   if (drawerAudit['results'].isEmpty) Text("No results found.", style: Theme.of(context).textTheme.bodySmall),
-                  for (final entry in drawerAudit['results'].entries) resultDisplay(entry, auditId),
+                  for (final entry in drawerAudit['results'].entries) resultDisplay(entry, auditId, isAuditActive),
                 ],
               ),
               Row(
@@ -165,7 +167,7 @@ class _DrawerPageState extends State<DrawerPage> {
     );
   }
 
-  Widget resultDisplay(MapEntry<String, dynamic> result, String auditId) {
+  Widget resultDisplay(MapEntry<String, dynamic> result, String auditId, bool isAuditActive) {
     final toolId = result.key;
     final toolStatus = result.value;
 
@@ -187,7 +189,7 @@ class _DrawerPageState extends State<DrawerPage> {
             DropdownMenuItem(value: 'absent', child: Text('Absent')),
             DropdownMenuItem(value: 'unserviceable', child: Text('Unserviceable')),
           ],
-          onChanged: (val) => _auditRepository.updateToolStatus(auditId, widget.drawerId, toolId, val as String),
+          onChanged: isAuditActive ? (val) => _auditRepository.updateToolStatus(auditId, widget.drawerId, toolId, val as String) : null,
         ),
       ],
     );
