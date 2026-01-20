@@ -24,7 +24,7 @@ void main() async {
 
   await plugin.initialize(
     InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/launcher_clear'),
+      android: AndroidInitializationSettings('clear_logo'),
     ),
   );
 
