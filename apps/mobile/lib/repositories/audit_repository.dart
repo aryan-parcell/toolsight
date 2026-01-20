@@ -69,22 +69,23 @@ class AuditRepository {
     );
 
     if (isAuditComplete) {
-      await auditDoc.update({'status': 'complete', 'endTime': FieldValue.serverTimestamp()});
+      final now = DateTime.now();
+
+      await auditDoc.update({'status': 'complete', 'endTime': now});
 
       // Handle Periodic Audit Scheduling
       final profile = toolboxData['auditProfile'];
-      Timestamp? nextDue;
+      DateTime? nextDue;
       if (profile['shiftAuditType'] == 'periodic') {
         final freq = profile['periodicFrequencyHours'];
-        final nextDueDate = DateTime.now().add(Duration(hours: freq));
-        nextDue = Timestamp.fromDate(nextDueDate);
+        nextDue = now.add(Duration(hours: freq));
       }
 
       final checkoutDoc = _checkoutsCollection.doc(auditData['checkoutId']);
       checkoutDoc.update({
         'currentAuditId': null,
         'auditStatus': 'complete',
-        'lastAuditTime': FieldValue.serverTimestamp(),
+        'lastAuditTime': now,
         'nextAuditDue': nextDue,
       });
     }

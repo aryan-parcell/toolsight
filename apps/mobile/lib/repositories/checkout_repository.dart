@@ -28,20 +28,22 @@ class CheckoutRepository {
 
       String? initialAuditId;
       String auditStatus = 'complete';
-      Timestamp? nextDue;
+      DateTime? nextDue;
+
+      final now = DateTime.now();
 
       if (profile['shiftAuditType'] == 'periodic') {
-        nextDue = Timestamp.fromDate(DateTime.now().add(Duration(hours: profile['periodicFrequencyHours'])));
+        nextDue = now.add(Duration(hours: profile['periodicFrequencyHours']));
       }
 
       if (profile['requireOnCheckout']) {
         initialAuditId = auditDoc.id;
         auditStatus = 'active';
-        nextDue = Timestamp.fromDate(DateTime.now().add(Duration(minutes: 15)));
+        nextDue = now;
 
         t.set(auditDoc, {
           'checkoutId': checkoutDoc.id,
-          'startTime': FieldValue.serverTimestamp(),
+          'startTime': now,
           'endTime': null,
           'drawerStates': createAuditDrawerStatesFromToolbox(toolbox),
           'status': 'active',
@@ -52,7 +54,7 @@ class CheckoutRepository {
       t.set(checkoutDoc, {
         'userId': _auth.currentUser!.uid,
         'toolboxId': eid,
-        'checkoutTime': FieldValue.serverTimestamp(),
+        'checkoutTime': now,
         'returnTime': null,
         // denormalized
         'status': 'active',
@@ -99,7 +101,7 @@ class CheckoutRepository {
 
       t.update(checkoutDoc, {
         'status': 'complete',
-        'returnTime': FieldValue.serverTimestamp(),
+        'returnTime': DateTime.now(),
       });
 
       t.update(toolboxDoc, {
