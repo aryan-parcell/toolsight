@@ -27,7 +27,7 @@ class ToolBoxDisplay extends StatelessWidget {
             Row(
               spacing: 5,
               children: [
-                if (auditStatus == 'pending') const Pill("Pending Audit"),
+                if (auditStatus == 'active') const Pill("Active Audit"),
                 if (auditStatus == 'overdue') const Pill("Audit Overdue"),
               ],
             ),
