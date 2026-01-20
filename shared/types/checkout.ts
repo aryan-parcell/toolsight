@@ -9,16 +9,18 @@ export interface Checkout {
   checkoutTime: Date;
   returnTime: Date | null;
 
-  // Denormalized Fields
-  status: 'active' | 'complete';
-  toolboxName: string;
-  auditProfile: AuditProfile;
-
   // Audit Scheduling Logic
   lastAuditTime: Date | null;     // When the last audit was completed
   nextAuditDue: Date | null;      // When the audit should be / was issued
 
-  // The Audit
+  // Denormalized Checkout Fields
+  status: 'active' | 'complete';
+
+  // Denormalized Toolbox Info
+  toolboxName: string;
+  auditProfile: AuditProfile;
+
+  // Denormalized Audit Info
   currentAuditId: string | null;
   auditStatus: AuditStatus;
 }
