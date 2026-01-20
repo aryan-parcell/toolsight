@@ -69,7 +69,7 @@
 
 ## **4. Firebase Functions Folder Setup**
 
-* Ensure your function code is in `functions/src` or `functions` depending on setup.
+* Ensure your function code is in `functions/src`.
 * Correct `package.json` scripts:
 
   ```json
@@ -80,6 +80,7 @@
   }
   ```
 * Ensure Node.js version matches Firebase Functions requirements (v18+ for Functions v2).
+* Create a `.env` file in `functions/` containing `API_KEY=IzaSy...` (Your Gemini API Key).
 
 ---
 
