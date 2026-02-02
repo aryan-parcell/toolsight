@@ -71,7 +71,7 @@ class AuditRepository {
     if (isAuditComplete) {
       final now = DateTime.now();
 
-      await auditDoc.update({'status': 'complete', 'endTime': now});
+      await auditDoc.update({'endTime': now});
 
       // Handle Periodic Audit Scheduling
       final profile = toolboxData['auditProfile'];
