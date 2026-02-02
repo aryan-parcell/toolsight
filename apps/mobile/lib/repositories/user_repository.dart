@@ -9,7 +9,7 @@ class UserRepository {
 
   /// Syncs the current user's profile and FCM token to Firestore.
   /// Call this after a successful login or app startup.
-  Future<void> syncCurrentUser() async {
+  Future<void> syncCurrentUser(String? organizationId) async {
     final user = _auth.currentUser;
     if (user == null) return;
 
@@ -24,9 +24,10 @@ class UserRepository {
       final token = await _fcm.getToken();
 
       await _db.collection('users').doc(user.uid).set({
-        // 'organizationId': '...',
+        if (organizationId != null) 'organizationId': organizationId,
         'email': user.email,
         'displayName': user.displayName ?? 'Maintainer',
+        'role': 'maintainer',
         'fcmToken': token,
         'lastLogin': DateTime.now(),
       }, SetOptions(merge: true));

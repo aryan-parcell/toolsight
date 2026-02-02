@@ -17,8 +17,11 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _orgIdController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final _userRepo = UserRepository();
+
+  bool _isRegistering = false;
 
   Future<void> _login() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) return;
@@ -30,7 +33,7 @@ class _LoginState extends State<Login> {
       );
 
       // Sync user data & token before navigating home
-      _userRepo.syncCurrentUser();
+      _userRepo.syncCurrentUser(null);
 
       if (mounted) context.goNamed(AppRoute.home.name);
     } on FirebaseAuthException catch (e) {
@@ -43,7 +46,7 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _register() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) return;
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty || _orgIdController.text.isEmpty) return;
 
     try {
       await _auth.createUserWithEmailAndPassword(
@@ -51,8 +54,8 @@ class _LoginState extends State<Login> {
         password: _passwordController.text.trim(),
       );
 
-      // Sync user data & token before navigating home
-      _userRepo.syncCurrentUser();
+      // Sync user data, token, and org id before navigating home
+      _userRepo.syncCurrentUser(_orgIdController.text.trim());
 
       if (mounted) context.goNamed(AppRoute.home.name);
     } on FirebaseAuthException catch (e) {
@@ -82,6 +85,13 @@ class _LoginState extends State<Login> {
           Column(
             spacing: 10,
             children: [
+              if (_isRegistering)
+                TextInputSection(
+                  label: "Organization ID",
+                  hintText: "Enter your organization ID",
+                  controller: _orgIdController,
+                  obscureText: false,
+                ),
               TextInputSection(
                 label: "Email",
                 hintText: "Enter your email",
@@ -96,16 +106,22 @@ class _LoginState extends State<Login> {
               ),
             ],
           ),
-          Row(
-            spacing: 10,
+
+          Column(
             children: [
-              WideButton(
-                text: "Register Now",
-                onPressed: _register,
+              Row(
+                children: [
+                  WideButton(
+                    text: _isRegistering ? "Register Now" : "Log In",
+                    onPressed: _isRegistering ? _register : _login,
+                  ),
+                ],
               ),
-              WideButton(
-                text: "Login",
-                onPressed: _login,
+              TextButton(
+                onPressed: () => setState(() => _isRegistering = !_isRegistering),
+                child: Text(
+                  _isRegistering ? "Have an account? Log In!" : "No account? Register Now!",
+                ),
               ),
             ],
           ),
