@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
-import { Mail, Lock, AlertCircle, Loader } from 'lucide-react';
+import { auth, db } from '../firebase';
+import { Mail, Lock, AlertCircle, Loader, Building } from 'lucide-react';
+import { collection, doc, setDoc } from 'firebase/firestore';
 
 const ParcellLogo = () => (
     <svg width="64" height="64" viewBox="0 0 1113.57 1295.11" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,6 +22,7 @@ interface LoginProps {
 
 export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     const [isSignUp, setIsSignUp] = useState(false);
+    const [orgName, setOrgName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -45,7 +47,24 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         }
 
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
+            // 1. Create admin user account
+            const userCred = await createUserWithEmailAndPassword(auth, email, password);
+            const uid = userCred.user.uid;
+
+            // 2. Create organization document
+            const orgRef = doc(collection(db, 'organizations'));
+            await setDoc(orgRef, {
+                name: orgName,
+            });
+
+            // 3. Create user document linked to organization
+            await setDoc(doc(db, 'users', uid), {
+                email,
+                displayName: email.split('@')[0],
+                organizationId: orgRef.id,
+                role: 'admin',
+            });
+
             onLoginSuccess();
         } catch (err: any) {
             setError(err.message || 'Failed to create account');
@@ -106,6 +125,26 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Organization Name Input (Sign Up Only) */}
+                        {isSignUp && (
+                            <div>
+                                <label className="block text-sm font-medium text-axiom-textLight dark:text-axiom-textDark mb-2">
+                                    Organization Name
+                                </label>
+                                <div className="relative">
+                                    <Building className="absolute left-3 top-3 w-5 h-5 text-axiom-textLight/40 dark:text-axiom-textDark/40" />
+                                    <input
+                                        type="text"
+                                        value={orgName}
+                                        onChange={(e) => setOrgName(e.target.value)}
+                                        required
+                                        className="w-full pl-10 pr-4 py-2 border border-axiom-borderLight dark:border-axiom-borderDark rounded-lg bg-axiom-light dark:bg-axiom-dark text-axiom-textLight dark:text-axiom-textDark focus:outline-none focus:border-axiom-cyan focus:ring-2 focus:ring-axiom-cyan/20 transition-colors"
+                                        placeholder="Acme Corp Maintenance"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         {/* Email Input */}
                         <div>
                             <label className="block text-sm font-medium text-axiom-textLight dark:text-axiom-textDark mb-2">
