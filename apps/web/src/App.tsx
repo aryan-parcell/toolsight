@@ -9,8 +9,10 @@ import { CalibrationManagement } from "./features/CalibrationManagement";
 import { ShadowboardSetup } from "./features/Shadowboard";
 import { AuditScheduling } from "./features/AuditScheduling";
 import { Login } from "./features/Login";
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
 import type { User } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import type { User as AppUser } from "@shared/types/user";
 
 export enum AppView {
     TOOLBOX_OVERVIEW = 'TOOLBOX_OVERVIEW',
@@ -34,11 +36,28 @@ const PlaceholderView = () => (
 export default function App() {
     const [currentView, setCurrentView] = useState<AppView>(AppView.TOOLBOX_OVERVIEW);
     const [user, setUser] = useState<User | null>(null);
+    const [orgId, setOrgId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+        const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
             setUser(currentUser);
+
+            if (currentUser) {
+                try {
+                    const user = await getDoc(doc(db, 'users', currentUser.uid));
+                    if (user.exists()) {
+                        const userData = user.data() as AppUser;
+                        console.log('User data:', userData);
+                        setOrgId(userData.organizationId);
+                    }
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                }
+            } else {
+                setOrgId(null);
+            }
+
             setLoading(false);
         });
 
@@ -48,9 +67,9 @@ export default function App() {
     const renderContent = () => {
         switch (currentView) {
             case AppView.TOOLBOX_OVERVIEW:
-                return <Dashboard onNavigate={setCurrentView} />;
+                return <Dashboard onNavigate={setCurrentView} orgId={orgId!} />;
             case AppView.TOOLBOX_WIZARD:
-                return <ToolboxWizard onNavigate={setCurrentView} />;
+                return <ToolboxWizard onNavigate={setCurrentView} orgId={orgId!} />;
             case AppView.SHADOWBOARD:
                 return <ShadowboardSetup />;
             case AppView.TEMPLATE_BUILDER:
@@ -66,7 +85,7 @@ export default function App() {
             case AppView.SETTINGS:
                 return <Settings />;
             default:
-                return <Dashboard onNavigate={setCurrentView} />;
+                return <Dashboard onNavigate={setCurrentView} orgId={orgId!} />;
         }
     };
 

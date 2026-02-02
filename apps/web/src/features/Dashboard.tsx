@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import type { ToolBox } from '@shared/types';
 import { DialogTrigger } from '@radix-ui/react-dialog';
-import { collection, deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { ChevronDown, Plus, User } from 'lucide-react';
 import React, { forwardRef, useEffect, useState } from 'react';
 import { AppView } from '../App';
@@ -19,6 +19,7 @@ const foamColors = [
 
 interface DashboardProps {
     onNavigate: (view: AppView) => void;
+    orgId: string;
 }
 
 interface AutosaveInputProps {
@@ -329,14 +330,16 @@ const ToolboxCard: React.FC<ToolBox> = (toolbox) => {
     );
 };
 
-const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onNavigate, orgId }) => {
     const [toolboxes, setToolboxes] = useState<ToolBox[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const toolboxesRef = collection(db, 'toolboxes');
 
-        const unsubscribe = onSnapshot(toolboxesRef, (snapshot) => {
+        const q = query(toolboxesRef, where("organizationId", "==", orgId));
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
             const tbs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ToolBox));
             setToolboxes(tbs);
             setLoading(false);

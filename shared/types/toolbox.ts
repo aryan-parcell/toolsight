@@ -21,7 +21,7 @@ export interface AuditProfile {
 export interface ToolBox {
   id?: string;
   name: string;
-  organization_id: string;
+  organizationId: string;
   drawers: Drawer[];
   tools: Tool[];
   type: string;

@@ -7,6 +7,7 @@ import { collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore
 
 interface ToolboxWizardProps {
     onNavigate: (view: AppView) => void;
+    orgId: string;
 }
 
 const foamColors = [
@@ -17,7 +18,7 @@ const foamColors = [
     { name: 'Yellow', value: 'Yellow', hex: '#CA8A04' },
 ];
 
-const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
+const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate, orgId }) => {
     const [step, setStep] = useState(1);
     const [activeDrawer, setActiveDrawer] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,7 +54,7 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
         );
 
         return {
-            organization_id: '1',
+            organizationId: orgId,
             name: formData.name,
             drawers: drawers,
             tools: tools,
