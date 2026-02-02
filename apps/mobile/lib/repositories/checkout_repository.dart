@@ -6,6 +6,7 @@ class CheckoutRepository {
   final _checkoutsCollection = FirebaseFirestore.instance.collection('checkouts');
   final _toolboxesCollection = FirebaseFirestore.instance.collection('toolboxes');
   final _auditsCollection = FirebaseFirestore.instance.collection('audits');
+  final _usersCollection = FirebaseFirestore.instance.collection('users');
   final _auth = FirebaseAuth.instance;
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getCheckoutStream(String checkoutId) {
@@ -13,17 +14,31 @@ class CheckoutRepository {
   }
 
   Future<void> checkOutToolbox(String eid) async {
+    final userId = _auth.currentUser!.uid;
+
+    final userDoc = _usersCollection.doc(userId);
     final toolboxDoc = _toolboxesCollection.doc(eid);
     final auditDoc = _auditsCollection.doc();
     final checkoutDoc = _checkoutsCollection.doc();
 
     await FirebaseFirestore.instance.runTransaction((t) async {
+      // 1. Fetch toolbox and user profile
+      final userSnapshot = await t.get(userDoc);
       final toolboxSnapshot = await t.get(toolboxDoc);
+
+      if (!userSnapshot.exists) throw StateError('Invalid User ID');
       if (!toolboxSnapshot.exists) throw StateError('Invalid ToolBox EID');
 
+      final user = userSnapshot.data()!;
       final toolbox = toolboxSnapshot.data()!;
+
+      // 2. Check if toolbox is available
       if (toolbox['status'] != 'available') throw StateError('Unavailable ToolBox EID');
 
+      // 3. Check if the toolbox belongs to the user's organization
+      if (user['organizationId'] != toolbox['organizationId']) throw StateError('Invalid Organization');
+
+      // 4. Handle audit behavior
       final profile = toolbox['auditProfile'];
 
       String? initialAuditId;
@@ -50,7 +65,7 @@ class CheckoutRepository {
         });
       }
 
-      // Create Checkout
+      // 5. Create Checkout
       t.set(checkoutDoc, {
         'userId': _auth.currentUser!.uid,
         'toolboxId': eid,
@@ -68,7 +83,7 @@ class CheckoutRepository {
         'auditStatus': auditStatus,
       });
 
-      // Update Toolbox
+      // 6. Update Toolbox
       t.update(toolboxDoc, {
         'status': 'checked-out',
         'currentUserId': _auth.currentUser!.uid,
