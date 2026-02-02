@@ -19,4 +19,7 @@ export interface Audit {
     startTime: Date;
     endTime: Date | null;
     drawerStates: Record<string, DrawerState>;
+
+    // Denormalized User/Toolbox Info
+    organizationId: string;
 }

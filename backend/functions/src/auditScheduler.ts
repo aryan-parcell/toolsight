@@ -36,6 +36,7 @@ async function issuePeriodicAudit(checkoutDoc: DocumentSnapshot, now: Date) {
       startTime: now,
       endTime: null,
       drawerStates: createDrawerStates(toolbox),
+      organizationId: toolbox.organizationId,
     });
 
     // Link new audit to checkout and set status to active

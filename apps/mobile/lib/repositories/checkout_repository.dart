@@ -61,7 +61,7 @@ class CheckoutRepository {
           'startTime': now,
           'endTime': null,
           'drawerStates': createAuditDrawerStatesFromToolbox(toolbox),
-          'status': 'active',
+          'organizationId': user['organizationId'],
         });
       }
 
@@ -75,6 +75,7 @@ class CheckoutRepository {
         'status': 'active',
         'toolboxName': toolbox['name'],
         'auditProfile': profile,
+        'organizationId': user['organizationId'],
         // audit scheduling
         'lastAuditTime': null,
         'nextAuditDue': nextDue,

@@ -13,12 +13,13 @@ export interface Checkout {
   lastAuditTime: Date | null;     // When the last audit was completed
   nextAuditDue: Date | null;      // When the audit should be / was issued
 
-  // Denormalized Checkout Fields
+  // Denormalized Checkout Info
   status: 'active' | 'complete';
 
   // Denormalized Toolbox Info
   toolboxName: string;
   auditProfile: AuditProfile;
+  organizationId: string;
 
   // Denormalized Audit Info
   currentAuditId: string | null;

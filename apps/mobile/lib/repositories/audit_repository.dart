@@ -26,13 +26,15 @@ class AuditRepository {
       if (currentAuditId != null) return currentAuditId;
 
       final now = DateTime.now();
+      final toolbox = toolboxSnap.data()!;
 
       // If not, start a new "At-Will" audit
       t.set(auditDoc, {
         'checkoutId': checkoutId,
         'startTime': now,
         'endTime': null,
-        'drawerStates': createAuditDrawerStatesFromToolbox(toolboxSnap.data()!),
+        'drawerStates': createAuditDrawerStatesFromToolbox(toolbox),
+        'organizationId': toolbox['organizationId'],
       });
 
       t.update(checkoutDoc, {
