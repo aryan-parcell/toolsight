@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- HELPER FUNCTIONS ---
+
+    // Basic check for signed-in user
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Fetch the user's profile
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // Does the doc belong to the user's org?
+    // This relies on 'organizationId' existing on the document itself
+    function belongsToOrg(resourceData) {
+      return isSignedIn() && resourceData.organizationId == getUserData().organizationId;
+    }
+
+    // Validate that the user is not being invalidly changed
+    function userCoreUnchanged() {
+      return request.resource.data.organizationId == resource.data.organizationId && request.resource.data.role == resource.data.role;
+    }
+
+    // Check if the user has a specific role (e.g., 'admin', 'maintainer')
+    function hasRole(role) {
+      return isSignedIn() && getUserData().role == role;
+    }
+
+    // --- COLLECTION RULES ---
+
+    match /organizations/{orgId} {
+      // Anyone in the organization can read organization data.
+      allow read: if isSignedIn() && getUserData().organizationId == orgId;
+
+      // Only newly created admins can create organizations, but the org is created before the user profile exists.
+      allow create: if isSignedIn(); 
+    }
+
+    // Users: You can only read/write your OWN profile.
+    match /users/{userId} {
+      allow read, create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId && userCoreUnchanged();
+    }
+
+    match /toolboxes/{toolboxId} {
+      // Anyone in the organization can read toolboxes.
+      allow read: if belongsToOrg(resource.data);
+
+      // Only 'admin' users can create, update, or delete toolboxes.
+      allow create: if hasRole('admin') && belongsToOrg(request.resource.data);
+      allow update: if hasRole('admin') && belongsToOrg(request.resource.data) && belongsToOrg(resource.data);
+      allow delete: if hasRole('admin') && belongsToOrg(resource.data);
+    }
+
+    match /checkouts/{checkoutId} {
+      // Anyone in the organization can create, read, or update checkouts.
+      allow read: if belongsToOrg(resource.data);
+      allow update: if belongsToOrg(resource.data) && belongsToOrg(request.resource.data);
+
+      // Only 'maintainer' users can create checkouts.
+      allow create: if hasRole('maintainer') && belongsToOrg(request.resource.data);
+    }
+
+    // Audits: Must match Org ID.
+    match /audits/{auditId} {
+      allow read: if belongsToOrg(resource.data);
+      allow create: if belongsToOrg(request.resource.data);
+      allow update: if belongsToOrg(resource.data) && belongsToOrg(request.resource.data);
+    }
+  }
+}
