@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:toolsight/repositories/checkout_repository.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/toolbox_display.dart';
@@ -15,11 +16,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final Stream<QuerySnapshot> _checkoutStream = FirebaseFirestore.instance
-      .collection('checkouts')
-      .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-      .where('status', isEqualTo: 'active')
-      .snapshots();
+  final _checkoutRepo = CheckoutRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +60,7 @@ class _HomeState extends State<Home> {
               children: [
                 Text("Active ToolBoxes", style: Theme.of(context).textTheme.titleLarge),
                 StreamBuilder<QuerySnapshot>(
-                  stream: _checkoutStream,
+                  stream: _checkoutRepo.getMyActiveCheckouts(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
                     if (snapshot.hasError) return Text("Error loading toolboxes");

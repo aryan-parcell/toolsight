@@ -9,6 +9,26 @@ class CheckoutRepository {
   final _usersCollection = FirebaseFirestore.instance.collection('users');
   final _auth = FirebaseAuth.instance;
 
+  Stream<QuerySnapshot> getMyActiveCheckouts() async* {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    // Fetch User Profile
+    final userDoc = await _usersCollection.doc(user.uid).get();
+    if (!userDoc.exists || userDoc.data() == null) return;
+
+    // Extract organization ID
+    final userData = userDoc.data() as Map<String, dynamic>;
+    final orgId = userData['organizationId'];
+
+    // Stream Checkouts with the required filter
+    yield* _checkoutsCollection
+        .where('userId', isEqualTo: user.uid)
+        .where('organizationId', isEqualTo: orgId)
+        .where('status', isEqualTo: 'active')
+        .snapshots();
+  }
+
   Stream<DocumentSnapshot<Map<String, dynamic>>> getCheckoutStream(String checkoutId) {
     return _checkoutsCollection.doc(checkoutId).snapshots();
   }

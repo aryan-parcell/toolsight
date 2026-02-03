@@ -91,6 +91,7 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate, orgId }) => {
         });
 
         return {
+            organizationId: orgId,
             checkoutId: null,
             startTime: serverTimestamp(),
             endTime: serverTimestamp(),
