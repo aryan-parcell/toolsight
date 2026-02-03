@@ -349,7 +349,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, orgId }) => {
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [orgId]);
 
     return (
         <div className="animate-in fade-in duration-500 space-y-10">
