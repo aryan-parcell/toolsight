@@ -9,10 +9,12 @@ import {
     FileText,
     Sun,
     Moon,
-    Hammer} from 'lucide-react';
+    Hammer
+} from 'lucide-react';
 import { AppView } from '../App';
 import { signOut } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 const ParcellLogo = () => (
     <svg width="32" height="32" viewBox="0 0 1113.57 1295.11" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-axiom-headingLight dark:text-white">
@@ -56,7 +58,51 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) =>
     const [isDark, setIsDark] = useState(getInitialTheme());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+    // State for user profile
+    const [displayName, setDisplayName] = useState<string>('Loading...');
+    const [userInitials, setUserInitials] = useState<string>('...');
+    const [orgName, setOrgName] = useState<string>('Loading...');
+
     const toggleTheme = () => setIsDark((d) => !d);
+
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    const userRef = doc(db, 'users', user.uid);
+                    const userSnap = await getDoc(userRef);
+
+                    if (userSnap.exists()) {
+                        const userData = userSnap.data();
+                        const name = userData.displayName || user.email || 'Admin User';
+                        setDisplayName(name);
+
+                        const initials = name
+                            .split(' ')
+                            .map((n: string) => n[0])
+                            .join('')
+                            .toUpperCase()
+                            .substring(0, 2);
+                        setUserInitials(initials);
+
+                        if (userData.organizationId) {
+                            const orgRef = doc(db, 'organizations', userData.organizationId);
+                            const orgSnap = await getDoc(orgRef);
+                            if (orgSnap.exists()) {
+                                setOrgName(orgSnap.data().name);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error fetching user profile:", error);
+                    setDisplayName("Error Loading");
+                }
+            }
+        };
+
+        fetchUserProfile();
+    }, []);
 
     useEffect(() => {
         const html = document.documentElement;
@@ -116,13 +162,13 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) =>
                     {/* User Profile */}
                     <div className="flex items-center px-3 py-3 gap-3">
                         <div className="w-full flex items-center hover:bg-axiom-borderLight dark:hover:bg-axiom-surfaceDark">
-                            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-700 text-white">JM</div>
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-700 text-white">{userInitials}</div>
                             <div className="ml-3">
-                                <div className="font-bold text-axiom-dark dark:text-white">J. Miller</div>
-                                <div className="text-xs opacity-70">Parcell</div>
+                                <div className="font-bold text-axiom-dark dark:text-white">{displayName}</div>
+                                <div className="text-xs opacity-70">{orgName}</div>
                             </div>
                         </div>
-                        <button 
+                        <button
                             onClick={() => signOut(auth)}
                             className="ml-auto opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
                             title="Sign out"
