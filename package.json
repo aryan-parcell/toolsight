@@ -12,7 +12,7 @@
 
     "deploy:web": "npm run build:web && firebase deploy --only hosting",
     "deploy:functions": "npm run build:functions && firebase deploy --only functions",
-    "deploy:rules": "firebase deploy --only firestore:rules",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage",
     
     "release": "npm run build:web && npm run build:functions && firebase deploy"
   }
