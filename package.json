@@ -1,0 +1,19 @@
+{
+  "name": "toolsight-monorepo",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix apps/web && npm install --prefix backend/functions",
+
+    "dev:web": "npm run dev --prefix apps/web",
+    "dev:functions": "npm run build:watch --prefix backend/functions",
+
+    "build:web": "npm run build --prefix apps/web",
+    "build:functions": "npm run build --prefix backend/functions",
+
+    "deploy:web": "npm run build:web && firebase deploy --only hosting",
+    "deploy:functions": "npm run build:functions && firebase deploy --only functions",
+    "deploy:rules": "firebase deploy --only firestore:rules",
+    
+    "release": "npm run build:web && npm run build:functions && firebase deploy"
+  }
+}
