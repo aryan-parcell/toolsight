@@ -30,6 +30,12 @@ service cloud.firestore {
       return isSignedIn() && getUserData().role == role;
     }
 
+    function maintainerToolboxUpdateValid() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+        ['status', 'currentUserId', 'currentCheckoutId', 'lastAuditId']
+      );
+    }
+
     // --- COLLECTION RULES ---
 
     match /organizations/{orgId} {
@@ -52,7 +58,7 @@ service cloud.firestore {
 
       // Only 'admin' users can create, update, or delete toolboxes.
       allow create: if hasRole('admin') && belongsToOrg(request.resource.data);
-      allow update: if hasRole('admin') && belongsToOrg(request.resource.data) && belongsToOrg(resource.data);
+      allow update: if (hasRole('admin') || maintainerToolboxUpdateValid()) && belongsToOrg(request.resource.data) && belongsToOrg(resource.data);
       allow delete: if hasRole('admin') && belongsToOrg(resource.data);
     }
 
