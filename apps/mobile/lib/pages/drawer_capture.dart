@@ -7,6 +7,7 @@ import 'package:flutter/material.dart' hide Drawer;
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:toolsight/repositories/audit_repository.dart';
+import 'package:toolsight/repositories/toolbox_repository.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/wide_button.dart';
 
@@ -40,24 +41,21 @@ class DrawerCapture extends StatefulWidget {
 }
 
 class _DrawerCaptureState extends State<DrawerCapture> {
+  final _toolboxRepo = ToolboxRepository();
   final _auditRepo = AuditRepository();
   int _currentIndex = 0;
   late Map<String, dynamic> _toolbox;
-  late DocumentReference<Map<String, dynamic>> _auditDoc;
   Stream<DocumentSnapshot<Map<String, dynamic>>>? _drawerAuditStream;
 
   File? _localDrawerImage;
   bool _isUploadingImage = false;
 
   void _fetchDrawerAudit() async {
-    final toolboxDoc = FirebaseFirestore.instance.collection('toolboxes').doc(widget.toolboxId);
-    final toolboxResponse = await toolboxDoc.get();
-    _toolbox = toolboxResponse.data()!;
+    _toolbox = await _toolboxRepo.getToolbox(widget.toolboxId);
 
     final auditId = _toolbox['lastAuditId'];
 
-    _auditDoc = FirebaseFirestore.instance.collection('audits').doc(auditId);
-    _drawerAuditStream = _auditDoc.snapshots();
+    _drawerAuditStream = _auditRepo.getAuditStream(auditId);
 
     if (widget.drawerId != null) {
       _currentIndex = _toolbox['drawers'].indexWhere((drawer) => drawer['drawerId'] == widget.drawerId);
