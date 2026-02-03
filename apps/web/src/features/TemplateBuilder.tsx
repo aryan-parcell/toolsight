@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { Upload, Save, Scan, ArrowRight, Trash2, Target, Crosshair, Plus, Image as ImageIcon, Camera, X } from 'lucide-react';
+import { Upload, Save, Scan, ArrowRight, Trash2, Target, Crosshair, Image as ImageIcon, Camera, X } from 'lucide-react';
 import ToolDetection from './ToolDetection';
 import AnchorPointOverlay from './AnchorPointManager';
 import type { Detection, AnchorPoint } from '@shared/types';

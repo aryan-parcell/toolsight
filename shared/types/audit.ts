@@ -1,4 +1,4 @@
-import { AuditToolStatus, VisualDetection } from "./detection";
+import type { AuditToolStatus, VisualDetection } from "./detection";
 
 export type AuditDrawerStatus = 
     | 'pending' 
