@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:toolsight/utils.dart';
 
 class AuditRepository {
+  final _storage = FirebaseStorage.instance;
   final _auditsCollection = FirebaseFirestore.instance.collection('audits');
   final _checkoutsCollection = FirebaseFirestore.instance.collection('checkouts');
   final _toolboxesCollection = FirebaseFirestore.instance.collection('toolboxes');
@@ -55,6 +58,16 @@ class AuditRepository {
 
   Future<String> getImageUrl(String path) {
     return FirebaseStorage.instance.ref().child(path).getDownloadURL();
+  }
+
+  Future<void> uploadDrawerImage(String auditId, String drawerId, String organizationId, File imageFile) async {
+    final extension = imageFile.path.split('.').last;
+    final storagePath = 'organizations/$organizationId/audits/$auditId/$drawerId.$extension';
+
+    final ref = _storage.ref().child(storagePath);
+    await ref.putFile(imageFile);
+
+    await _auditsCollection.doc(auditId).update({'drawerStates.$drawerId.imageStoragePath': storagePath});
   }
 
   Future<void> updateToolStatus(String auditId, String drawerId, String toolId, String newStatus) {

@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:toolsight/repositories/audit_repository.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/wide_button.dart';
 
@@ -39,6 +40,7 @@ class DrawerCapture extends StatefulWidget {
 }
 
 class _DrawerCaptureState extends State<DrawerCapture> {
+  final _auditRepo = AuditRepository();
   int _currentIndex = 0;
   late Map<String, dynamic> _toolbox;
   late DocumentReference<Map<String, dynamic>> _auditDoc;
@@ -83,16 +85,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
       _isUploadingImage = true;
     });
 
-    final auditId = _toolbox['lastAuditId'];
-    final extension = fileToUpload.path.split('.').last;
-    final imageStoragePath = 'audits/$auditId/$drawerId.$extension';
-
-    final storageRef = FirebaseStorage.instance.ref();
-    final imageRef = storageRef.child(imageStoragePath);
-
-    await imageRef.putFile(fileToUpload);
-
-    _auditDoc.update({'drawerStates.$drawerId.imageStoragePath': imageStoragePath});
+    await _auditRepo.uploadDrawerImage(_toolbox['lastAuditId'], drawerId, _toolbox['organizationId'], imageFile);
 
     setState(() {
       _isUploadingImage = false;

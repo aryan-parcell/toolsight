@@ -7,21 +7,23 @@ import {analyzeToolImage} from "./gemini";
 import {findMatchingDetection} from "./utils";
 
 export const aiAuditer = onObjectFinalized(async (event) => {
+  // 1. Extract file metadata
   const fileBucket = event.data.bucket;
   const filePath = event.data.name;
   const contentType = event.data.contentType || "image/jpeg";
+  if (!filePath) return;
 
-  // 1. Only process images in the 'audits' folder
-  if (!filePath || !filePath.startsWith("audits/")) {
-    return console.log("Skipping.");
-  }
-
-  // 2. File path structure validation (audits/{auditId}/{drawerId}.jpg)
+  // 2. File path structure validation
+  // (organizations/{orgId}/audits/{auditId}/{drawerId}.jpg)
   const segments = filePath.split("/");
-  if (segments.length !== 3) return console.log("Invalid path.");
+  const isAuditImage =
+    segments.length === 5 &&
+    segments[0] === "organizations" &&
+    segments[2] === "audits";
+  if (!isAuditImage) return console.log("Skipping.");
 
   // 3. Extract IDs from file path
-  const auditId = segments[1];
+  const auditId = segments[3];
   const drawerId = path.parse(filePath).name; // Remove file extension
 
   try {
