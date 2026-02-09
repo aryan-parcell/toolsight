@@ -20,9 +20,31 @@
 import {setGlobalOptions} from "firebase-functions/v2";
 import {auditScheduler} from "./auditScheduler";
 import {aiAuditer} from "./aiAuditer";
+import {HttpsError, onCall} from "firebase-functions/https";
+import {analyzeToolImage} from "./gemini";
 
 // For cost control, you can set the maximum number of containers that can be
 // running at the same time
 setGlobalOptions({maxInstances: 10});
 
 export {auditScheduler, aiAuditer};
+
+export const discoverTools = onCall({
+  cors: true,
+  memory: "512MiB",
+  timeoutSeconds: 60,
+}, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "User must be logged in.");
+  }
+
+  const {image, mimeType} = request.data;
+
+  try {
+    const tools = await analyzeToolImage(image, mimeType, []);
+    return {tools};
+  } catch (error: any) {
+    console.error("Analysis Failed:", error);
+    throw new HttpsError("internal", "AI Analysis Failed");
+  }
+});

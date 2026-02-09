@@ -6,6 +6,7 @@ import AnchorPointOverlay from './AnchorPointManager';
 import type { Detection, AnchorPoint } from '@shared/types';
 import { ImageUploadDropzone } from '@/components/ImageUploadDropzone';
 import { ImageAnalysisStep } from '@/components/ImageAnalysisStep';
+import { httpsCallable, getFunctions } from "firebase/functions";
 
 // Workflow Steps
 enum BuilderStep {
@@ -39,14 +40,17 @@ const TemplateBuilder: React.FC = () => {
         setStep(BuilderStep.ANALYSIS);
     };
 
-    // --- Step 2: Analysis (Actual Gemini) ---
     const runAnalysis = async () => {
         if (!image) return;
         setIsAnalyzing(true);
         try {
-            // Call robust Gemini utility
-            // const detectedTools = await analyzeToolImage(image);
-            const detectedTools: Detection[] = []; // Placeholder for Gemini response
+            const mimeType = image.split(';')[0].split(':')[1] || "image/png";
+
+            const functions = getFunctions();
+            const discoverTools = httpsCallable(functions, 'discoverTools');
+            const response = await discoverTools({ image: image, mimeType: mimeType });
+            const data = response.data as { tools: Detection[] };
+            const detectedTools: Detection[] = data.tools || [];
 
             if (detectedTools.length > 0) {
                 setTools(detectedTools);

@@ -87,21 +87,24 @@ function validateAndNormalizeDetection(tool: any): Detection {
 export async function analyzeToolImage(
   image: string,
   mimeType: string,
-  expectedTools: Tool[],
+  expectedTools: Tool[] = [],
   templateImage?: string,
 ): Promise<Detection[]> {
   // Ensure API Key is present
   const apiKey = process.env.API_KEY;
   if (!apiKey) throw new Error("Gemini API key is missing.");
 
-  // Create a RAG context string from the database definitions
-  const toolsContext = expectedTools.map((t) =>
-    `- Tool Name: "${t.toolName}", ID: "${t.toolId}"`
-  ).join("\n");
-
   // Using flash model for speed/cost efficiency
   const modelId = "gemini-2.5-flash-lite";
-  const systemPrompt = `
+
+  let systemPrompt = "";
+  if (expectedTools.length > 0) {
+    // Create a RAG context string from the database definitions
+    const toolsContext = expectedTools.map((t) =>
+      `- Tool Name: "${t.toolName}", ID: "${t.toolId}"`
+    ).join("\n");
+
+    systemPrompt = `
     SYSTEM: You are ToolSight AI, a specialized aircraft maintenance tool 
     detector.
 
@@ -111,21 +114,17 @@ export async function analyzeToolImage(
 
     INSTRUCTIONS:
     1. Analyze the image of a tool drawer and identify tools.
-    2. Try to match detected tools to the "Tool Name" values provided in the 
-    CONTEXT above.
-    3. If you find a match, include the "Tool ID" from the context in your 
-    output.
+    2. Match detected tools to the "Tool Name" values provided in the CONTEXT.
+    3. Include exact "Tool ID" from the CONTEXT in output if a match is found.
     4. Identify ONLY the tools and empty slots that are ACTUALLY VISIBLE
     5. Status Determination:
         - "present": Tool is clearly visible, identifiable, and functional
         - "absent": An empty slot where a tool should be
         - "unserviceable": Tool is present but visibly damaged or unusable.
     6. If you see a tool that is NOT in the context, mark it as "unknown" 
-    or provide a descriptive name.
 
     CRITICAL COORDINATE SYSTEM REQUIREMENTS:
-    - ALL coordinates MUST be in PERCENTAGE format (0 to 100) relative to the 
-    image dimensions.
+    - ALL coordinates MUST be in PERCENTAGE format (0 to 100)
     - x, y coordinates represent the TOP-LEFT corner as percentages (0 to 100)
     - width, height represent the size as percentages (0 to 100).
     - Example: A tool at image center would have x≈50, y≈50.
@@ -133,8 +132,8 @@ export async function analyzeToolImage(
     - ALWAYS return values like 10.5, 25.3, 67.8 (percentages, not normalized)
 
     OUTPUT:
-    - Return ONLY a valid JSON array of objects. The JSON should be properly
-    formatted. An example is shown below.
+    - Return ONLY a valid JSON array of objects. 
+    - The JSON should be properly formatted. An example is shown below.
 
     OUTPUT FORMAT (JSON Array):
     [{
@@ -145,6 +144,36 @@ export async function analyzeToolImage(
       "x": 10.5, "y": 20.0, "width": 5.0, "height": 15.0,
     }, ...]
   `;
+  } else {
+    systemPrompt = `
+    SYSTEM: You are ToolSight AI, a specialized aircraft maintenance tool 
+    detector.
+    GOAL: Identify EVERY tool visible to create a master inventory template.
+
+    INSTRUCTIONS:
+    1. Analyze the image of a tool drawer and identify all distinct tools.
+    2. Generate a concise, professional name for each tool
+
+    CRITICAL COORDINATE SYSTEM REQUIREMENTS:
+    - ALL coordinates MUST be in PERCENTAGE format (0 to 100)
+    - x, y coordinates represent the TOP-LEFT corner as percentages (0 to 100)
+    - width, height represent the size as percentages (0 to 100).
+    - Example: A tool at image center would have x≈50, y≈50.
+    - NEVER return values like 0.1, 0.5, 0.8 (normalized, not percentages)
+    - ALWAYS return values like 10.5, 25.3, 67.8 (percentages, not normalized)
+
+    OUTPUT:
+    - Return ONLY a valid JSON array of objects. 
+    - The JSON should be properly formatted. An example is shown below.
+
+    OUTPUT FORMAT (JSON Array):
+    [{
+      "name": "Wrench 10mm",
+      "confidence": 0.95,
+      "x": 10.5, "y": 20.0, "width": 5.0, "height": 15.0,
+    }, ...]
+  `;
+  }
 
   // Remove data URL prefix if present to get raw base64
   const base64Data = image.includes(",") ? image.split(",")[1] : image;
