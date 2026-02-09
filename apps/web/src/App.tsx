@@ -6,8 +6,6 @@ import TemplateBuilder from "./features/TemplateBuilder";
 import { Reports } from "./features/Reports";
 import { Settings } from "./features/Settings";
 import { CalibrationManagement } from "./features/CalibrationManagement";
-import { ShadowboardSetup } from "./features/Shadowboard";
-import { AuditScheduling } from "./features/AuditScheduling";
 import { Login } from "./features/Login";
 import { auth, db } from "./firebase";
 import type { User } from "firebase/auth";
@@ -70,12 +68,8 @@ export default function App() {
                 return <Dashboard onNavigate={setCurrentView} orgId={orgId!} />;
             case AppView.TOOLBOX_WIZARD:
                 return <ToolboxWizard onNavigate={setCurrentView} orgId={orgId!} />;
-            case AppView.SHADOWBOARD:
-                return <ShadowboardSetup />;
             case AppView.TEMPLATE_BUILDER:
                 return <TemplateBuilder />;
-            case AppView.AUDIT_SCHEDULING:
-                return <AuditScheduling />;
             case AppView.CALIBRATION:
                 return <CalibrationManagement />;
             case AppView.INVENTORY:

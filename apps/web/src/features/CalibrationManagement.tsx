@@ -2,7 +2,12 @@ import { CheckCircle2, FileDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pill } from "@/components/Pill";
-import { CALIBRATION } from "@/data/mock-data";
+
+export const CALIBRATION = [
+    { sku: "TORQ-200NM", name: "Torque Wrench 200Nm", due: "2025-10-20", status: "Due Soon", certificateUrl: "#" },
+    { sku: "CALIPER-150MM", name: "Digital Caliper 150mm", due: "2026-01-05", status: "Compliant", certificateUrl: "#" },
+    { sku: "DIAL-IND-10MM", name: "Dial Indicator 10mm", due: "2025-09-30", status: "Overdue", certificateUrl: "#" },
+];
 
 export function CalibrationManagement() {
     return (
