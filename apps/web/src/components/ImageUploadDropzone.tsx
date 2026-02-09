@@ -16,6 +16,30 @@ export function ImageUploadDropzone({
     const [isCameraLoading, setIsCameraLoading] = useState(false);
     const [stream, setStream] = useState<MediaStream | null>(null);
 
+    /* ---------- Image processing ---------- */
+
+    const ensureLandscape = (dataUrl: string): Promise<string> => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const { naturalWidth: w, naturalHeight: h } = img;
+                if (h <= w) return resolve(dataUrl);
+
+                const canvas = document.createElement("canvas");
+                canvas.width = h;
+                canvas.height = w;
+
+                const ctx = canvas.getContext("2d")!;
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.drawImage(img, -w / 2, -h / 2);
+
+                resolve(canvas.toDataURL("image/png"));
+            };
+            img.src = dataUrl;
+        });
+    };
+
     /* ---------- File handling ---------- */
 
     const processFile = (file: File) => {
@@ -24,7 +48,9 @@ export function ImageUploadDropzone({
         const reader = new FileReader();
         reader.onload = (ev) => {
             if (ev.target?.result) {
-                onImageSelected(ev.target.result as string);
+                ensureLandscape(ev.target.result as string).then((landscapeDataUrl) => {
+                    onImageSelected(landscapeDataUrl);
+                });
             }
         };
         reader.readAsDataURL(file);
@@ -99,7 +125,10 @@ export function ImageUploadDropzone({
         const dataUrl = canvas.toDataURL("image/jpeg");
 
         stopCamera();
-        onImageSelected(dataUrl);
+
+        ensureLandscape(dataUrl).then((landscapeDataUrl) => {
+            onImageSelected(landscapeDataUrl);
+        });
     };
 
     /* ---------- Cleanup on unmount ---------- */
