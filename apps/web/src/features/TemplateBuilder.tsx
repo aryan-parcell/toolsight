@@ -1,10 +1,11 @@
 
-import React, { useState, useRef } from 'react';
-import { Upload, Save, Scan, ArrowRight, Trash2, Target, Crosshair, Image as ImageIcon, Camera, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, Trash2, Target, Crosshair } from 'lucide-react';
 import ToolDetection from './ToolDetection';
 import AnchorPointOverlay from './AnchorPointManager';
 import type { Detection, AnchorPoint } from '@shared/types';
 import { ImageUploadDropzone } from '@/components/ImageUploadDropzone';
+import { ImageAnalysisStep } from '@/components/ImageAnalysisStep';
 
 // Workflow Steps
 enum BuilderStep {
@@ -169,41 +170,13 @@ const TemplateBuilder: React.FC = () => {
                     <ImageUploadDropzone onImageSelected={handleImageSelected} />
                 )}
 
-                {/* STEP 2: ANALYSIS */}
-                {step === BuilderStep.ANALYSIS && (
-                    <div className="flex-1 flex flex-col items-center justify-center bg-axiom-surfaceLight dark:bg-axiom-surfaceDark border border-axiom-borderLight dark:border-axiom-borderDark rounded-xl relative overflow-hidden">
-                        {image && <img src={image} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm" />}
-                        <div className="relative z-10 flex flex-col items-center">
-                            {isAnalyzing ? (
-                                <>
-                                    <div className="w-20 h-20 border-4 border-axiom-cyan border-t-transparent rounded-full animate-spin mb-6"></div>
-                                    <h3 className="text-2xl font-bold dark:text-white animate-pulse">Analyzing Image...</h3>
-                                    <p className="text-gray-400 mt-2">Detecting tools and features via Gemini AI</p>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="w-24 h-24 bg-axiom-cyan/10 rounded-full flex items-center justify-center mb-6 text-axiom-cyan">
-                                        <Scan size={48} />
-                                    </div>
-                                    <h3 className="text-xl font-bold dark:text-white mb-6">Image Loaded</h3>
-                                    <div className="flex gap-4">
-                                        <button
-                                            onClick={() => setStep(BuilderStep.UPLOAD)}
-                                            className="px-8 py-4 rounded-full font-bold text-gray-400 hover:text-white transition-colors"
-                                        >
-                                            Back
-                                        </button>
-                                        <button
-                                            onClick={runAnalysis}
-                                            className="bg-axiom-cyan text-black px-10 py-4 rounded-full font-bold hover:bg-[#00ccff] transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(0,229,255,0.3)]"
-                                        >
-                                            Run AI Detection
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
+                {step === BuilderStep.ANALYSIS && image && (
+                    <ImageAnalysisStep
+                        image={image}
+                        isAnalyzing={isAnalyzing}
+                        onBack={() => setStep(BuilderStep.UPLOAD)}
+                        onRunAnalysis={runAnalysis}
+                    />
                 )}
 
                 {/* STEP 3: VERIFICATION (EDITOR) */}
