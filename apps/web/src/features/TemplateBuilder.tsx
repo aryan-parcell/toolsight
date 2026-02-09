@@ -4,6 +4,7 @@ import { Upload, Save, Scan, ArrowRight, Trash2, Target, Crosshair, Image as Ima
 import ToolDetection from './ToolDetection';
 import AnchorPointOverlay from './AnchorPointManager';
 import type { Detection, AnchorPoint } from '@shared/types';
+import { ImageUploadDropzone } from '@/components/ImageUploadDropzone';
 
 // Workflow Steps
 enum BuilderStep {
@@ -14,7 +15,7 @@ enum BuilderStep {
 }
 
 const TemplateBuilder: React.FC = () => {
-    const [currentStep, setCurrentStep] = useState<BuilderStep>(BuilderStep.UPLOAD);
+    const [step, setStep] = useState(BuilderStep.UPLOAD);
     const [image, setImage] = useState<string | null>(null);
 
     // Data State
@@ -26,96 +27,15 @@ const TemplateBuilder: React.FC = () => {
     const [selectedToolIndex, setSelectedToolIndex] = useState<number | null>(null);
     const [selectedAnchorId, setSelectedAnchorId] = useState<string | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [isDraggingFile, setIsDraggingFile] = useState(false);
-    const [showCamera, setShowCamera] = useState(false);
 
     // Assignment State
     const [selectedDrawer, setSelectedDrawer] = useState<string>('');
 
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const videoRef = useRef<HTMLVideoElement>(null);
-
-    // --- Step 1: Upload ---
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                setImage(ev.target?.result as string);
-                setTools([]);
-                setAnchors([]);
-                setCurrentStep(BuilderStep.ANALYSIS);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDraggingFile(true);
-    };
-
-    const handleDragLeave = () => {
-        setIsDraggingFile(false);
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDraggingFile(false);
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                setImage(ev.target?.result as string);
-                setTools([]);
-                setAnchors([]);
-                setCurrentStep(BuilderStep.ANALYSIS);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const startCamera = async () => {
-        setShowCamera(true);
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-            }
-        } catch (err) {
-            console.error("Error accessing camera:", err);
-            alert("Could not access camera");
-            setShowCamera(false);
-        }
-    };
-
-    const capturePhoto = () => {
-        if (videoRef.current) {
-            const video = videoRef.current;
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d')?.drawImage(video, 0, 0);
-            const dataUrl = canvas.toDataURL('image/jpeg');
-
-            // Stop stream
-            const stream = video.srcObject as MediaStream;
-            stream?.getTracks().forEach(track => track.stop());
-
-            setImage(dataUrl);
-            setShowCamera(false);
-            setTools([]);
-            setAnchors([]);
-            setCurrentStep(BuilderStep.ANALYSIS);
-        }
-    };
-
-    const closeCamera = () => {
-        if (videoRef.current) {
-            const stream = videoRef.current.srcObject as MediaStream;
-            stream?.getTracks().forEach(track => track.stop());
-        }
-        setShowCamera(false);
+    const handleImageSelected = (dataUrl: string) => {
+        setImage(dataUrl);
+        setTools([]);
+        setAnchors([]);
+        setStep(BuilderStep.ANALYSIS);
     };
 
     // --- Step 2: Analysis (Actual Gemini) ---
@@ -137,7 +57,7 @@ const TemplateBuilder: React.FC = () => {
             alert(`AI Analysis failed: ${error.message || "Unknown error"}`);
         } finally {
             setIsAnalyzing(false);
-            setCurrentStep(BuilderStep.VERIFICATION);
+            setStep(BuilderStep.VERIFICATION);
             setEditorMode('tools');
         }
     };
@@ -212,107 +132,45 @@ const TemplateBuilder: React.FC = () => {
 
     // --- Render Helpers ---
 
-    const renderStepIndicator = () => (
-        <div className="flex items-center justify-center mb-8 space-x-4">
-            {[
-                { id: BuilderStep.UPLOAD, icon: Upload, label: "Upload" },
-                { id: BuilderStep.ANALYSIS, icon: Scan, label: "Analyze" },
-                { id: BuilderStep.VERIFICATION, icon: Target, label: "Verify" },
-                { id: BuilderStep.ASSIGNMENT, icon: Save, label: "Assign" }
-            ].map((s, idx) => (
-                <div key={s.id} className="flex items-center">
-                    <div className={`flex flex-col items-center ${currentStep === s.id ? 'text-axiom-cyan' : currentStep > s.id ? 'text-green-500' : 'text-gray-500'}`}>
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${currentStep === s.id ? 'border-axiom-cyan bg-axiom-cyan/10' : currentStep > s.id ? 'border-green-500 bg-green-500/10' : 'border-gray-600 bg-gray-800'}`}>
-                            <s.icon size={18} />
-                        </div>
-                        <span className="text-xs mt-2 font-medium">{s.label}</span>
-                    </div>
-                    {idx < 3 && <div className={`w-12 h-0.5 mx-2 ${currentStep > s.id ? 'bg-green-500' : 'bg-gray-700'}`} />}
+    const Step: React.FC<{ n: number; label: string; filled: boolean; first: boolean }> = ({ n, label, filled, first }) => (
+        <>
+            {!first && <div className={`flex-1 h-0.5 mx-4 mb-6 transition-colors duration-300 ${filled ? 'bg-axiom-cyan' : 'bg-gray-200'}`} />}
+            <div className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-colors duration-300 ${filled ? 'bg-axiom-cyan text-white' : 'bg-gray-200 text-gray-500'}`}>
+                    {n}
                 </div>
-            ))}
+                <span className={`text-xs mt-2 font-medium ${filled ? 'text-axiom-cyan' : 'text-gray-400'}`}>{label}</span>
+            </div>
+        </>
+    )
+
+    const StepIndicator = () => (
+        <div className="flex items-center justify-between w-full max-w-2xl mx-auto mb-12 px-4">
+            <Step n={1} filled={step >= 0} label="Upload" first={true} />
+            <Step n={2} filled={step >= 1} label="Analysis" first={false} />
+            <Step n={3} filled={step >= 2} label="Verify" first={false} />
+            <Step n={4} filled={step >= 3} label="Assign" first={false} />
         </div>
     );
 
     return (
-        <div className="h-full flex flex-col animate-in fade-in duration-500 relative">
-            {/* Camera Overlay */}
-            {showCamera && (
-                <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center">
-                    <div className="relative w-full max-w-4xl aspect-video bg-gray-900">
-                        <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
-                        <button
-                            onClick={closeCamera}
-                            className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/80"
-                        >
-                            <X size={24} />
-                        </button>
-                        <div className="absolute bottom-8 left-0 right-0 flex justify-center">
-                            <button
-                                onClick={capturePhoto}
-                                className="w-20 h-20 rounded-full border-4 border-white bg-white/20 hover:bg-white/40 flex items-center justify-center"
-                            >
-                                <div className="w-16 h-16 rounded-full bg-white"></div>
-                            </button>
-                        </div>
-                    </div>
+        <div className="h-full flex flex-col animate-in fade-in duration-500 relative space-y-10">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-4xl font-black text-axiom-headingLight dark:text-white">Template Builder</h2>
+                    <p className="text-axiom-textLight dark:text-axiom-textDark">Create and configure tool templates.</p>
                 </div>
-            )}
-
-            <div className="mb-6">
-                <h2 className="text-3xl font-bold text-axiom-headingLight dark:text-white tracking-tight">Template Builder</h2>
-                <p className="text-axiom-textLight dark:text-gray-400">Create and configure tool templates.</p>
             </div>
 
-            {renderStepIndicator()}
+            <StepIndicator />
 
             <div className="flex-1 min-h-0 flex flex-col">
-                {/* STEP 1: UPLOAD */}
-                {currentStep === BuilderStep.UPLOAD && (
-                    <div className="flex-1 flex flex-col gap-6">
-                        <div
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                            className={`flex-1 flex flex-col items-center justify-center bg-axiom-surfaceLight dark:bg-axiom-surfaceDark border-2 border-dashed rounded-xl p-12 transition-colors ${isDraggingFile ? 'border-axiom-cyan bg-axiom-cyan/5' : 'border-axiom-borderLight dark:border-axiom-borderDark'}`}
-                        >
-                            <div className="w-24 h-24 bg-axiom-borderLight dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
-                                <ImageIcon size={48} className="text-gray-400" />
-                            </div>
-                            <h3 className="text-xl font-bold dark:text-white mb-2">Upload Reference Image</h3>
-                            <p className="text-gray-500 mb-8 max-w-md text-center">
-                                Drag & Drop an image here, or use one of the options below.
-                            </p>
-
-                            <div className="flex gap-4">
-                                <button
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="bg-axiom-cyan text-black px-8 py-4 rounded-full font-bold hover:bg-[#00ccff] transition-colors shadow-lg hover:shadow-axiom-cyan/20 flex items-center gap-2"
-                                >
-                                    <Upload size={20} />
-                                    Select File
-                                </button>
-                                <button
-                                    onClick={startCamera}
-                                    className="bg-gray-800 text-white border border-gray-700 px-8 py-4 rounded-full font-bold hover:bg-gray-700 transition-colors shadow-lg flex items-center gap-2"
-                                >
-                                    <Camera size={20} />
-                                    Use Camera
-                                </button>
-                            </div>
-
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleImageUpload}
-                                className="hidden"
-                                accept="image/*"
-                            />
-                        </div>
-                    </div>
+                {step === BuilderStep.UPLOAD && (
+                    <ImageUploadDropzone onImageSelected={handleImageSelected} />
                 )}
 
                 {/* STEP 2: ANALYSIS */}
-                {currentStep === BuilderStep.ANALYSIS && (
+                {step === BuilderStep.ANALYSIS && (
                     <div className="flex-1 flex flex-col items-center justify-center bg-axiom-surfaceLight dark:bg-axiom-surfaceDark border border-axiom-borderLight dark:border-axiom-borderDark rounded-xl relative overflow-hidden">
                         {image && <img src={image} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm" />}
                         <div className="relative z-10 flex flex-col items-center">
@@ -330,7 +188,7 @@ const TemplateBuilder: React.FC = () => {
                                     <h3 className="text-xl font-bold dark:text-white mb-6">Image Loaded</h3>
                                     <div className="flex gap-4">
                                         <button
-                                            onClick={() => setCurrentStep(BuilderStep.UPLOAD)}
+                                            onClick={() => setStep(BuilderStep.UPLOAD)}
                                             className="px-8 py-4 rounded-full font-bold text-gray-400 hover:text-white transition-colors"
                                         >
                                             Back
@@ -349,7 +207,7 @@ const TemplateBuilder: React.FC = () => {
                 )}
 
                 {/* STEP 3: VERIFICATION (EDITOR) */}
-                {currentStep === BuilderStep.VERIFICATION && (
+                {step === BuilderStep.VERIFICATION && (
                     <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-0">
                         {/* Main Editor Canvas */}
                         <div className="lg:col-span-3 flex flex-col gap-2">
@@ -428,7 +286,7 @@ const TemplateBuilder: React.FC = () => {
                                 </span>
                                 <div className="flex gap-2">
                                     <button
-                                        onClick={() => setCurrentStep(BuilderStep.UPLOAD)}
+                                        onClick={() => setStep(BuilderStep.UPLOAD)}
                                         className="px-4 py-2 rounded-full font-medium text-gray-400 hover:text-white transition-colors"
                                     >
                                         Restart
@@ -440,7 +298,7 @@ const TemplateBuilder: React.FC = () => {
                                                 setEditorMode('anchors');
                                                 return;
                                             }
-                                            setCurrentStep(BuilderStep.ASSIGNMENT);
+                                            setStep(BuilderStep.ASSIGNMENT);
                                         }}
                                         className="bg-green-600 text-white px-6 py-2 rounded-full font-medium hover:bg-green-500 transition-colors"
                                     >
@@ -533,7 +391,7 @@ const TemplateBuilder: React.FC = () => {
                 )}
 
                 {/* STEP 4: ASSIGNMENT */}
-                {currentStep === BuilderStep.ASSIGNMENT && (
+                {step === BuilderStep.ASSIGNMENT && (
                     <div className="flex-1 flex items-center justify-center">
                         <div className="bg-axiom-surfaceLight dark:bg-axiom-surfaceDark border border-axiom-borderLight dark:border-axiom-borderDark rounded-xl p-8 max-w-md w-full shadow-2xl">
                             <h3 className="text-2xl font-bold dark:text-white mb-6">Save Template</h3>
@@ -572,7 +430,7 @@ const TemplateBuilder: React.FC = () => {
 
                             <div className="flex gap-4">
                                 <button
-                                    onClick={() => setCurrentStep(BuilderStep.VERIFICATION)}
+                                    onClick={() => setStep(BuilderStep.VERIFICATION)}
                                     className="flex-1 py-3 rounded-lg border border-gray-600 text-gray-300 hover:bg-white/5 transition-colors font-medium"
                                 >
                                     Back
