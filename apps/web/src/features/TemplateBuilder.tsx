@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowRight, Trash2, Target, Crosshair } from 'lucide-react';
+import { ArrowRight, Trash2, Plus, Edit, Anchor } from 'lucide-react';
 import ToolDetection from './ToolDetection';
 import AnchorPointOverlay from './AnchorPointManager';
 import type { Detection, AnchorPoint } from '@shared/types';
@@ -67,8 +67,6 @@ const TemplateBuilder: React.FC = () => {
         }
     };
 
-    // --- Step 3: Verification (Editor Logic) ---
-
     const handleToolMoved = (index: number, newX: number, newY: number) => {
         const updated = [...tools];
         updated[index] = { ...updated[index], x: newX, y: newY };
@@ -81,26 +79,20 @@ const TemplateBuilder: React.FC = () => {
         setTools(updated);
     };
 
-    // const handleToolRotated = (index: number, angle: number) => {
-    //     const updated = [...tools];
-    //     updated[index] = { ...updated[index], angle };
-    //     setTools(updated);
-    // };
-
-    // const handleAddTool = (x: number = 50, y: number = 50) => {
-    //     const newTool: Detection = {
-    //         name: `New Tool ${tools.length + 1}`,
-    //         position: 'Unknown',
-    //         x: x - 5,
-    //         y: y - 5,
-    //         width: 10,
-    //         height: 10,
-    //         status: 'present',
-    //         shapeType: 'rectangle'
-    //     };
-    //     setTools([...tools, newTool]);
-    //     setSelectedToolIndex(tools.length);
-    // };
+    const handleAddTool = (x: number = 50, y: number = 50) => {
+        const newTool: Detection = {
+            name: `New Tool ${tools.length + 1}`,
+            toolId: '',
+            status: 'present',
+            confidence: 1,
+            x: x - 5,
+            y: y - 5,
+            width: 10,
+            height: 10,
+        };
+        setTools([...tools, newTool]);
+        setSelectedToolIndex(tools.length);
+    };
 
     const handleAddAnchor = (x: number, y: number) => {
         if (anchors.length >= 4) return;
@@ -183,40 +175,53 @@ const TemplateBuilder: React.FC = () => {
                     />
                 )}
 
-                {/* STEP 3: VERIFICATION (EDITOR) */}
                 {step === BuilderStep.VERIFICATION && (
                     <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-0">
-                        {/* Main Editor Canvas */}
+                        {/* LEFT COLUMN: Canvas & Toolbar */}
                         <div className="lg:col-span-3 flex flex-col gap-2">
-                            {/* Toolbar moved above canvas */}
-                            <div className="bg-gray-900 border border-gray-800 rounded-lg p-2 flex justify-between items-center">
+                            {/* Toolbar */}
+                            <div className=" 
+                                bg-axiom-surfaceLight dark:bg-axiom-surfaceDark 
+                                border border-axiom-borderLight dark:border-axiom-borderDark 
+                                rounded-lg p-2 flex justify-between items-center
+                            ">
                                 <div className="flex gap-2">
                                     <button
-                                        onClick={() => { setEditorMode('tools'); setSelectedAnchorId(null); }}
-                                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center ${editorMode === 'tools' ? 'bg-axiom-cyan text-black' : 'text-gray-300 hover:bg-white/10'}`}
+                                        onClick={() => {
+                                            setEditorMode('tools');
+                                            setSelectedAnchorId(null);
+                                        }}
+                                        className={`p-2 rounded-md text-sm font-medium flex items-center ${editorMode === 'tools' ? 'bg-axiom-cyan text-black' : ''}`}
                                     >
-                                        <Crosshair size={16} className="mr-2" />
+                                        <Edit size={16} className="mr-2" />
                                         Edit Tools
                                     </button>
                                     <button
-                                        onClick={() => { setEditorMode('anchors'); setSelectedToolIndex(null); }}
-                                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center ${editorMode === 'anchors' ? 'bg-axiom-cyan text-black' : 'text-gray-300 hover:bg-white/10'}`}
+                                        onClick={() => {
+                                            setEditorMode('anchors');
+                                            setSelectedToolIndex(null);
+                                        }}
+                                        className={`p-2 rounded-md text-sm font-medium flex items-center ${editorMode === 'anchors' ? 'bg-axiom-cyan text-black' : ''}`}
                                     >
-                                        <Target size={16} className="mr-2" />
+                                        <Anchor size={16} className="mr-2" />
                                         Edit Anchors
                                     </button>
                                 </div>
-                                {/* <div className="flex gap-2">
+                                <div className="flex gap-2">
                                     {editorMode === 'tools' && (
-                                        <button onClick={() => handleAddTool()} className="bg-gray-800 text-white px-3 py-2 rounded-lg border border-gray-700 text-sm hover:bg-gray-700 flex items-center">
-                                            <Plus size={16} className="mr-1" /> Add Tool
+                                        <button
+                                            onClick={() => handleAddTool()}
+                                            className="p-2 rounded-md text-sm font-medium bg-axiom-cyan text-black flex items-center"
+                                        >
+                                            <Plus size={16} className="mr-2" />
+                                            Add Tool
                                         </button>
                                     )}
-                                </div> */}
+                                </div>
                             </div>
 
                             {/* Canvas */}
-                            <div className="flex-1 bg-gray-900 border border-gray-800 rounded-xl relative overflow-hidden flex items-center justify-center">
+                            <div className="flex-1 rounded-lg relative overflow-hidden flex items-center justify-center">
                                 <div className="relative inline-block w-full h-full">
                                     {image && (
                                         <>
@@ -230,9 +235,9 @@ const TemplateBuilder: React.FC = () => {
                                             <ToolDetection
                                                 toolPositions={tools}
                                                 isEditMode={editorMode === 'tools'}
+                                                onCanvasClick={handleCanvasClick}
                                                 onToolMoved={handleToolMoved}
                                                 onToolResized={handleToolResized}
-                                                // onToolRotated={handleToolRotated}
                                                 selectedToolId={selectedToolIndex}
                                                 onSelectTool={setSelectedToolIndex}
                                                 // Pass dynamic classes to control stacking context. 
@@ -257,14 +262,18 @@ const TemplateBuilder: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="p-4 bg-gray-900 border border-gray-800 rounded-lg flex justify-between items-center">
+                            <div className=" 
+                                bg-axiom-surfaceLight dark:bg-axiom-surfaceDark 
+                                border border-axiom-borderLight dark:border-axiom-borderDark 
+                                rounded-lg p-2 flex justify-between items-center
+                            ">
                                 <span className="text-gray-500 text-sm">
                                     {editorMode === 'tools' ? 'Drag to move/resize tools. Click "Add Tool" to create new.' : 'Click 4 distinct points to serve as anchors.'}
                                 </span>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => setStep(BuilderStep.UPLOAD)}
-                                        className="px-4 py-2 rounded-full font-medium text-gray-400 hover:text-white transition-colors"
+                                        className="p-2 text-gray-500 text-sm"
                                     >
                                         Restart
                                     </button>
@@ -277,26 +286,31 @@ const TemplateBuilder: React.FC = () => {
                                             }
                                             setStep(BuilderStep.ASSIGNMENT);
                                         }}
-                                        className="bg-green-600 text-white px-6 py-2 rounded-full font-medium hover:bg-green-500 transition-colors"
+                                        className="bg-green-600 text-white px-6 py-2 rounded-full text-sm flex items-center justify-center gap-1"
                                     >
-                                        Finish Verification <ArrowRight size={16} className="inline ml-2" />
+                                        Finish Verification
+                                        <ArrowRight size={16} />
                                     </button>
                                 </div>
                             </div>
                         </div>
 
                         {/* Properties Panel */}
-                        <div className="bg-axiom-surfaceLight dark:bg-axiom-surfaceDark border border-axiom-borderLight dark:border-axiom-borderDark rounded-xl p-4 flex flex-col overflow-hidden">
+                        <div className="
+                            bg-axiom-surfaceLight dark:bg-axiom-surfaceDark 
+                            border border-axiom-borderLight dark:border-axiom-borderDark 
+                            rounded-lg p-2 flex flex-col overflow-hidden
+                        ">
                             <h3 className="font-bold dark:text-white mb-4 border-b border-gray-700 pb-2">
                                 {editorMode === 'tools' ? 'Tool Properties' : 'Anchor Properties'}
                             </h3>
 
-                            <div className="flex-1 overflow-y-auto custom-scrollbar">
+                            <div className="flex-1">
                                 {editorMode === 'tools' ? (
                                     selectedToolIndex !== null && tools[selectedToolIndex] ? (
                                         <div className="space-y-4">
                                             <div>
-                                                <label className="block text-xs text-gray-500 mb-1">Name</label>
+                                                <label className="block text-sm mb-2">Name</label>
                                                 <input
                                                     type="text"
                                                     value={tools[selectedToolIndex].name}
@@ -305,60 +319,63 @@ const TemplateBuilder: React.FC = () => {
                                                         upd[selectedToolIndex].name = e.target.value;
                                                         setTools(upd);
                                                     }}
-                                                    className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white text-sm"
+                                                    className='w-full rounded-lg p-2 text-sm border dark:bg-white/10 dark:border-axiom-borderDark dark:text-white'
                                                 />
                                             </div>
-                                            {/* <div>
-                                                <label className="block text-xs text-gray-500 mb-1">Position ID</label>
-                                                <input
-                                                    type="text"
-                                                    value={tools[selectedToolIndex].position}
-                                                    onChange={(e) => {
-                                                        const upd = [...tools];
-                                                        upd[selectedToolIndex].position = e.target.value;
-                                                        setTools(upd);
-                                                    }}
-                                                    className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white text-sm"
-                                                />
-                                            </div> */}
                                             <button
                                                 onClick={() => {
                                                     const upd = tools.filter((_, i) => i !== selectedToolIndex);
                                                     setTools(upd);
                                                     setSelectedToolIndex(null);
                                                 }}
-                                                className="w-full text-red-500 border border-red-900/50 bg-red-900/10 py-2 rounded hover:bg-red-900/30 text-sm"
+                                                className="w-full text-red-500 border border-red-500 bg-red-500/10 py-2 rounded hover:bg-red-500/20 text-sm"
                                             >
                                                 Delete Tool
                                             </button>
                                         </div>
                                     ) : (
-                                        <div className="text-center text-gray-500 py-10 text-sm">Select a tool to edit</div>
+                                        <div className="text-gray-500 text-sm text-center">Select a tool to edit</div>
                                     )
                                 ) : (
                                     <div className="space-y-2">
+                                        {anchors.length === 0 && <div className="text-gray-500 text-sm text-center">No anchors defined. </div>}
                                         {anchors.map((anchor, idx) => (
-                                            <div key={anchor.id} className={`p-3 rounded border cursor-pointer ${selectedAnchorId === anchor.id ? 'border-axiom-cyan bg-axiom-cyan/10' : 'border-gray-700 bg-gray-800'}`} onClick={() => setSelectedAnchorId(anchor.id)}>
-                                                <div className="flex justify-between items-center mb-1">
-                                                    <span className="font-bold text-sm dark:text-white">Anchor {idx + 1}</span>
-                                                    <button onClick={(e) => { e.stopPropagation(); setAnchors(anchors.filter(a => a.id !== anchor.id)); }} className="text-gray-500 hover:text-red-500"><Trash2 size={14} /></button>
+                                            <div
+                                                key={anchor.id}
+                                                onClick={() => setSelectedAnchorId(anchor.id)}
+                                                className={`
+                                                    w-full rounded-lg
+                                                    ${selectedAnchorId === anchor.id ? ' bg-axiom-cyan' : 'bg-axiom-surfaceLight dark:bg-axiom-surfaceDark'}
+                                                `}
+                                            >
+                                                <div className="flex justify-between items-center gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={anchor.label}
+                                                        onChange={(e) => {
+                                                            const upd = [...anchors];
+                                                            upd[idx].label = e.target.value;
+                                                            setAnchors(upd);
+                                                        }}
+                                                        className='w-full rounded-lg p-2 text-xs border dark:bg-white/10'
+                                                        placeholder="Enter label..."
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    />
+
+                                                    <button
+                                                        className="text-gray-500 hover:text-red-500"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setAnchors(anchors.filter(a => a.id !== anchor.id));
+                                                        }}>
+                                                        <Trash2 size={16} />
+                                                    </button>
                                                 </div>
-                                                <input
-                                                    value={anchor.label}
-                                                    onChange={(e) => {
-                                                        const upd = [...anchors];
-                                                        upd[idx].label = e.target.value;
-                                                        setAnchors(upd);
-                                                    }}
-                                                    className="w-full bg-transparent border-none text-xs text-gray-400 focus:text-white p-0 focus:ring-0"
-                                                    placeholder="Enter label..."
-                                                    onClick={(e) => e.stopPropagation()}
-                                                />
+
                                             </div>
                                         ))}
-                                        {anchors.length === 0 && <div className="text-gray-500 text-sm text-center">No anchors defined. Click image to add.</div>}
                                         {anchors.length < 4 && anchors.length > 0 && (
-                                            <div className="text-yellow-500 text-xs text-center mt-2">Need {4 - anchors.length} more anchors</div>
+                                            <div className="text-gray-500 text-xs text-center">Need {4 - anchors.length} more anchors</div>
                                         )}
                                     </div>
                                 )}
@@ -367,54 +384,53 @@ const TemplateBuilder: React.FC = () => {
                     </div>
                 )}
 
-                {/* STEP 4: ASSIGNMENT */}
                 {step === BuilderStep.ASSIGNMENT && (
                     <div className="flex-1 flex items-center justify-center">
-                        <div className="bg-axiom-surfaceLight dark:bg-axiom-surfaceDark border border-axiom-borderLight dark:border-axiom-borderDark rounded-xl p-8 max-w-md w-full shadow-2xl">
-                            <h3 className="text-2xl font-bold dark:text-white mb-6">Save Template</h3>
+                        <div className="bg-axiom-surfaceLight dark:bg-axiom-surfaceDark border border-axiom-borderLight dark:border-axiom-borderDark rounded-xl p-8 max-w-md w-full shadow-2xl space-y-6">
+                            <h3 className="text-xl font-bold dark:text-white">Save Template</h3>
 
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-400 mb-2">Assign to Drawer (Optional)</label>
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-400">Assign to Drawer (Optional)</label>
                                 <select
                                     value={selectedDrawer}
                                     onChange={(e) => setSelectedDrawer(e.target.value)}
-                                    className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white outline-none focus:border-axiom-cyan"
+                                    className="w-full rounded-lg p-3 bg-axiom-surfaceLight dark:bg-axiom-surfaceDark text-black dark:text-white border border-gray-500"
                                 >
                                     <option value="">No Assignment (Save to Library)</option>
                                     <option value="drawer-1">Main Cabinet - Drawer 1</option>
                                     <option value="drawer-2">Main Cabinet - Drawer 2</option>
                                     <option value="cart-1">Mobile Cart - Top Tray</option>
                                 </select>
-                                <p className="text-xs text-gray-500 mt-2">
+                                <p className="text-xs text-gray-500">
                                     Select a drawer to assign immediately, or leave blank to save to Template Inventory.
                                 </p>
                             </div>
 
-                            <div className="space-y-2 mb-8 bg-gray-900/50 p-4 rounded-lg">
+                            <div className="space-y-2 rounded-lg bg-axiom-surfaceLight dark:bg-axiom-surfaceDark ">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Total Tools</span>
-                                    <span className="text-white font-mono">{tools.length}</span>
+                                    <span className="text-black dark:text-white">{tools.length}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Anchors</span>
-                                    <span className="text-white font-mono">{anchors.length}</span>
+                                    <span className="text-black dark:text-white">{anchors.length}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Resolution</span>
-                                    <span className="text-white font-mono">High Res</span>
+                                    <span className="text-black dark:text-white">High Res</span>
                                 </div>
                             </div>
 
                             <div className="flex gap-4">
                                 <button
                                     onClick={() => setStep(BuilderStep.VERIFICATION)}
-                                    className="flex-1 py-3 rounded-lg border border-gray-600 text-gray-300 hover:bg-white/5 transition-colors font-medium"
+                                    className="flex-1 py-3 rounded-lg border border-gray-500 text-black dark:text-white"
                                 >
                                     Back
                                 </button>
                                 <button
                                     onClick={handleSaveTemplate}
-                                    className="flex-1 py-3 rounded-lg bg-axiom-cyan text-black font-bold hover:bg-[#00ccff] transition-colors"
+                                    className="flex-1 py-3 rounded-lg bg-axiom-cyan text-black font-bold"
                                 >
                                     {selectedDrawer ? 'Save & Assign' : 'Save to Library'}
                                 </button>
