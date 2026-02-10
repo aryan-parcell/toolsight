@@ -67,16 +67,12 @@ const TemplateBuilder: React.FC = () => {
         }
     };
 
-    const handleToolMoved = (index: number, newX: number, newY: number) => {
-        const updated = [...tools];
-        updated[index] = { ...updated[index], x: newX, y: newY };
-        setTools(updated);
-    };
-
-    const handleToolResized = (index: number, w: number, h: number) => {
-        const updated = [...tools];
-        updated[index] = { ...updated[index], width: w, height: h };
-        setTools(updated);
+    const handleToolUpdated = (index: number, updates: Partial<Detection>) => {
+        setTools(prevTools => {
+            const updated = [...prevTools];
+            updated[index] = { ...updated[index], ...updates };
+            return updated;
+        });
     };
 
     const handleAddTool = (x: number = 50, y: number = 50) => {
@@ -236,8 +232,7 @@ const TemplateBuilder: React.FC = () => {
                                                 toolPositions={tools}
                                                 isEditMode={editorMode === 'tools'}
                                                 onCanvasClick={handleCanvasClick}
-                                                onToolMoved={handleToolMoved}
-                                                onToolResized={handleToolResized}
+                                                onToolUpdated={handleToolUpdated}
                                                 selectedToolId={selectedToolIndex}
                                                 onSelectTool={setSelectedToolIndex}
                                                 // Pass dynamic classes to control stacking context. 
