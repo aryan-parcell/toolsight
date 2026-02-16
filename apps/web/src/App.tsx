@@ -11,6 +11,7 @@ import { auth, db } from "./firebase";
 import type { User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import type { User as AppUser } from "@shared/types/user";
+import TemplateInventory from "./features/TemplateInventory";
 
 export enum AppView {
     TOOLBOX_OVERVIEW = 'TOOLBOX_OVERVIEW',
@@ -73,7 +74,7 @@ export default function App() {
             case AppView.CALIBRATION:
                 return <CalibrationManagement />;
             case AppView.INVENTORY:
-                return <PlaceholderView />;
+                return <TemplateInventory orgId={orgId!} />;
             case AppView.REPORTS:
                 return <Reports />;
             case AppView.SETTINGS:
