@@ -52,6 +52,16 @@ service cloud.firestore {
       allow update: if isSignedIn() && request.auth.uid == userId && userCoreUnchanged();
     }
 
+    match /templates/{templateId} {
+      // Anyone in the organization can read templates.
+      allow read: if belongsToOrg(resource.data);
+
+      // Only 'admin' users can create, update, or delete templates.
+      allow create: if hasRole('admin') && belongsToOrg(request.resource.data);
+      allow update: if hasRole('admin') && belongsToOrg(request.resource.data) && belongsToOrg(resource.data);
+      allow delete: if hasRole('admin') && belongsToOrg(resource.data);
+    }
+
     match /toolboxes/{toolboxId} {
       // Anyone in the organization can read toolboxes.
       allow read: if belongsToOrg(resource.data);

@@ -1,12 +1,19 @@
 export interface Drawer {
   drawerId: string;
   drawerName: string;
+  // Template Layout Info
+  templateId?: string;
 }
 
 export interface Tool {
   toolId: string;
   drawerId: string;
   toolName: string;
+  // Template Layout Info
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
 }
 
 export interface AuditProfile {

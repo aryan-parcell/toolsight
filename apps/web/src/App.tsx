@@ -69,7 +69,7 @@ export default function App() {
             case AppView.TOOLBOX_WIZARD:
                 return <ToolboxWizard onNavigate={setCurrentView} orgId={orgId!} />;
             case AppView.TEMPLATE_BUILDER:
-                return <TemplateBuilder />;
+                return <TemplateBuilder orgId={orgId!} />;
             case AppView.CALIBRATION:
                 return <CalibrationManagement />;
             case AppView.INVENTORY:

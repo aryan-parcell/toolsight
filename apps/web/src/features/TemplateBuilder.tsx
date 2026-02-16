@@ -7,6 +7,9 @@ import type { Detection, AnchorPoint } from '@shared/types';
 import { ImageUploadDropzone } from '@/components/ImageUploadDropzone';
 import { ImageAnalysisStep } from '@/components/ImageAnalysisStep';
 import { httpsCallable, getFunctions } from "firebase/functions";
+import { getDownloadURL, ref, uploadString } from 'firebase/storage';
+import { db, storage } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 // Workflow Steps
 enum BuilderStep {
@@ -16,7 +19,11 @@ enum BuilderStep {
     ASSIGNMENT = 3
 }
 
-const TemplateBuilder: React.FC = () => {
+interface TemplateBuilderProps {
+    orgId: string;
+}
+
+const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
     const [step, setStep] = useState(BuilderStep.UPLOAD);
     const [image, setImage] = useState<string | null>(null);
 
@@ -113,17 +120,48 @@ const TemplateBuilder: React.FC = () => {
     };
 
     const handleSaveTemplate = async () => {
-        if (!templateName && !selectedDrawer) return;
+        if (!templateName || !image || tools.length === 0) return;
 
         setIsSaving(true);
 
-        console.log("Saving Template:", {
-            image,
-            tools,
-            anchors
-        });
+        try {
+            // Upload Clean Template Image to Firebase Storage
+            const templateId = `${templateName}-${Date.now()}`;
 
-        setIsSaving(false);
+            const storagePath = `organizations/${orgId}/templates/${templateId}.jpg`;
+            const storageRef = ref(storage, storagePath);
+            await uploadString(storageRef, image, 'data_url');
+            const downloadUrl = await getDownloadURL(storageRef);
+
+            // Save Metadata to Firestore
+            const templateData = {
+                organizationId: orgId,
+                name: templateName,
+                storagePath: storagePath,
+                imageUrl: downloadUrl,
+                tools: tools.map(t => ({
+                    toolId: t.toolId,
+                    toolName: t.name,
+                    x: parseFloat(t.x.toFixed(1)),
+                    y: parseFloat(t.y.toFixed(1)),
+                    width: parseFloat(t.width.toFixed(1)),
+                    height: parseFloat(t.height.toFixed(1))
+                })),
+            };
+
+            await setDoc(doc(db, "templates", templateId), templateData);
+
+            // Reset
+            setImage(null);
+            setTools([]);
+            setAnchors([]);
+            setTemplateName("");
+            setStep(BuilderStep.UPLOAD);
+        } catch (error) {
+            console.error("Save failed:", error);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     // --- Render Helpers ---
@@ -458,9 +496,6 @@ const TemplateBuilder: React.FC = () => {
                                     disabled={isSaving}
                                     className="flex-1 py-3 rounded-lg bg-axiom-cyan text-black font-bold"
                                 >
-                                    {isSaving ? (
-                                        <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2"></span>
-                                    ) : null}
                                     {isSaving ? 'Saving...' : 'Save Template'}
                                 </button>
                             </div>
