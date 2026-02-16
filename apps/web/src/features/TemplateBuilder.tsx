@@ -31,7 +31,9 @@ const TemplateBuilder: React.FC = () => {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     // Assignment State
-    const [selectedDrawer, setSelectedDrawer] = useState<string>('');
+    const [selectedDrawer, setSelectedDrawer] = useState('');
+    const [templateName, setTemplateName] = useState("");
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleImageSelected = (dataUrl: string) => {
         setImage(dataUrl);
@@ -110,17 +112,18 @@ const TemplateBuilder: React.FC = () => {
         }
     };
 
-    // --- Step 4: Assignment ---
-    const handleSaveTemplate = () => {
-        const action = selectedDrawer ? `assigned to ${selectedDrawer}` : 'saved to library';
+    const handleSaveTemplate = async () => {
+        if (!templateName && !selectedDrawer) return;
+
+        setIsSaving(true);
+
         console.log("Saving Template:", {
-            drawer: selectedDrawer || 'Unassigned',
             image,
             tools,
             anchors
         });
-        alert(`Template Successfully ${selectedDrawer ? 'Saved & Assigned' : 'Saved to Library'}!`);
-        // Reset or Navigate away
+
+        setIsSaving(false);
     };
 
     // --- Render Helpers ---
@@ -329,7 +332,32 @@ const TemplateBuilder: React.FC = () => {
                                             </button>
                                         </div>
                                     ) : (
-                                        <div className="text-gray-500 text-sm text-center">Select a tool to edit</div>
+                                        <div className="space-y-4">
+                                            <p className="text-xs text-gray-500 font-medium mb-2 uppercase tracking-wider">
+                                                Detected Tools ({tools.length})
+                                            </p>
+                                            {tools.map((tool, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    onClick={() => setSelectedToolIndex(idx)}
+                                                    className="group flex items-center justify-between p-3 rounded-lg bg-white dark:bg-axiom-dark border border-gray-500"
+                                                >
+                                                    <div className="flex items-center gap-3 overflow-hidden">
+                                                        <span className="flex-shrink-0 w-6 h-6 rounded bg-gray-500 text-white text-xs flex items-center justify-center font-mono">
+                                                            {idx + 1}
+                                                        </span>
+                                                        <span className="text-sm">
+                                                            {tool.name}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {tools.length === 0 && (
+                                                <div className="text-center py-10 text-gray-500 text-sm">
+                                                    No tools yet.
+                                                </div>
+                                            )}
+                                        </div>
                                     )
                                 ) : (
                                     <div className="space-y-2">
@@ -385,23 +413,28 @@ const TemplateBuilder: React.FC = () => {
                             <h3 className="text-xl font-bold dark:text-white">Save Template</h3>
 
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-400">Assign to Drawer (Optional)</label>
+                                <label className="block text-sm font-medium text-gray-500">Template Name</label>
+                                <input
+                                    type="text"
+                                    value={templateName}
+                                    onChange={(e) => setTemplateName(e.target.value)}
+                                    placeholder="e.g. B737 Engine Maintenance Kit"
+                                    className="w-full border border-gray-500 rounded-lg p-3 focus:border-axiom-cyan "
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-500">Assign to Drawer (Optional)</label>
                                 <select
                                     value={selectedDrawer}
                                     onChange={(e) => setSelectedDrawer(e.target.value)}
                                     className="w-full rounded-lg p-3 bg-axiom-surfaceLight dark:bg-axiom-surfaceDark text-black dark:text-white border border-gray-500"
                                 >
                                     <option value="">No Assignment (Save to Library)</option>
-                                    <option value="drawer-1">Main Cabinet - Drawer 1</option>
-                                    <option value="drawer-2">Main Cabinet - Drawer 2</option>
-                                    <option value="cart-1">Mobile Cart - Top Tray</option>
                                 </select>
-                                <p className="text-xs text-gray-500">
-                                    Select a drawer to assign immediately, or leave blank to save to Template Inventory.
-                                </p>
                             </div>
 
-                            <div className="space-y-2 rounded-lg bg-axiom-surfaceLight dark:bg-axiom-surfaceDark ">
+                            <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Total Tools</span>
                                     <span className="text-black dark:text-white">{tools.length}</span>
@@ -410,24 +443,25 @@ const TemplateBuilder: React.FC = () => {
                                     <span className="text-gray-500">Anchors</span>
                                     <span className="text-black dark:text-white">{anchors.length}</span>
                                 </div>
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-500">Resolution</span>
-                                    <span className="text-black dark:text-white">High Res</span>
-                                </div>
                             </div>
 
                             <div className="flex gap-4">
                                 <button
                                     onClick={() => setStep(BuilderStep.VERIFICATION)}
+                                    disabled={isSaving}
                                     className="flex-1 py-3 rounded-lg border border-gray-500 text-black dark:text-white"
                                 >
                                     Back
                                 </button>
                                 <button
                                     onClick={handleSaveTemplate}
+                                    disabled={isSaving}
                                     className="flex-1 py-3 rounded-lg bg-axiom-cyan text-black font-bold"
                                 >
-                                    {selectedDrawer ? 'Save & Assign' : 'Save to Library'}
+                                    {isSaving ? (
+                                        <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2"></span>
+                                    ) : null}
+                                    {isSaving ? 'Saving...' : 'Save Template'}
                                 </button>
                             </div>
                         </div>
