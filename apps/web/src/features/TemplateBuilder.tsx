@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ArrowRight, Trash2, Plus, Edit, Anchor } from 'lucide-react';
 import ToolDetection from './ToolDetection';
 import AnchorPointOverlay from './AnchorPointManager';
-import type { Detection, AnchorPoint } from '@shared/types';
+import type { Detection, AnchorPoint, Template } from '@shared/types';
 import { ImageUploadDropzone } from '@/components/ImageUploadDropzone';
 import { ImageAnalysisStep } from '@/components/ImageAnalysisStep';
 import { httpsCallable, getFunctions } from "firebase/functions";
@@ -134,13 +134,12 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
             const downloadUrl = await getDownloadURL(storageRef);
 
             // Save Metadata to Firestore
-            const templateData = {
-                organizationId: orgId,
+            const templateData: Template = {
                 name: templateName,
+                organizationId: orgId,
                 storagePath: storagePath,
                 imageUrl: downloadUrl,
                 tools: tools.map(t => ({
-                    toolId: t.toolId,
                     toolName: t.name,
                     x: parseFloat(t.x.toFixed(1)),
                     y: parseFloat(t.y.toFixed(1)),

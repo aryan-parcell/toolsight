@@ -24,12 +24,21 @@ export interface VisualDetection {
     boundingBox: BoundingBox;
 }
 
+export interface TemplateTool {
+    toolName: string;
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+}
+
 export interface Template {
-    id: string;
+    id?: string;
     name: string;
+    organizationId: string;
+    storagePath: string;
     imageUrl: string;
-    tools: BoundingBox[];
-    createdAt: string;
+    tools: TemplateTool[];
 }
 
 // For Template Builder
