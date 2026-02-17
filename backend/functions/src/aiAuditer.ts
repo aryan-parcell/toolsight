@@ -1,7 +1,9 @@
 import {onObjectFinalized} from "firebase-functions/v2/storage";
 import {getStorage} from "firebase-admin/storage";
 import * as path from "path";
-import {AuditToolStatus, ToolBox, VisualDetection} from "@shared/types";
+import {
+  AuditToolStatus, Template, ToolBox, VisualDetection,
+} from "@shared/types";
 import {db} from "./firebase";
 import {analyzeToolImage} from "./gemini";
 import {findMatchingDetection} from "./utils";
@@ -54,11 +56,28 @@ export const aiAuditer = onObjectFinalized(async (event) => {
     const [fileBuffer] = await file.download();
     const base64Image = fileBuffer.toString("base64");
 
+    // 7.5 Download template image
+    const drawer = toolboxData.drawers.find((d) => d.drawerId === drawerId);
+    const templateId = drawer?.templateId;
+    let base64TemplateImage: string | undefined;
+
+    if (templateId) {
+      const snap = await db.collection("templates").doc(templateId).get();
+      if (snap.exists) {
+        const template = snap.data() as Template;
+
+        const templateFile = getStorage().bucket().file(template.storagePath);
+        const [templateBuf] = await templateFile.download();
+        base64TemplateImage = templateBuf.toString("base64");
+      }
+    }
+
     // 8. Run AI Analysis
     const aiRawDetections = await analyzeToolImage(
       base64Image,
       contentType,
-      drawerTools
+      drawerTools,
+      base64TemplateImage
     );
 
     // 9. Merge & Map (The "Truth" Generation)

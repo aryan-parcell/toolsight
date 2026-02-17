@@ -1,3 +1,4 @@
+import {Part} from "@google/genai";
 import type {Detection, Tool} from "@shared/types";
 
 /**
@@ -97,24 +98,50 @@ export async function analyzeToolImage(
   // Using flash model for speed/cost efficiency
   const modelId = "gemini-2.5-flash-lite";
 
+  // --- 1. Build System Prompt ---
+
   let systemPrompt = "";
   if (expectedTools.length > 0) {
     // Create a RAG context string from the database definitions
-    const toolsContext = expectedTools.map((t) =>
-      `- Tool Name: "${t.toolName}", ID: "${t.toolId}"`
-    ).join("\n");
+    const toolsContext = expectedTools.map((t) => {
+      const toolDesc = `Tool Name: "${t.toolName}", ID: "${t.toolId}";`;
+      const toolLoc = `Reference Location (Image 1): (
+          x: ${t.x}%, y: ${t.y}%, w: ${t.width}%, h: ${t.height}%
+      )`;
+
+      return `- ${toolDesc} ${templateImage ? toolLoc : ""}`;
+    }).join("\n");
 
     systemPrompt = `
     SYSTEM: You are ToolSight AI, a specialized aircraft maintenance tool 
     detector.
 
+    ${templateImage ?
+    `
+          INPUTS: You are provided with TWO images. 
+          Image 1 is the REFERENCE TEMPLATE (clean state with all tools). 
+          Image 2 is the TARGET AUDIT IMAGE (current state to analyze).
+          ` :
+    "INPUT: You are provided with a TARGET AUDIT IMAGE."
+}
+
     CONTEXT: You are looking at a specific drawer that SHOULD contain the 
     following tools:
     ${toolsContext}
 
+    ${templateImage ?
+    `
+          INSTRUCTIONS FOR REFERENCE: Look at Image 1 (Reference). 
+          Use the provided 'Reference Location' coordinates to find each tool 
+          and learn its specific visual appearance (shape, color, etc). 
+          Then, search for that SAME object in Image 2 (Target).
+          ` :
+    ""
+}
+
     INSTRUCTIONS:
-    1. Analyze the image of a tool drawer and identify tools.
-    2. Match detected tools to the "Tool Name" values provided in the CONTEXT.
+    1. Analyze the TARGET AUDIT IMAGE of a tool drawer and identify tools.
+    2. Match detected tools to the Tool values provided in the CONTEXT.
     3. Include exact "Tool ID" from the CONTEXT in output if a match is found.
     4. Identify ONLY the tools and empty slots that are ACTUALLY VISIBLE
     5. Status Determination:
@@ -175,8 +202,26 @@ export async function analyzeToolImage(
   `;
   }
 
-  // Remove data URL prefix if present to get raw base64
-  const base64Data = image.includes(",") ? image.split(",")[1] : image;
+  // --- 2. Construct Payload ---
+
+  const drawerBase64 = image.includes(",") ? image.split(",")[1] : image;
+  const templateBase64 = templateImage && templateImage.includes(",") ?
+    templateImage.split(",")[1] :
+    templateImage;
+
+  const contentParts: Part[] = [];
+
+  contentParts.push({text: systemPrompt});
+
+  if (templateImage) {
+    contentParts.push(
+      {inlineData: {mimeType: "image/jpeg", data: templateBase64}}
+    );
+  }
+
+  contentParts.push({inlineData: {mimeType: mimeType, data: drawerBase64}});
+
+  // --- 3. Execute Request ---
 
   // Retry logic with exponential backoff
   // Increased retries to 6 and initial delay to 4000ms to handle
@@ -194,10 +239,7 @@ export async function analyzeToolImage(
         model: modelId,
         contents: {
           role: "user",
-          parts: [
-            {text: systemPrompt},
-            {inlineData: {mimeType: mimeType, data: base64Data}},
-          ],
+          parts: contentParts,
         },
         config: {
           temperature: 0.2,
