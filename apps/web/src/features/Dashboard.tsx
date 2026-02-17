@@ -144,6 +144,20 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
         }
     };
 
+    const handleUnlinkDrawerTemplate = async (drawerId: string) => {
+        // Update local state (assuming 'drawers' is your state variable)
+        const updatedDrawers = drawers.map(d => {
+            if (d.drawerId === drawerId) {
+                const { templateId, ...rest } = d;
+                return rest;
+            }
+            return d;
+        });
+
+        console.log(`Unlinking template from toolbox: ${toolbox.name}`);
+        handleUpdateToolbox({ drawers: updatedDrawers })
+    };
+
     const handleDeleteToolbox = async () => {
         try {
             await deleteDoc(toolboxRef);
@@ -280,9 +294,17 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
                                 <span className="text-xs text-gray-400">{drawerTools.length} items</span>
                             </div>
 
-                            <div className="space-y-2 pl-2">
+                            <div className="space-y-2">
                                 {drawer.templateId ? (
-                                    <TemplateDisplay templateId={drawer.templateId} />
+                                    <div className="space-y-2">
+                                        <TemplateDisplay templateId={drawer.templateId} />
+                                        <button
+                                            onClick={() => handleUnlinkDrawerTemplate(drawer.drawerId)}
+                                            className="w-full p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm"
+                                        >
+                                            Unlink Template
+                                        </button>
+                                    </div>
                                 ) :
                                     drawerTools.length > 0 ? (
                                         drawerTools.map((tool) => (
