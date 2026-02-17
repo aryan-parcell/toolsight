@@ -8,6 +8,7 @@ import { ChevronDown, Plus, User } from 'lucide-react';
 import React, { forwardRef, useEffect, useState } from 'react';
 import { AppView } from '../App';
 import { db } from '../firebase';
+import TemplateDisplay from '@/components/TemplateDisplay';
 
 const foamColors = [
     { name: 'Black', value: 'Black', hex: '#18181B' },
@@ -280,20 +281,24 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
                             </div>
 
                             <div className="space-y-2 pl-2">
-                                {drawerTools.length > 0 ? (
-                                    drawerTools.map((tool) => (
-                                        <div key={tool.toolId} className="flex items-center gap-3">
-                                            <div className="w-1 h-1 rounded-full bg-gray-500"></div>
-                                            <AutosaveInput
-                                                value={tool.toolName}
-                                                onSave={(val) => handleUpdateToolName(tool.toolId, val)}
-                                                placeholder="Tool Name"
-                                            />
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className="text-sm text-gray-400 italic pl-4">No tools configured</p>
-                                )}
+                                {drawer.templateId ? (
+                                    <TemplateDisplay templateId={drawer.templateId} />
+                                ) :
+                                    drawerTools.length > 0 ? (
+                                        drawerTools.map((tool) => (
+                                            <div key={tool.toolId} className="flex items-center gap-3">
+                                                <div className="w-1 h-1 rounded-full bg-gray-500"></div>
+                                                <AutosaveInput
+                                                    value={tool.toolName}
+                                                    onSave={(val) => handleUpdateToolName(tool.toolId, val)}
+                                                    placeholder="Tool Name"
+                                                />
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-sm text-gray-400 italic pl-4">No tools configured</p>
+                                    )
+                                }
                             </div>
                         </div>
                     );
