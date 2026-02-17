@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, query, where, onSnapshot, doc, updateDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, updateDoc, getDoc, deleteDoc, getDocs } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -102,6 +102,35 @@ export default function TemplateInventory({ orgId }: TemplateInventoryProps) {
         if (!confirm("Are you sure you want to delete this template? This cannot be undone.")) return;
 
         try {
+            // Find all toolboxes that might contain this template
+            const q = query(collection(db, 'toolboxes'), where('organizationId', '==', orgId));
+            const snapshot = await getDocs(q);
+
+            const updatePromises = snapshot.docs.map(async (docSnap) => {
+                const toolbox = docSnap.data() as ToolBox;
+                let needsUpdate = false;
+
+                // Check if any drawer uses this template
+                const updatedDrawers = toolbox.drawers.map(d => {
+                    if (d.templateId === templateId) {
+                        needsUpdate = true;
+                        const { templateId, ...rest } = d;
+                        return rest;
+                    }
+                    return d;
+                });
+
+                if (needsUpdate) {
+                    console.log(`Unlinking template from toolbox: ${toolbox.name}`);
+                    return updateDoc(doc(db, 'toolboxes', docSnap.id), {
+                        drawers: updatedDrawers
+                    });
+                }
+            });
+
+            await Promise.all(updatePromises);
+
+            // Delete template image and document
             const templateRef = doc(db, 'templates', templateId);
             const templateSnap = await getDoc(templateRef);
 
