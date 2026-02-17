@@ -4,33 +4,44 @@ import { Switch } from "@/components/ui/switch";
 
 export function Settings() {
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Settings2 className="h-5 w-5" /> Preferences</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <div className="text-sm font-medium">High-contrast mode</div>
-                        <div className="text-xs text-zinc-500">Improves visibility in bright or dim conditions</div>
-                    </div>
-                    <Switch />
+        <div className="space-y-6 animate-in fade-in duration-500">
+            {/* Header */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h2 className="text-4xl font-black text-axiom-headingLight dark:text-white">Settings</h2>
+                    <p className="text-axiom-textLight dark:text-axiom-textDark">Edit app settings.</p>
                 </div>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <div className="text-sm font-medium">Glove-friendly controls</div>
-                        <div className="text-xs text-zinc-500">Increases hit targets to 48–56px</div>
+            </div>
+
+            {/* Content */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Settings2 className="h-5 w-5" /> Preferences</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <div className="text-sm font-medium">High-contrast mode</div>
+                            <div className="text-xs text-zinc-500">Improves visibility in bright or dim conditions</div>
+                        </div>
+                        <Switch />
                     </div>
-                    <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <div className="text-sm font-medium">Edge processing</div>
-                        <div className="text-xs text-zinc-500">Analyze photos locally when possible</div>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <div className="text-sm font-medium">Glove-friendly controls</div>
+                            <div className="text-xs text-zinc-500">Increases hit targets to 48–56px</div>
+                        </div>
+                        <Switch defaultChecked />
                     </div>
-                    <Switch />
-                </div>
-            </CardContent>
-        </Card>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <div className="text-sm font-medium">Edge processing</div>
+                            <div className="text-xs text-zinc-500">Analyze photos locally when possible</div>
+                        </div>
+                        <Switch />
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
     );
 }
