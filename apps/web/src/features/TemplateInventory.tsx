@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { LayoutGrid, CheckCircle2, Loader2 } from 'lucide-react';
 import type { ToolBox, Tool, Template } from '@shared/types';
 import { deleteObject, ref } from 'firebase/storage';
+import TemplateDisplay from '@/components/TemplateDisplay';
 
 interface TemplateInventoryProps {
     orgId: string;
@@ -221,7 +222,7 @@ export default function TemplateInventory({ orgId }: TemplateInventoryProps) {
                     {selectedTemplate && (
                         <div className="space-y-4">
                             {/* Template Preview */}
-                            <img src={selectedTemplate.imageUrl} className="object-cover rounded" alt="Preview" />
+                            <TemplateDisplay templateId={selectedTemplate.id!} />
 
                             {/* Options */}
                             <div className="space-y-2">
