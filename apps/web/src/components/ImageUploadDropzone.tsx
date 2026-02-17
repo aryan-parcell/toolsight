@@ -5,7 +5,7 @@ interface ImageUploadDropzoneProps {
     onImageSelected: (dataUrl: string) => void;
 }
 
-export function ImageUploadDropzone({
+export default function ImageUploadDropzone({
     onImageSelected,
 }: ImageUploadDropzoneProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);

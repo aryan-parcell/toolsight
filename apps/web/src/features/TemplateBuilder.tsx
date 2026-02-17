@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
 import { ArrowRight, Trash2, Plus, Edit, Anchor } from 'lucide-react';
-import ToolDetection from './ToolDetection';
-import AnchorPointOverlay from './AnchorPointManager';
 import type { Detection, AnchorPoint, Template } from '@shared/types';
-import { ImageUploadDropzone } from '@/components/ImageUploadDropzone';
-import { ImageAnalysisStep } from '@/components/ImageAnalysisStep';
+import ImageUploadDropzone from '@/components/ImageUploadDropzone';
+import ImageAnalysisStep from '@/components/ImageAnalysisStep';
+import ToolDetection from '@/components/ToolDetection';
+import AnchorPointOverlay from '@/components/AnchorPointManager';
 import { httpsCallable, getFunctions } from "firebase/functions";
 import { getDownloadURL, ref, uploadString } from 'firebase/storage';
 import { db, storage } from '@/firebase';

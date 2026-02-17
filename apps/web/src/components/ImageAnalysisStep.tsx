@@ -7,7 +7,7 @@ interface ImageAnalysisStepProps {
     onRunAnalysis: () => void;
 }
 
-export function ImageAnalysisStep({
+export default function ImageAnalysisStep({
     image,
     isAnalyzing,
     onBack,
@@ -68,5 +68,3 @@ export function ImageAnalysisStep({
         </div>
     );
 };
-
-export default ImageAnalysisStep;
