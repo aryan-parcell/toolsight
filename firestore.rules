@@ -38,6 +38,13 @@ service cloud.firestore {
 
     // --- COLLECTION RULES ---
 
+    match /demo_bookings/{docId} {
+      // Allow anyone to submit a lead
+      allow create: if true; 
+      // Only admins can read/delete them
+      allow read, update, delete: if hasRole('admin'); 
+    }
+
     match /organizations/{orgId} {
       // Anyone in the organization can read organization data.
       allow read: if isSignedIn() && getUserData().organizationId == orgId;

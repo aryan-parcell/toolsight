@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../firebase';
-import { Mail, Lock, AlertCircle, Loader, Building } from 'lucide-react';
+import { Mail, Lock, AlertCircle, Loader, Building, ArrowLeft } from 'lucide-react';
 import { collection, doc, setDoc } from 'firebase/firestore';
 
 const ParcellLogo = () => (
@@ -18,9 +18,10 @@ const ParcellLogo = () => (
 
 interface LoginProps {
     onLoginSuccess: () => void;
+    onBack: () => void;
 }
 
-export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
+export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onBack }) => {
     const [isSignUp, setIsSignUp] = useState(false);
     const [orgName, setOrgName] = useState('');
     const [email, setEmail] = useState('');
@@ -109,6 +110,13 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                         Manage your toolboxes with precision
                     </p>
                 </div>
+
+                <button
+                    onClick={onBack}
+                    className="text-sm text-axiom-textLight/70 dark:text-axiom-textDark/70 mb-4 hover:underline flex items-center gap-1"
+                >
+                    <ArrowLeft className="w-4 h-4 mr-1 inline" /> Back to Landing
+                </button>
 
                 {/* Login Card */}
                 <div className="bg-axiom-surfaceLight dark:bg-axiom-surfaceDark rounded-lg shadow-lg p-8 border border-axiom-borderLight dark:border-axiom-borderDark">

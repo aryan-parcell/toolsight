@@ -7,6 +7,7 @@ import { Reports } from "./features/Reports";
 import { Settings } from "./features/Settings";
 import { CalibrationManagement } from "./features/CalibrationManagement";
 import { Login } from "./features/Login";
+import LandingPage from "./features/LandingPage";
 import { auth, db } from "./firebase";
 import type { User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
@@ -37,6 +38,7 @@ export default function App() {
     const [user, setUser] = useState<User | null>(null);
     const [orgId, setOrgId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [showAuth, setShowAuth] = useState(false);
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
@@ -91,11 +93,16 @@ export default function App() {
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-axiom-cyan"></div>
                 </div>
             ) : user ? (
+                // Logged In Flow
                 <Layout currentView={currentView} onNavigate={setCurrentView}>
                     {renderContent()}
                 </Layout>
+            ) : showAuth ? (
+                // Auth Flow (Login / Sign Up)
+                <Login onLoginSuccess={() => setUser(auth.currentUser)} onBack={() => setShowAuth(false)} />
             ) : (
-                <Login onLoginSuccess={() => setUser(auth.currentUser)} />
+                // Default Public Flow
+                <LandingPage onLogin={() => setShowAuth(true)} />
             )}
         </>
     );
