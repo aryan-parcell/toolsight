@@ -72,60 +72,68 @@ class _LoginState extends State<Login> {
     return AppScaffold(
       allowBack: false,
       allowLogout: false,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        spacing: 20,
-        children: [
-          const Center(
-            child: Text(
-              "ToolSight",
-              style: TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Column(
-            spacing: 10,
-            children: [
-              if (_isRegistering)
-                TextInputSection(
-                  label: "Organization ID",
-                  hintText: "Enter your organization ID",
-                  controller: _orgIdController,
-                  obscureText: false,
-                ),
-              TextInputSection(
-                label: "Email",
-                hintText: "Enter your email",
-                controller: _emailController,
-                obscureText: false,
-              ),
-              TextInputSection(
-                label: "Password",
-                hintText: "Enter your password",
-                controller: _passwordController,
-                obscureText: true,
-              ),
-            ],
-          ),
-
-          Column(
-            children: [
-              Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 20,
                 children: [
-                  WideButton(
-                    text: _isRegistering ? "Register Now" : "Log In",
-                    onPressed: _isRegistering ? _register : _login,
+                  const Center(
+                    child: Text(
+                      "ToolSight",
+                      style: TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Column(
+                    spacing: 10,
+                    children: [
+                      if (_isRegistering)
+                        TextInputSection(
+                          label: "Organization ID",
+                          hintText: "Enter your organization ID",
+                          controller: _orgIdController,
+                          obscureText: false,
+                        ),
+                      TextInputSection(
+                        label: "Email",
+                        hintText: "Enter your email",
+                        controller: _emailController,
+                        obscureText: false,
+                      ),
+                      TextInputSection(
+                        label: "Password",
+                        hintText: "Enter your password",
+                        controller: _passwordController,
+                        obscureText: true,
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          WideButton(
+                            text: _isRegistering ? "Register Now" : "Log In",
+                            onPressed: _isRegistering ? _register : _login,
+                          ),
+                        ],
+                      ),
+                      TextButton(
+                        onPressed: () => setState(() => _isRegistering = !_isRegistering),
+                        child: Text(
+                          _isRegistering ? "Have an account? Log In!" : "No account? Register Now!",
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              TextButton(
-                onPressed: () => setState(() => _isRegistering = !_isRegistering),
-                child: Text(
-                  _isRegistering ? "Have an account? Log In!" : "No account? Register Now!",
-                ),
-              ),
-            ],
-          ),
-        ],
+            ),
+          );
+        },
       ),
     );
   }
