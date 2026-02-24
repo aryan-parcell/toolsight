@@ -3,6 +3,7 @@ import { ArrowRight, CheckCircle2, ScanLine, ShieldCheck, Zap, Loader2 } from 'l
 import { Button } from '@/components/ui/button';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+import SystemGrid from '@/components/SystemGrid';
 
 const ParcellLogo = () => (
     <svg width="32" height="32" viewBox="0 0 1113.57 1295.11" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
@@ -101,15 +102,9 @@ export default function LandingPage({ onLogin }: { onLogin: () => void }) {
                         </div>
                     </div>
 
-                    {/* Hero Graphic / Mockup Placeholder */}
+                    {/* Hero Graphic */}
                     <div className="relative animate-in fade-in zoom-in-95 duration-1000 delay-200">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-axiom-cyan/20 to-transparent blur-3xl rounded-full"></div>
-                        <div className="relative bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden aspect-[4/3] flex items-center justify-center">
-                            <div className="text-center space-y-4">
-                                <ScanLine className="w-16 h-16 text-gray-700 mx-auto" />
-                                <p className="text-gray-500 font-mono text-sm">[ App Interface / AI Bounding Box Mockup ]</p>
-                            </div>
-                        </div>
+                        <SystemGrid />
                     </div>
                 </div>
             </section>
