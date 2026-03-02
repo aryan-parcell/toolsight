@@ -55,7 +55,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
                   WideButton(
                     text: "Capture Drawer Images",
                     onPressed: () async {
-                      await _auditRepository.ensureActiveAudit(widget.toolboxId, currentCheckoutId);
+                      await _auditRepository.ensureActiveAudit(widget.toolboxId);
 
                       if (context.mounted) {
                         context.pushNamed(

@@ -14,26 +14,31 @@ class AuditRepository {
     return _auditsCollection.doc(auditId).snapshots();
   }
 
-  Future<String> ensureActiveAudit(String toolboxId, String checkoutId) async {
+  Future<String> ensureActiveAudit(String toolboxId) async {
     final auditDoc = _auditsCollection.doc();
     final toolboxDoc = _toolboxesCollection.doc(toolboxId);
-    final checkoutDoc = _checkoutsCollection.doc(checkoutId);
 
     return FirebaseFirestore.instance.runTransaction((t) async {
       final toolboxSnap = await t.get(toolboxDoc);
+      if (!toolboxSnap.exists) throw StateError("Invalid toolbox.");
+      final toolbox = toolboxSnap.data()!;
+
+      final currentCheckoutId = toolbox['currentCheckoutId'];
+
+      final checkoutDoc = _checkoutsCollection.doc(currentCheckoutId);
       final checkoutSnap = await t.get(checkoutDoc);
-      if (!checkoutSnap.exists || !toolboxSnap.exists) throw "Invalid checkout or toolbox.";
+      if (!checkoutSnap.exists) throw StateError("Invalid checkout.");
+      final checkout = checkoutSnap.data()!;
 
       // If an audit is already active, return its ID
-      final currentAuditId = checkoutSnap.data()?['currentAuditId'];
+      final currentAuditId = checkout['currentAuditId'];
       if (currentAuditId != null) return currentAuditId;
 
       final now = DateTime.now();
-      final toolbox = toolboxSnap.data()!;
 
       // If not, start a new "At-Will" audit
       t.set(auditDoc, {
-        'checkoutId': checkoutId,
+        'checkoutId': currentCheckoutId,
         'startTime': now,
         'endTime': null,
         'drawerStates': createAuditDrawerStatesFromToolbox(toolbox),
