@@ -83,7 +83,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
                     onColor: Colors.white,
                     onPressed: () async {
                       try {
-                        await _checkoutRepository.closeToolbox(widget.toolboxId, currentCheckoutId);
+                        await _checkoutRepository.closeToolbox(widget.toolboxId);
                         if (context.mounted) {
                           // context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
                           context.goNamed(AppRoute.home.name);

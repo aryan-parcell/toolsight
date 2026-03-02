@@ -114,11 +114,17 @@ class CheckoutRepository {
     });
   }
 
-  Future<void> closeToolbox(String toolboxId, String checkoutId) async {
+  Future<void> closeToolbox(String toolboxId) async {
     final toolboxDoc = _toolboxesCollection.doc(toolboxId);
-    final checkoutDoc = _checkoutsCollection.doc(checkoutId);
 
     await FirebaseFirestore.instance.runTransaction((t) async {
+      final toolboxSnap = await t.get(toolboxDoc);
+      if (!toolboxSnap.exists) throw StateError("Invalid toolbox.");
+      final toolbox = toolboxSnap.data()!;
+
+      final currentCheckoutId = toolbox['currentCheckoutId'];
+
+      final checkoutDoc = _checkoutsCollection.doc(currentCheckoutId);
       final checkoutSnapshot = await t.get(checkoutDoc);
       if (!checkoutSnapshot.exists) throw StateError('Invalid Checkout ID');
 
