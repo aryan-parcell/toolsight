@@ -135,12 +135,12 @@ class CheckoutBanner extends StatelessWidget {
           bgColor = Colors.red.shade50;
           textColor = Colors.red.shade900;
           icon = Icons.warning_amber_rounded;
-          message = "AUDIT OVERDUE: $nextDueText";
+          message = "Overdue Audit Issued: $nextDueText";
         } else if (currentAuditId != null) {
           bgColor = Colors.orange.shade50;
           textColor = Colors.orange.shade900;
           icon = Icons.pending_actions;
-          message = "Active Audit Due: $nextDueText";
+          message = "Active Audit Issued: $nextDueText";
         }
 
         return Container(
