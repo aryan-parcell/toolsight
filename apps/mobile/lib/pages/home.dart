@@ -43,6 +43,8 @@ class _HomeState extends State<Home> {
                 children: [
                   WideButton(
                     text: "Manual Entry",
+                    color: Colors.black,
+                    onColor: Colors.white,
                     onPressed: () => context.pushNamed(AppRoute.manualEntry.name),
                   ),
                   WideButton(

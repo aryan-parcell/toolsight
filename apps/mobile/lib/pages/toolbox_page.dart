@@ -79,6 +79,8 @@ class _ToolboxPageState extends State<ToolboxPage> {
                 children: [
                   WideButton(
                     text: "Close ${toolbox['name']}",
+                    color: Colors.black,
+                    onColor: Colors.white,
                     onPressed: () async {
                       try {
                         await _checkoutRepository.closeToolbox(widget.toolboxId, currentCheckoutId);

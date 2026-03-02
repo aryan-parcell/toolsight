@@ -16,15 +16,23 @@ class WideButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Expanded(
       child: SizedBox(
         height: 50,
-        child: OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: color ?? colorScheme.primary,
+            foregroundColor: onColor ?? colorScheme.onPrimary,
+            elevation: 0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           onPressed: onPressed,
-          child: Text(text, style: Theme.of(context).textTheme.labelLarge),
+          child: Text(
+            text,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
         ),
       ),
     );

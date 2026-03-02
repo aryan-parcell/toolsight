@@ -72,6 +72,8 @@ class _DrawerPageState extends State<DrawerPage> {
                   children: [
                     WideButton(
                       text: "Retake Drawer Images",
+                      color: Colors.black,
+                      onColor: Colors.white,
                       onPressed: () {
                         context.pushNamed(
                           AppRoute.capture.name,
