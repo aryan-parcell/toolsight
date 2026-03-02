@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronRight, Settings, ChevronLeft, ChevronDown } from 'lucide-react';
 import type { Drawer, ToolBox, Tool, DrawerState } from '@shared/types';
-import { AppView } from '../types';
+import { AppView } from '../App';
 import { db } from '../firebase';
 import { collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 
