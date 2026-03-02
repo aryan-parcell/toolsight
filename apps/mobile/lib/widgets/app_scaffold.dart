@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toolsight/router.dart';
+import 'package:toolsight/widgets/parcell_header.dart';
 
 class AppScaffold extends StatefulWidget {
   final Widget child;
@@ -23,25 +24,23 @@ class _AppScaffoldState extends State<AppScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 100),
-            child: widget.child,
-          ),
-          if (widget.allowBack)
-            Positioned(
-              top: 50,
-              left: 38,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => context.pop(),
-              ),
-            ),
+      appBar: AppBar(
+        title: ParcellHeader(),
+        centerTitle: true,
+        leadingWidth: 100,
+        leading: widget.allowBack
+            ? Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => context.pop(),
+                ),
+              )
+            : null,
+        actions: [
           if (widget.allowLogout)
-            Positioned(
-              top: 50,
-              right: 38,
+            Padding(
+              padding: const EdgeInsets.only(right: 35),
               child: IconButton(
                 icon: const Icon(Icons.logout),
                 onPressed: () {
@@ -51,6 +50,10 @@ class _AppScaffoldState extends State<AppScaffold> {
               ),
             ),
         ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 25),
+        child: widget.child,
       ),
     );
   }
