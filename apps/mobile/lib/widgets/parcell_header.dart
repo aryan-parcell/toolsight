@@ -44,7 +44,7 @@ class ParcellHeader extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.cyan,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ],
