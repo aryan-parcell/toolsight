@@ -85,7 +85,8 @@ class _ToolboxPageState extends State<ToolboxPage> {
                       try {
                         await _checkoutRepository.closeToolbox(widget.toolboxId, currentCheckoutId);
                         if (context.mounted) {
-                          context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
+                          // context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
+                          context.goNamed(AppRoute.home.name);
                         }
                       } on StateError catch (e) {
                         if (context.mounted) {
