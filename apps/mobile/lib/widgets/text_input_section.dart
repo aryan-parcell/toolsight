@@ -30,7 +30,7 @@ class _TextInputSectionState extends State<TextInputSection> {
           decoration: InputDecoration(
             hintText: widget.hintText,
             contentPadding: EdgeInsets.all(10),
-            border: OutlineInputBorder(borderRadius: BorderRadius.zero),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
           controller: widget.controller,
           obscureText: widget.obscureText,
