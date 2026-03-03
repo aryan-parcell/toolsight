@@ -456,7 +456,7 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
                                     value={templateName}
                                     onChange={(e) => setTemplateName(e.target.value)}
                                     placeholder="e.g. B737 Engine Maintenance Kit"
-                                    className="w-full border border-gray-500 rounded-lg p-3 focus:border-axiom-cyan "
+                                    className="w-full border border-gray-500 rounded-lg p-3 focus:border-axiom-cyan dark:bg-white/10"
                                 />
                             </div>
 
