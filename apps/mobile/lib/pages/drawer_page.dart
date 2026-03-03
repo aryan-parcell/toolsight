@@ -89,7 +89,7 @@ class _DrawerPageState extends State<DrawerPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 10,
                 children: [
-                  Text("Results", style: Theme.of(context).textTheme.labelLarge),
+                  Text("Results", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   if (drawerAudit['results'].isEmpty) Text("No results found.", style: Theme.of(context).textTheme.bodySmall),
                   for (final entry in drawerAudit['results'].entries) resultDisplay(entry, auditId, isAuditActive),
                 ],
