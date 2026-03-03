@@ -6,8 +6,9 @@ class DrawerDisplay extends StatelessWidget {
   final String toolboxId;
   final String drawerId;
   final String drawerName;
+  final int toolCount;
 
-  const DrawerDisplay(this.toolboxId, this.drawerId, this.drawerName, {super.key});
+  const DrawerDisplay(this.toolboxId, this.drawerId, this.drawerName, this.toolCount, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +29,14 @@ class DrawerDisplay extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(drawerName, style: Theme.of(context).textTheme.labelLarge),
-            // Text('${drawer.present}/${drawer.total}', style: Theme.of(context).textTheme.labelLarge),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(drawerName, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('$toolCount Tools', style: TextStyle(color: Colors.grey)),
+              ],
+            ),
+            Icon(Icons.chevron_right, color: Colors.grey),
           ],
         ),
       ),

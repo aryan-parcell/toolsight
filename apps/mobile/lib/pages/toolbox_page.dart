@@ -71,7 +71,13 @@ class _ToolboxPageState extends State<ToolboxPage> {
               Column(
                 spacing: 10,
                 children: [
-                  for (final drawer in toolbox['drawers']) DrawerDisplay(widget.toolboxId, drawer['drawerId'], drawer['drawerName']),
+                  for (final drawer in toolbox['drawers'])
+                    DrawerDisplay(
+                      widget.toolboxId,
+                      drawer['drawerId'],
+                      drawer['drawerName'],
+                      (toolbox['tools'] as List).where((t) => t['drawerId'] == drawer['drawerId']).length,
+                    ),
                 ],
               ),
               Divider(),
