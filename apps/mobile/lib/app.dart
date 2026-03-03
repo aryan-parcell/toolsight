@@ -33,11 +33,9 @@ class _AppState extends State<App> {
     const axiomCyan = Color(0xFF00E5FF);
     const lightBg = Color(0xFFFFFFFF);
     const lightSurface = Color(0xFFFAFAFA);
-    const lightBorder = Color(0xFF272727);
 
     const darkBg = Color(0xFF090909);
     const darkSurface = Color(0xFF222222);
-    const darkBorder = Color(0xFFEAEAEA);
 
     return ValueListenableBuilder(
       valueListenable: themeNotifier,
@@ -52,7 +50,7 @@ class _AppState extends State<App> {
               primary: axiomCyan,
               onPrimary: Colors.black,
               surface: lightSurface,
-              outline: lightBorder,
+              outline: Colors.grey,
             ),
             textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
             appBarTheme: const AppBarTheme(
@@ -67,7 +65,7 @@ class _AppState extends State<App> {
               primary: axiomCyan,
               onPrimary: Colors.black,
               surface: darkSurface,
-              outline: darkBorder,
+              outline: Colors.grey,
             ),
             textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
             appBarTheme: const AppBarTheme(
