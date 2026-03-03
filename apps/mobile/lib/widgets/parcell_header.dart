@@ -6,6 +6,8 @@ class ParcellHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
     final parcellSVG = SvgPicture.string(
       '''
 <svg width="32" height="32" viewBox="0 0 1113.57 1295.11" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -20,6 +22,7 @@ class ParcellHeader extends StatelessWidget {
 ''',
       width: 32,
       height: 32,
+      colorFilter: ColorFilter.mode(isLight ? Colors.black : Colors.white, BlendMode.srcIn),
     );
 
     return Row(
@@ -36,7 +39,7 @@ class ParcellHeader extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: isLight ? Colors.black : Colors.white,
                 ),
               ),
               TextSpan(

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toolsight/repositories/checkout_repository.dart';
@@ -43,8 +42,7 @@ class _HomeState extends State<Home> {
                 children: [
                   WideButton(
                     text: "Manual Entry",
-                    color: Colors.black,
-                    onColor: Colors.white,
+                    color: Colors.orange,
                     onPressed: () => context.pushNamed(AppRoute.manualEntry.name),
                   ),
                   WideButton(

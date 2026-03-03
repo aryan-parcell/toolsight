@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:toolsight/app.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/parcell_header.dart';
 
@@ -25,7 +26,12 @@ class _AppScaffoldState extends State<AppScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: ParcellHeader(),
+        title: GestureDetector(
+          onLongPress: () {
+            themeNotifier.value = themeNotifier.value == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+          },
+          child: ParcellHeader(),
+        ),
         centerTitle: true,
         leadingWidth: 100,
         leading: widget.allowBack
