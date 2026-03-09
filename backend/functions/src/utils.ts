@@ -1,6 +1,4 @@
-import {
-  Tool, Drawer, ToolBox, AuditToolStatus, DrawerState, Detection,
-} from "@shared/types";
+import {Tool, Drawer, ToolBox, DrawerState, Detection} from "@shared/types";
 import {db, messaging} from "./firebase";
 
 /**
@@ -43,7 +41,7 @@ export function createDrawerStates(
   const drawerStates: Record<string, DrawerState> = {};
 
   toolbox.drawers.forEach((drawer: Drawer) => {
-    const results: Record<string, AuditToolStatus> = {};
+    const results: Record<string, Detection> = {};
 
     // Find all tools belonging to this drawer
     const drawerTools = toolbox.tools.filter(
@@ -51,7 +49,12 @@ export function createDrawerStates(
     );
 
     drawerTools.forEach((t) => {
-      results[t.toolId] = "absent";
+      results[t.toolId] = {
+        toolId: t.toolId,
+        status: "absent",
+        confidence: 0,
+        toolInfo: t.toolInfo,
+      };
     });
 
     drawerStates[drawer.drawerId] = {

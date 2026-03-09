@@ -76,7 +76,7 @@ class AuditRepository {
   }
 
   Future<void> updateToolStatus(String auditId, String drawerId, String toolId, String newStatus) {
-    return _auditsCollection.doc(auditId).update({'drawerStates.$drawerId.results.$toolId': newStatus});
+    return _auditsCollection.doc(auditId).update({'drawerStates.$drawerId.results.$toolId.status': newStatus});
   }
 
   Future<void> confirmDrawerResults(String auditId, String drawerId, Map<String, dynamic> auditData, Map<String, dynamic> toolboxData) async {

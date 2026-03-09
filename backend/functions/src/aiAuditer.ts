@@ -1,9 +1,7 @@
 import {onObjectFinalized} from "firebase-functions/v2/storage";
 import {getStorage} from "firebase-admin/storage";
 import * as path from "path";
-import {
-  AuditToolStatus, Template, ToolBox, VisualDetection,
-} from "@shared/types";
+import {Detection, Template, ToolBox} from "@shared/types";
 import {db} from "./firebase";
 import {analyzeToolImage} from "./gemini";
 import {findMatchingDetection} from "./utils";
@@ -81,8 +79,7 @@ export const aiAuditer = onObjectFinalized(async (event) => {
     );
 
     // 9. Merge & Map (The "Truth" Generation)
-    const auditResults: Record<string, AuditToolStatus> = {};
-    const visualDetections: Record<string, VisualDetection> = {};
+    const auditResults: Record<string, Detection> = {};
 
     // Loop through EXPECTED tools (The Source of Truth)
     drawerTools.forEach((tool) => {
@@ -95,22 +92,20 @@ export const aiAuditer = onObjectFinalized(async (event) => {
         }
 
         // Save audit results
-        auditResults[tool.toolId] = match.status;
-
-        // Save bounding box for UI
-        visualDetections[tool.toolId] = {
-          name: tool.toolInfo.name,
+        auditResults[tool.toolId] = {
+          toolId: tool.toolId,
+          status: match.status,
           confidence: match.confidence,
-          boundingBox: {
-            x: match.toolInfo.x!,
-            y: match.toolInfo.y!,
-            width: match.toolInfo.width!,
-            height: match.toolInfo.height!,
-          },
+          toolInfo: match.toolInfo,
         };
       } else {
         // AI missed it --> Default to absent
-        auditResults[tool.toolId] = "absent";
+        auditResults[tool.toolId] = {
+          toolId: tool.toolId,
+          status: "absent",
+          confidence: 0,
+          toolInfo: tool.toolInfo,
+        };
       }
     });
 
@@ -118,7 +113,6 @@ export const aiAuditer = onObjectFinalized(async (event) => {
     await db.collection("audits").doc(auditId).update({
       [`drawerStates.${drawerId}.drawerStatus`]: "ai-completed",
       [`drawerStates.${drawerId}.results`]: auditResults,
-      [`drawerStates.${drawerId}.visualResults`]: visualDetections,
     });
   } catch (error) {
     console.error("Pipeline Failed:", error);

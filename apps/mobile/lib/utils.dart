@@ -15,7 +15,12 @@ Map<String, dynamic> createAuditDrawerStatesFromToolbox(Map<String, dynamic> too
   for (final tool in toolbox['tools']) {
     final drawerId = tool['drawerId'];
     final toolId = tool['toolId'];
-    drawerStates[drawerId]['results'][toolId] = 'absent';
+    drawerStates[drawerId]['results'][toolId] = {
+      'toolId': toolId,
+      'status': 'absent',
+      'confidence': 0,
+      'toolInfo': tool['toolInfo']
+    };
   }
 
   return drawerStates;

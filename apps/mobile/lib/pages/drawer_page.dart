@@ -112,7 +112,7 @@ class _DrawerPageState extends State<DrawerPage> {
   }
 
   Widget imageDisplay(String? imageStoragePath, Map<String, dynamic> drawerAudit) {
-    final visualResults = drawerAudit['visualResults'] as Map<String, dynamic>? ?? {};
+    final results = drawerAudit['results'] as Map<String, dynamic>? ?? {};
     final isProcessing = drawerAudit['drawerStatus'] == 'pending' && imageStoragePath != null;
 
     final blankImage = Container(width: double.infinity, height: 200, color: Colors.grey);
@@ -133,12 +133,12 @@ class _DrawerPageState extends State<DrawerPage> {
               fit: BoxFit.fitWidth,
             ),
 
-            if (visualResults.isNotEmpty)
+            if (results.isNotEmpty)
               Positioned.fill(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return BoundingBoxOverlay(
-                      visualResults: visualResults,
+                      results: results,
                       imageWidth: constraints.biggest.width,
                       imageHeight: constraints.biggest.height,
                     );
@@ -170,7 +170,7 @@ class _DrawerPageState extends State<DrawerPage> {
 
   Widget resultDisplay(MapEntry<String, dynamic> result, String auditId, bool isAuditActive) {
     final toolId = result.key;
-    final toolStatus = result.value;
+    final toolStatus = result.value['status'];
 
     final tool = _toolbox['tools'].firstWhere((tool) => tool['toolId'] == toolId);
 
@@ -198,13 +198,13 @@ class _DrawerPageState extends State<DrawerPage> {
 }
 
 class BoundingBoxOverlay extends StatelessWidget {
-  final Map<String, dynamic> visualResults;
+  final Map<String, dynamic> results;
   final double imageWidth;
   final double imageHeight;
 
   const BoundingBoxOverlay({
     super.key,
-    required this.visualResults,
+    required this.results,
     required this.imageWidth,
     required this.imageHeight,
   });
@@ -212,17 +212,24 @@ class BoundingBoxOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: visualResults.entries.map((entry) {
-        final data = entry.value;
-        final box = data['boundingBox'];
+      children: results.entries.map((entry) {
+        final detection = entry.value;
+        final status = detection['status'];
+        final info = detection['toolInfo'];
 
-        if (box == null) return const SizedBox.shrink();
+        if (info == null) return const SizedBox.shrink();
+        if ([info['x'], info['y'], info['width'], info['height']].contains(null)) return const SizedBox.shrink();
 
         // Convert 0-100% coordinates to pixels
-        final double top = (box['y'] / 100) * imageHeight;
-        final double left = (box['x'] / 100) * imageWidth;
-        final double width = (box['width'] / 100) * imageWidth;
-        final double height = (box['height'] / 100) * imageHeight;
+        final double top = (info['y'] / 100) * imageHeight;
+        final double left = (info['x'] / 100) * imageWidth;
+        final double width = (info['width'] / 100) * imageWidth;
+        final double height = (info['height'] / 100) * imageHeight;
+
+        // Color code based on status
+        Color boxColor = Colors.greenAccent;
+        if (status == 'absent') boxColor = Colors.redAccent;
+        if (status == 'unserviceable') boxColor = Colors.orangeAccent;
 
         return Positioned(
           top: top,
@@ -231,8 +238,8 @@ class BoundingBoxOverlay extends StatelessWidget {
           height: height,
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.greenAccent, width: 2),
-              color: Colors.greenAccent.withAlpha(64),
+              border: Border.all(color: boxColor, width: 2),
+              color: boxColor.withAlpha(64),
             ),
             child: Align(
               alignment: Alignment.topLeft,
@@ -240,7 +247,7 @@ class BoundingBoxOverlay extends StatelessWidget {
                 color: Colors.black54,
                 padding: const EdgeInsets.all(2),
                 child: Text(
-                  data['name'] ?? 'Unknown',
+                  info['name'] ?? 'Unknown',
                   style: const TextStyle(color: Colors.white, fontSize: 10),
                   overflow: TextOverflow.ellipsis,
                 ),

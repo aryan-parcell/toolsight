@@ -1,4 +1,4 @@
-import type { AuditToolStatus, VisualDetection } from "./detection";
+import type { Detection } from "./detection";
 
 export type AuditDrawerStatus = 
     | 'pending' 
@@ -9,8 +9,7 @@ export type AuditDrawerStatus =
 export interface DrawerState {
     drawerStatus: AuditDrawerStatus;
     imageStoragePath: string | null;
-    results: Record<string, AuditToolStatus> | null;
-    visualResults?: Record<string, VisualDetection>;
+    results: Record<string, Detection> | null;
 }
 
 export interface Audit {

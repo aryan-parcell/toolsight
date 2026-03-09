@@ -89,7 +89,12 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate, orgId }) => {
             };
         });
         tb.tools.forEach((tool: Tool) => {
-            drawerStates[tool.drawerId].results![tool.toolId] = 'present';
+            drawerStates[tool.drawerId].results![tool.toolId] = {
+                toolId: tool.toolId,
+                status: "present",
+                confidence: 1,
+                toolInfo: tool.toolInfo,
+            };
         });
 
         return {
