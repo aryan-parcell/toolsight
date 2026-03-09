@@ -25,19 +25,22 @@ export default function ToolDetection({
     const [showOverlay, setShowOverlay] = useState(true);
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
+    const [isRotating, setIsRotating] = useState(false);
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [resizeDirection, setResizeDirection] = useState<'se' | 'sw' | 'ne' | 'nw' | null>(null);
     const [dragOffset, setDragOffset] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
+    const [rotationCenter, setRotationCenter] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
 
     useEffect(() => {
         if (onDragStateChange) {
-            onDragStateChange(isDragging || isResizing);
+            onDragStateChange(isDragging || isResizing || isRotating);
         }
-    }, [isDragging, isResizing, onDragStateChange]);
+    }, [isDragging, isResizing, isRotating, onDragStateChange]);
 
     useEffect(() => {
         setIsDragging(false);
         setIsResizing(false);
+        setIsRotating(false);
         setActiveIndex(null);
         setResizeDirection(null);
     }, [isEditMode]);
@@ -82,9 +85,28 @@ export default function ToolDetection({
         setResizeDirection(direction);
     };
 
+    const handleRotateStart = (e: React.MouseEvent, index: number) => {
+        if (!isEditMode) return;
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (onSelectTool) onSelectTool(index);
+
+        // Find the actual DOM element to calculate its absolute center on screen
+        const target = (e.target as HTMLElement).closest('[data-tool-shape="true"]') as HTMLElement;
+        const rect = target.getBoundingClientRect();
+
+        setIsRotating(true);
+        setActiveIndex(index);
+        setRotationCenter({
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2
+        });
+    };
+
     const handleMouseMove = (e: React.MouseEvent) => {
         if (!isEditMode) return;
-        if (!isDragging && !isResizing) return;
+        if (!isDragging && !isResizing && !isRotating) return;
         if (activeIndex === null) return;
         if (!onToolUpdated) return;
 
@@ -98,6 +120,7 @@ export default function ToolDetection({
         let newY = tool.toolInfo.y!;
         let newW = tool.toolInfo.width!;
         let newH = tool.toolInfo.height!;
+        let newA = tool.toolInfo.angle!;
 
         // --- LOGIC 1: MOVING ---
         if (isDragging) {
@@ -142,13 +165,25 @@ export default function ToolDetection({
             }
         }
 
+        // --- LOGIC 3: ROTATING ---
+        if (isRotating) {
+            const dx = e.clientX - rotationCenter.x;
+            const dy = e.clientY - rotationCenter.y;
+
+            // Atan2 math. +90 aligns 0 degrees with the top handle
+            newA = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+            if (newA < 0) newA += 360;
+            if (newA >= 360) newA -= 360;
+        }
+
         onToolUpdated(activeIndex, {
             toolInfo: {
-                name: tool.toolInfo.name,
+                ...tool.toolInfo,
                 x: newX,
                 y: newY,
                 width: newW,
-                height: newH
+                height: newH,
+                angle: newA,
             }
         });
     };
@@ -156,6 +191,7 @@ export default function ToolDetection({
     const handleMouseUp = () => {
         setIsDragging(false);
         setIsResizing(false);
+        setIsRotating(false);
         setActiveIndex(null);
         setResizeDirection(null);
     };
@@ -191,7 +227,7 @@ export default function ToolDetection({
                     <div
                         key={index}
                         data-tool-shape="true"
-                        className="absolute group"
+                        className="absolute group origin-center"
                         style={{
                             top: `${info.y!}%`,
                             left: `${info.x!}%`,
@@ -199,20 +235,25 @@ export default function ToolDetection({
                             height: `${info.height!}%`,
                             zIndex: isSelected ? 30 : 20,
                             cursor: isEditMode ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                            transform: `rotate(${info.angle!}deg)`,
                         }}
                         onMouseDown={(e) => handleMouseDown(e, index)}
                     >
                         {/* SHAPE */}
-                        <div className={`
-                            w-full h-full border-2 
-                            ${isSelected ? "border-axiom-cyan bg-axiom-cyan/20 " : "border-green-400 bg-green-400/20"} 
-                        `} />
+                        <div
+                            className={`
+                                w-full h-full border-2
+                                ${isSelected ? "border-axiom-cyan bg-axiom-cyan/20 " : "border-green-400 bg-green-400/20"} 
+                            `}
+                            style={{ borderRadius: info.shape === 'ellipse' ? '50%' : '0' }}
+                        />
 
                         {/* LABEL */}
                         <div
                             className={`
-                                absolute top-1 left-1 p-1 text-xs select-none 
+                                absolute top-1 p-1 text-xs select-none 
                                 ${isSelected ? 'bg-axiom-cyan text-black' : 'bg-black/50 text-white'}
+                                ${info.shape === 'ellipse' ? 'left-1/2 -translate-x-1/2' : 'left-1'}
                             `}
                         >
                             {info.name}
@@ -221,6 +262,14 @@ export default function ToolDetection({
                         {/* HANDLES */}
                         {isEditMode && isSelected && (
                             <>
+                                {/* Rotation Handle (Top Center) */}
+                                <div
+                                    className="absolute -top-6 left-1/2 -translate-x-1/2 w-4 h-4 bg-axiom-cyan rounded-full cursor-crosshair z-50 hover:scale-125 border-2 border-black"
+                                    onMouseDown={(e) => handleRotateStart(e, index)}
+                                />
+                                {/* Connecting line for rotation handle */}
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-axiom-cyan pointer-events-none" />
+
                                 <div className="bg-white rounded-full cursor-se-resize z-40 hover:scale-125 absolute -bottom-1.5 -right-1.5 w-4 h-4" onMouseDown={(e) => handleResizeStart(e, index, 'se')} />
                                 <div className="bg-white rounded-full cursor-sw-resize z-40 hover:scale-125 absolute -bottom-1.5 -left-1.5 w-4 h-4" onMouseDown={(e) => handleResizeStart(e, index, 'sw')} />
                                 <div className="bg-white rounded-full cursor-ne-resize z-40 hover:scale-125 absolute -top-1.5 -right-1.5 w-4 h-4" onMouseDown={(e) => handleResizeStart(e, index, 'ne')} />

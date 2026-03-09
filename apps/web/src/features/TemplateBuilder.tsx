@@ -95,6 +95,8 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
                 y: y - 5,
                 width: 10,
                 height: 10,
+                shape: 'rectangle',
+                angle: 0,
             }
         };
         setTools([...tools, newTool]);
@@ -352,6 +354,33 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
                                                     }}
                                                     className='w-full rounded-lg p-2 text-sm border dark:bg-white/10 dark:border-axiom-borderDark dark:text-white'
                                                 />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm mb-2">Shape</label>
+                                                <div className="flex gap-2 rounded-lg border">
+                                                    <button
+                                                        onClick={() => handleToolUpdated(selectedToolIndex, {
+                                                            toolInfo: {
+                                                                ...tools[selectedToolIndex].toolInfo,
+                                                                shape: 'rectangle',
+                                                            }
+                                                        })}
+                                                        className={`flex-1 py-1.5 text-xs rounded transition-colors ${tools[selectedToolIndex].toolInfo.shape === 'rectangle' ? 'bg-axiom-cyan text-black font-bold' : 'text-gray-400'}`}
+                                                    >
+                                                        Rectangle
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleToolUpdated(selectedToolIndex, {
+                                                            toolInfo: {
+                                                                ...tools[selectedToolIndex].toolInfo,
+                                                                shape: 'ellipse',
+                                                            }
+                                                        })}
+                                                        className={`flex-1 py-1.5 text-xs rounded transition-colors ${tools[selectedToolIndex].toolInfo.shape === 'ellipse' ? 'bg-axiom-cyan text-black font-bold' : 'text-gray-400'}`}
+                                                    >
+                                                        Ellipse
+                                                    </button>
+                                                </div>
                                             </div>
                                             <button
                                                 onClick={() => {

@@ -226,6 +226,10 @@ class BoundingBoxOverlay extends StatelessWidget {
         final double width = (info['width'] / 100) * imageWidth;
         final double height = (info['height'] / 100) * imageHeight;
 
+        // Convert degrees to radians for Transform.rotate
+        final double angleRad = (info['angle'] ?? 0).toDouble() * (3.1415 / 180);
+        final bool isEllipse = info['shape'] == 'ellipse';
+
         // Color code based on status
         Color boxColor = Colors.greenAccent;
         if (status == 'absent') boxColor = Colors.redAccent;
@@ -236,20 +240,24 @@ class BoundingBoxOverlay extends StatelessWidget {
           left: left,
           width: width,
           height: height,
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: boxColor, width: 2),
-              color: boxColor.withAlpha(64),
-            ),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Container(
-                color: Colors.black54,
-                padding: const EdgeInsets.all(2),
-                child: Text(
-                  info['name'] ?? 'Unknown',
-                  style: const TextStyle(color: Colors.white, fontSize: 10),
-                  overflow: TextOverflow.ellipsis,
+          child: Transform.rotate(
+            angle: angleRad,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: boxColor, width: 2),
+                color: boxColor.withAlpha(64),
+                borderRadius: isEllipse ? BorderRadius.circular(1000) : BorderRadius.zero,
+              ),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Container(
+                  color: Colors.black54,
+                  padding: const EdgeInsets.all(2),
+                  child: Text(
+                    info['name'] ?? 'Unknown',
+                    style: const TextStyle(color: Colors.white, fontSize: 10),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ),

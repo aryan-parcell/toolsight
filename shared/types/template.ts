@@ -4,6 +4,8 @@ export interface ToolInfo {
     y?: number;
     width?: number;
     height?: number;
+    shape?: 'rectangle' | 'ellipse';
+    angle?: number;
 }
 
 export interface Template {

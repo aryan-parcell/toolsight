@@ -42,6 +42,8 @@ function validateAndNormalizeDetection(tool: any): Detection {
       y: Math.max(0, Math.min(100, tool.y)),
       width: Math.max(1, Math.min(100, tool.width)),
       height: Math.max(1, Math.min(100, tool.height)),
+      shape: tool.shape === "ellipse" ? "ellipse" : "rectangle",
+      angle: typeof tool.angle === "number" ? tool.angle : 0,
     },
   };
 
@@ -82,7 +84,8 @@ export async function analyzeToolImage(
       const toolDesc = `Tool Name: "${t.toolInfo.name}", ID: "${t.toolId}";`;
       const toolLoc = `Reference Location (Image 1): (
           x: ${t.toolInfo.x}%, y: ${t.toolInfo.y}%, 
-          w: ${t.toolInfo.width}%, h: ${t.toolInfo.height}%
+          w: ${t.toolInfo.width}%, h: ${t.toolInfo.height}%,
+          shape: ${t.toolInfo.shape}, angle: ${t.toolInfo.angle} degrees,
       )`;
 
       return `- ${toolDesc} ${templateImage ? toolLoc : ""}`;
@@ -132,7 +135,10 @@ export async function analyzeToolImage(
     - width, height represent the size as percentages (0 to 100).
     - Example: A tool at image center would have x≈50, y≈50.
     - NEVER return values like 0.1, 0.5, 0.8 (normalized, not percentages)
-    - ALWAYS return values like 10.5, 25.3, 67.8 (percentages, not normalized)
+    - ALWAYS return values like 10, 25, 67 (percentages, not normalized)
+    - angle represents the rotation of the bounding box
+    - angle is in degrees (0-360) clockwise and 0 means unrotated/horizontal.
+    - shape: Must be exactly "rectangle" or "ellipse".
 
     OUTPUT:
     - Return ONLY a valid JSON array of objects. 
@@ -144,7 +150,9 @@ export async function analyzeToolImage(
       "toolId": "t-105",    <-- CRITICAL: Return the ID from context if matched
       "status": "present",  <-- CRITICAL: "present", "absent", "unserviceable"
       "confidence": 0.95,
-      "x": 10.5, "y": 20.0, "width": 5.0, "height": 15.0,
+      "x": 10, "y": 20, "width": 5, "height": 15,
+      "angle": 45,
+      "shape": "rectangle"
     }, ...]
   `;
   } else {
@@ -163,7 +171,10 @@ export async function analyzeToolImage(
     - width, height represent the size as percentages (0 to 100).
     - Example: A tool at image center would have x≈50, y≈50.
     - NEVER return values like 0.1, 0.5, 0.8 (normalized, not percentages)
-    - ALWAYS return values like 10.5, 25.3, 67.8 (percentages, not normalized)
+    - ALWAYS return values like 10, 25, 67 (percentages, not normalized)
+    - angle represents the rotation of the bounding box
+    - angle is in degrees (0-360) clockwise and 0 means unrotated/horizontal.
+    - shape: Must be exactly "rectangle" or "ellipse".
 
     OUTPUT:
     - Return ONLY a valid JSON array of objects. 
@@ -173,7 +184,9 @@ export async function analyzeToolImage(
     [{
       "name": "Wrench 10mm",
       "confidence": 0.95,
-      "x": 10.5, "y": 20.0, "width": 5.0, "height": 15.0,
+      "x": 10, "y": 20, "width": 5, "height": 15,
+      "angle": 45,
+      "shape": "rectangle"
     }, ...]
   `;
   }
