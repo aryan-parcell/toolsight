@@ -1,3 +1,5 @@
+import type { ToolInfo } from "./template";
+
 export interface Drawer {
   drawerId: string;
   drawerName: string;
@@ -8,12 +10,7 @@ export interface Drawer {
 export interface Tool {
   toolId: string;
   drawerId: string;
-  toolName: string;
-  // Template Layout Info
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
+  toolInfo: ToolInfo
 }
 
 export interface AuditProfile {

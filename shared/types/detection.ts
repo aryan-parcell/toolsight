@@ -1,12 +1,10 @@
+import type { ToolInfo } from "./template";
+
 export interface Detection {
-    name: string;
     toolId: string;
     status: AuditToolStatus;
     confidence: number;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
+    toolInfo: ToolInfo;
 }
 
 export type AuditToolStatus = "present" | "absent" | "unserviceable";

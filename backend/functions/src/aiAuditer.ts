@@ -99,13 +99,13 @@ export const aiAuditer = onObjectFinalized(async (event) => {
 
         // Save bounding box for UI
         visualDetections[tool.toolId] = {
-          name: tool.toolName,
+          name: tool.toolInfo.name,
           confidence: match.confidence,
           boundingBox: {
-            x: match.x,
-            y: match.y,
-            width: match.width,
-            height: match.height,
+            x: match.toolInfo.x!,
+            y: match.toolInfo.y!,
+            width: match.toolInfo.width!,
+            height: match.toolInfo.height!,
           },
         };
       } else {

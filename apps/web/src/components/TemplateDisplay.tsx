@@ -54,11 +54,10 @@ export default function TemplateDisplay({ templateId }: TemplateDisplayProps) {
             <ToolDetection
                 toolPositions={template.tools.map(tool => {
                     return {
-                        ...tool,
-                        name: tool.toolName,
                         toolId: '',
                         status: 'present',
                         confidence: 1,
+                        toolInfo: tool,
                     } as Detection;
                 })}
                 isEditMode={false}

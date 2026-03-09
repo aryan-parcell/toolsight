@@ -20,10 +20,10 @@ export function findMatchingDetection(
 
   // 2. Fallback to Name fuzzy match
   const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-  const target = normalize(tool.toolName);
+  const target = normalize(tool.toolInfo.name);
 
   return detections.find((d) => {
-    const candidate = normalize(d.name || "");
+    const candidate = normalize(d.toolInfo.name);
     return candidate.includes(target) || target.includes(candidate);
   });
 }

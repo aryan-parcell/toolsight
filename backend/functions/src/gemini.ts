@@ -1,5 +1,5 @@
-import {Part} from "@google/genai";
-import type {Detection, Tool} from "@shared/types";
+import { Part } from "@google/genai";
+import type { Detection, Tool } from "@shared/types";
 
 /**
  * Cleans a JSON string that may be wrapped in markdown code blocks
@@ -32,43 +32,18 @@ function cleanJsonString(text: string): string {
  * @return {Detection} Normalized AI tool detection
  */
 function validateAndNormalizeDetection(tool: any): Detection {
-  let processedTool = {...tool};
-
-  // If ALL coordinates are <= 1, they're likely normalized (0-1)
-  // and need conversion to %
-  if (
-    tool.x <= 1 && tool.y <= 1 && tool.width <= 1 && tool.height <= 1 &&
-    tool.x >= 0 && tool.y >= 0 && tool.width > 0 && tool.height > 0
-  ) {
-    processedTool = {
-      ...tool,
-      x: tool.x * 100,
-      y: tool.y * 100,
-      width: tool.width * 100,
-      height: tool.height * 100,
-    };
-  }
-
-  // Clamp to valid ranges
   const validated: Detection = {
-    name: tool.name || "Unknown Tool Name",
     toolId: tool.toolId || "Unknown Tool ID",
     status: tool.status || "Unknown Tool Status",
     confidence: typeof tool.confidence === "number" ? tool.confidence : 0,
-    x: Math.max(0, Math.min(100, processedTool.x)),
-    y: Math.max(0, Math.min(100, processedTool.y)),
-    width: Math.max(1, Math.min(100, processedTool.width)),
-    height: Math.max(1, Math.min(100, processedTool.height)),
+    toolInfo: {
+      name: tool.name || "Unknown Tool Name",
+      x: Math.max(0, Math.min(100, tool.x)),
+      y: Math.max(0, Math.min(100, tool.y)),
+      width: Math.max(1, Math.min(100, tool.width)),
+      height: Math.max(1, Math.min(100, tool.height)),
+    }
   };
-
-  // Ensure bounding box doesn't extend outside image bounds
-  if (validated.x + validated.width > 100) {
-    validated.width = Math.max(1, 100 - validated.x);
-  }
-
-  if (validated.y + validated.height > 100) {
-    validated.height = Math.max(1, 100 - validated.y);
-  }
 
   return validated;
 }
@@ -104,9 +79,10 @@ export async function analyzeToolImage(
   if (expectedTools.length > 0) {
     // Create a RAG context string from the database definitions
     const toolsContext = expectedTools.map((t) => {
-      const toolDesc = `Tool Name: "${t.toolName}", ID: "${t.toolId}";`;
+      const toolDesc = `Tool Name: "${t.toolInfo.name}", ID: "${t.toolId}";`;
       const toolLoc = `Reference Location (Image 1): (
-          x: ${t.x}%, y: ${t.y}%, w: ${t.width}%, h: ${t.height}%
+          x: ${t.toolInfo.x}%, y: ${t.toolInfo.y}%, 
+          w: ${t.toolInfo.width}%, h: ${t.toolInfo.height}%
       )`;
 
       return `- ${toolDesc} ${templateImage ? toolLoc : ""}`;
@@ -117,27 +93,27 @@ export async function analyzeToolImage(
     detector.
 
     ${templateImage ?
-    `
+        `
           INPUTS: You are provided with TWO images. 
           Image 1 is the REFERENCE TEMPLATE (clean state with all tools). 
           Image 2 is the TARGET AUDIT IMAGE (current state to analyze).
           ` :
-    "INPUT: You are provided with a TARGET AUDIT IMAGE."
-}
+        "INPUT: You are provided with a TARGET AUDIT IMAGE."
+      }
 
     CONTEXT: You are looking at a specific drawer that SHOULD contain the 
     following tools:
     ${toolsContext}
 
     ${templateImage ?
-    `
+        `
           INSTRUCTIONS FOR REFERENCE: Look at Image 1 (Reference). 
           Use the provided 'Reference Location' coordinates to find each tool 
           and learn its specific visual appearance (shape, color, etc). 
           Then, search for that SAME object in Image 2 (Target).
           ` :
-    ""
-}
+        ""
+      }
 
     INSTRUCTIONS:
     1. Analyze the TARGET AUDIT IMAGE of a tool drawer and identify tools.
@@ -211,15 +187,15 @@ export async function analyzeToolImage(
 
   const contentParts: Part[] = [];
 
-  contentParts.push({text: systemPrompt});
+  contentParts.push({ text: systemPrompt });
 
   if (templateImage) {
     contentParts.push(
-      {inlineData: {mimeType: "image/jpeg", data: templateBase64}}
+      { inlineData: { mimeType: "image/jpeg", data: templateBase64 } }
     );
   }
 
-  contentParts.push({inlineData: {mimeType: mimeType, data: drawerBase64}});
+  contentParts.push({ inlineData: { mimeType: mimeType, data: drawerBase64 } });
 
   // --- 3. Execute Request ---
 
@@ -232,8 +208,8 @@ export async function analyzeToolImage(
   ): Promise<Detection[]> => {
     try {
       // Initialize client inside the request to ensure fresh config if needed
-      const {GoogleGenAI} = await import("@google/genai");
-      const ai = new GoogleGenAI({apiKey});
+      const { GoogleGenAI } = await import("@google/genai");
+      const ai = new GoogleGenAI({ apiKey });
 
       const response = await ai.models.generateContent({
         model: modelId,

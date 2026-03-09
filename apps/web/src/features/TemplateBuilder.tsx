@@ -86,14 +86,16 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
 
     const handleAddTool = (x: number = 50, y: number = 50) => {
         const newTool: Detection = {
-            name: `New Tool ${tools.length + 1}`,
             toolId: '',
             status: 'present',
             confidence: 1,
-            x: x - 5,
-            y: y - 5,
-            width: 10,
-            height: 10,
+            toolInfo: {
+                name: `New Tool ${tools.length + 1}`,
+                x: x - 5,
+                y: y - 5,
+                width: 10,
+                height: 10,
+            }
         };
         setTools([...tools, newTool]);
         setSelectedToolIndex(tools.length);
@@ -139,13 +141,7 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
                 organizationId: orgId,
                 storagePath: storagePath,
                 imageUrl: downloadUrl,
-                tools: tools.map(t => ({
-                    toolName: t.name,
-                    x: parseFloat(t.x.toFixed(1)),
-                    y: parseFloat(t.y.toFixed(1)),
-                    width: parseFloat(t.width.toFixed(1)),
-                    height: parseFloat(t.height.toFixed(1))
-                })),
+                tools: tools.map(t => t.toolInfo),
             };
 
             await setDoc(doc(db, "templates", templateId), templateData);
@@ -348,10 +344,10 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
                                                 <label className="block text-sm mb-2">Name</label>
                                                 <input
                                                     type="text"
-                                                    value={tools[selectedToolIndex].name}
+                                                    value={tools[selectedToolIndex].toolInfo.name}
                                                     onChange={(e) => {
                                                         const upd = [...tools];
-                                                        upd[selectedToolIndex].name = e.target.value;
+                                                        upd[selectedToolIndex].toolInfo.name = e.target.value;
                                                         setTools(upd);
                                                     }}
                                                     className='w-full rounded-lg p-2 text-sm border dark:bg-white/10 dark:border-axiom-borderDark dark:text-white'
@@ -384,7 +380,7 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
                                                             {idx + 1}
                                                         </span>
                                                         <span className="text-sm">
-                                                            {tool.name}
+                                                            {tool.toolInfo.name}
                                                         </span>
                                                     </div>
                                                 </div>

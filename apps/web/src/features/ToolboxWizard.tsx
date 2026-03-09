@@ -49,7 +49,9 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate, orgId }) => {
             Array.from({ length: toolCount }).map((_, toolIndex) => ({
                 toolId: `t${drawerIndex}-${toolIndex}`,
                 drawerId: `d${drawerIndex}`,
-                toolName: `Tool ${toolIndex + 1} in Drawer ${drawerIndex + 1}`
+                toolInfo: {
+                    name: `Tool ${toolIndex + 1} in Drawer ${drawerIndex + 1}`
+                }
             }))
         );
 

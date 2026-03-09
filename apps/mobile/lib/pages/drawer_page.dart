@@ -178,7 +178,7 @@ class _DrawerPageState extends State<DrawerPage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: Text(tool['toolName']),
+          child: Text(tool['toolInfo']['name']),
         ),
         DropdownButton(
           value: toolStatus,

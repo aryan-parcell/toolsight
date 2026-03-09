@@ -1,5 +1,5 @@
-export interface TemplateTool {
-    toolName: string;
+export interface ToolInfo {
+    name: string;
     x?: number;
     y?: number;
     width?: number;
@@ -12,7 +12,7 @@ export interface Template {
     organizationId: string;
     storagePath: string;
     imageUrl: string;
-    tools: TemplateTool[];
+    tools: ToolInfo[];
 }
 
 export interface AnchorPoint {

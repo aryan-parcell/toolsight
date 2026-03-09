@@ -311,7 +311,7 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
                                             <div key={tool.toolId} className="flex items-center gap-3">
                                                 <div className="w-1 h-1 rounded-full bg-gray-500"></div>
                                                 <AutosaveInput
-                                                    value={tool.toolName}
+                                                    value={tool.toolInfo.name}
                                                     onSave={(val) => handleUpdateToolName(tool.toolId, val)}
                                                     placeholder="Tool Name"
                                                 />

@@ -73,11 +73,13 @@ export default function TemplateInventory({ orgId }: TemplateInventoryProps) {
             const newTools: Tool[] = selectedTemplate.tools.map((t, i) => ({
                 drawerId: selectedDrawerId,
                 toolId: `t${selectedDrawerId.substring(1)}-${i}`,
-                toolName: t.toolName,
-                x: t.x,
-                y: t.y,
-                width: t.width,
-                height: t.height
+                toolInfo: {
+                    name: t.name,
+                    x: t.x,
+                    y: t.y,
+                    width: t.width,
+                    height: t.height
+                }
             }));
 
             // Write to Firestore
