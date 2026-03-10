@@ -9,8 +9,8 @@ import { CalibrationManagement } from "./features/CalibrationManagement";
 import { Login } from "./features/Login";
 import LandingPage from "./features/LandingPage";
 import { auth, db } from "./firebase";
-import type { User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import type { User as AuthUser } from "firebase/auth";
+import { doc, onSnapshot } from "firebase/firestore";
 import type { User as AppUser } from "@shared/types/user";
 import TemplateInventory from "./features/TemplateInventory";
 
@@ -35,37 +35,56 @@ const PlaceholderView = () => (
 
 export default function App() {
     const [currentView, setCurrentView] = useState<AppView>(AppView.TOOLBOX_OVERVIEW);
-    const [user, setUser] = useState<User | null>(null);
-    const [orgId, setOrgId] = useState<string | null>(null);
+
+    const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+    const [appUser, setAppUser] = useState<AppUser | null>(null);
+
     const [loading, setLoading] = useState(true);
     const [showAuth, setShowAuth] = useState(false);
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
-            setUser(currentUser);
+        let unsubscribeDoc: (() => void) | null = null;
 
-            if (currentUser) {
-                try {
-                    const user = await getDoc(doc(db, 'users', currentUser.uid));
-                    if (user.exists()) {
-                        const userData = user.data() as AppUser;
-                        console.log('User data:', userData);
-                        setOrgId(userData.organizationId);
-                    }
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
-                }
-            } else {
-                setOrgId(null);
+        const unsubscribeAuth = auth.onAuthStateChanged((currentUser) => {
+            setAuthUser(currentUser);
+
+            // Cleanup any active user doc listeners if the auth state changes rapidly
+            if (unsubscribeDoc) {
+                unsubscribeDoc();
+                unsubscribeDoc = null;
             }
 
-            setLoading(false);
+            if (currentUser) {
+                const userRef = doc(db, 'users', currentUser.uid);
+
+                unsubscribeDoc = onSnapshot(userRef, (userDoc) => {
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data() as AppUser;
+                        console.log('User data:', userData);
+
+                        setAppUser(userData);
+                    }
+
+                    setLoading(false);
+                }, (error) => {
+                    console.error('Error fetching user data:', error);
+                    setLoading(false);
+                });
+            } else {
+                setAppUser(null);
+                setLoading(false);
+            }
         });
 
-        return unsubscribe;
+        return () => {
+            unsubscribeAuth();
+            if (unsubscribeDoc) unsubscribeDoc();
+        };
     }, []);
 
     const renderContent = () => {
+        const orgId = appUser?.organizationId ?? '';
+
         switch (currentView) {
             case AppView.TOOLBOX_OVERVIEW:
                 return <Dashboard onNavigate={setCurrentView} orgId={orgId!} />;
@@ -92,14 +111,14 @@ export default function App() {
                 <div className="min-h-screen flex items-center justify-center bg-axiom-light dark:bg-axiom-dark">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-axiom-cyan"></div>
                 </div>
-            ) : user ? (
+            ) : authUser && appUser ? (
                 // Logged In Flow
-                <Layout currentView={currentView} user={user} onNavigate={setCurrentView}>
+                <Layout currentView={currentView} user={appUser} onNavigate={setCurrentView}>
                     {renderContent()}
                 </Layout>
             ) : showAuth ? (
                 // Auth Flow (Login / Sign Up)
-                <Login onLoginSuccess={() => setUser(auth.currentUser)} onBack={() => setShowAuth(false)} />
+                <Login onLoginSuccess={() => setAuthUser(auth.currentUser)} onBack={() => setShowAuth(false)} />
             ) : (
                 // Default Public Flow
                 <LandingPage onLogin={() => setShowAuth(true)} />

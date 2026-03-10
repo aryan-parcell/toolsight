@@ -13,9 +13,10 @@ import {
     Target
 } from 'lucide-react';
 import { AppView } from '../App';
-import { signOut, type User } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 import { auth, db } from '../firebase';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
+import type { User as AppUser } from '@shared/types';
 
 const ParcellLogo = () => (
     <svg width="32" height="32" viewBox="0 0 1113.57 1295.11" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-axiom-headingLight dark:text-white">
@@ -52,7 +53,7 @@ const getInitialTheme = (): boolean => {
 interface LayoutProps {
     children: React.ReactNode;
     currentView: AppView;
-    user: User | null;
+    user: AppUser | null;
     onNavigate: (view: AppView) => void;
 }
 
@@ -70,33 +71,23 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, user, onNavigate
     useEffect(() => {
         if (!user) return;
 
-        const userRef = doc(db, 'users', user.uid);
+        const name = user.displayName || user.email || 'Admin User';
+        setDisplayName(name);
 
-        const unsubscribe = onSnapshot(userRef, async (userSnap) => {
-            if (!userSnap.exists()) return;
+        const initials = name
+            .split(' ')
+            .map((n: string) => n[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+        setUserInitials(initials);
 
-            const userData = userSnap.data();
-            const name = userData.displayName || user.email || 'Admin User';
-            setDisplayName(name);
-
-            const initials = name
-                .split(' ')
-                .map((n: string) => n[0])
-                .join('')
-                .toUpperCase()
-                .substring(0, 2);
-            setUserInitials(initials);
-
-            if (userData.organizationId) {
-                const orgRef = doc(db, 'organizations', userData.organizationId);
-                const orgSnap = await getDoc(orgRef);
-                if (orgSnap.exists()) {
-                    setOrgName(orgSnap.data().name);
-                }
+        const orgRef = doc(db, 'organizations', user.organizationId);
+        getDoc(orgRef).then((orgSnap) => {
+            if (orgSnap.exists()) {
+                setOrgName(orgSnap.data().name);
             }
         });
-
-        return unsubscribe;
     }, [user]);
 
     useEffect(() => {
