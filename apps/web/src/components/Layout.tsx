@@ -105,7 +105,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, user, onNavigate
                 setIsMobileMenuOpen(false);
             }}
             className={`
-                flex items-center w-full px-3 py-3 my-3 rounded-full transition-all duration-200 font-medium text-axiom-dark dark:text-axiom-light 
+                flex items-center w-full px-3 py-3 my-3 rounded-full font-medium text-axiom-dark dark:text-axiom-light 
                 ${currentView === view ? 'bg-axiom-cyan/20' : 'hover:bg-axiom-borderLight dark:hover:bg-axiom-surfaceDark'}
             `}
         >
@@ -126,7 +126,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, user, onNavigate
     );
 
     return (
-        <div className="min-h-screen bg-axiom-light dark:bg-axiom-dark text-axiom-textLight dark:text-axiom-textDark font-sans transition-colors duration-300 flex">
+        <div className="min-h-screen bg-axiom-light dark:bg-axiom-dark text-axiom-textLight dark:text-axiom-textDark font-sans flex">
 
             {/* Sidebar - Desktop */}
             <div className="hidden lg:flex flex-col w-72 bg-axiom-surfaceLight dark:bg-axiom-dark p-6 fixed h-full z-30">
@@ -154,7 +154,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, user, onNavigate
                         </div>
                         <button
                             onClick={() => signOut(auth)}
-                            className="ml-auto opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+                            className="ml-auto opacity-50 hover:opacity-100 cursor-pointer"
                             title="Sign out"
                         >
                             <LogOut />
