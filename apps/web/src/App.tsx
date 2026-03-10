@@ -94,7 +94,7 @@ export default function App() {
                 </div>
             ) : user ? (
                 // Logged In Flow
-                <Layout currentView={currentView} onNavigate={setCurrentView}>
+                <Layout currentView={currentView} user={user} onNavigate={setCurrentView}>
                     {renderContent()}
                 </Layout>
             ) : showAuth ? (

@@ -13,9 +13,9 @@ import {
     Target
 } from 'lucide-react';
 import { AppView } from '../App';
-import { signOut } from 'firebase/auth';
+import { signOut, type User } from 'firebase/auth';
 import { auth, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 
 const ParcellLogo = () => (
     <svg width="32" height="32" viewBox="0 0 1113.57 1295.11" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-axiom-headingLight dark:text-white">
@@ -52,10 +52,11 @@ const getInitialTheme = (): boolean => {
 interface LayoutProps {
     children: React.ReactNode;
     currentView: AppView;
+    user: User | null;
     onNavigate: (view: AppView) => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) => {
+const Layout: React.FC<LayoutProps> = ({ children, currentView, user, onNavigate }) => {
     const [isDark, setIsDark] = useState(getInitialTheme());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -67,43 +68,36 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) =>
     const toggleTheme = () => setIsDark((d) => !d);
 
     useEffect(() => {
-        const fetchUserProfile = async () => {
-            const user = auth.currentUser;
-            if (user) {
-                try {
-                    const userRef = doc(db, 'users', user.uid);
-                    const userSnap = await getDoc(userRef);
+        if (!user) return;
 
-                    if (userSnap.exists()) {
-                        const userData = userSnap.data();
-                        const name = userData.displayName || user.email || 'Admin User';
-                        setDisplayName(name);
+        const userRef = doc(db, 'users', user.uid);
 
-                        const initials = name
-                            .split(' ')
-                            .map((n: string) => n[0])
-                            .join('')
-                            .toUpperCase()
-                            .substring(0, 2);
-                        setUserInitials(initials);
+        const unsubscribe = onSnapshot(userRef, async (userSnap) => {
+            if (!userSnap.exists()) return;
 
-                        if (userData.organizationId) {
-                            const orgRef = doc(db, 'organizations', userData.organizationId);
-                            const orgSnap = await getDoc(orgRef);
-                            if (orgSnap.exists()) {
-                                setOrgName(orgSnap.data().name);
-                            }
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error fetching user profile:", error);
-                    setDisplayName("Error Loading");
+            const userData = userSnap.data();
+            const name = userData.displayName || user.email || 'Admin User';
+            setDisplayName(name);
+
+            const initials = name
+                .split(' ')
+                .map((n: string) => n[0])
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+            setUserInitials(initials);
+
+            if (userData.organizationId) {
+                const orgRef = doc(db, 'organizations', userData.organizationId);
+                const orgSnap = await getDoc(orgRef);
+                if (orgSnap.exists()) {
+                    setOrgName(orgSnap.data().name);
                 }
             }
-        };
+        });
 
-        fetchUserProfile();
-    }, []);
+        return unsubscribe;
+    }, [user]);
 
     useEffect(() => {
         const html = document.documentElement;

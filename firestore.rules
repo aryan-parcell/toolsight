@@ -46,8 +46,8 @@ service cloud.firestore {
     }
 
     match /organizations/{orgId} {
-      // Anyone in the organization can read organization data.
-      allow read: if isSignedIn() && getUserData().organizationId == orgId;
+      // Anyone can read organization data.
+      allow read: if true;
 
       // Only newly created admins can create organizations, but the org is created before the user profile exists.
       allow create: if isSignedIn(); 
