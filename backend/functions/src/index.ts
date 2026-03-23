@@ -22,12 +22,13 @@ import {auditScheduler} from "./auditScheduler";
 import {aiAuditer} from "./aiAuditer";
 import {HttpsError, onCall} from "firebase-functions/https";
 import {analyzeToolImage} from "./gemini";
+import {createCheckoutSession, stripeWebhook} from "./stripe";
 
 // For cost control, you can set the maximum number of containers that can be
 // running at the same time
 setGlobalOptions({maxInstances: 10});
 
-export {auditScheduler, aiAuditer};
+export {auditScheduler, aiAuditer, createCheckoutSession, stripeWebhook};
 
 export const discoverTools = onCall({
   cors: true,
