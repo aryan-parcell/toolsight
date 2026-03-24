@@ -14,26 +14,34 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
-    // Does the doc belong to the user's org?
-    // This relies on 'organizationId' existing on the document itself
-    function belongsToOrg(resourceData) {
-      return isSignedIn() && resourceData.organizationId == getUserData().organizationId;
-    }
-
-    // Validate that the user is not being invalidly changed
-    function userCoreUnchanged() {
-      return request.resource.data.organizationId == resource.data.organizationId && request.resource.data.role == resource.data.role;
-    }
-
     // Check if the user has a specific role (e.g., 'admin', 'maintainer')
     function hasRole(role) {
       return isSignedIn() && getUserData().role == role;
     }
 
+    // Does the doc belong to the user's (active) org?
+    // This relies on 'organizationId' existing on the document itself
+    // Validates auth, org ownership, AND active billing in one swoop.
+    function hasActiveOrgAccess(docData) {
+      let user = getUserData();
+      let isSameOrg = docData.organizationId == user.organizationId;
+      let isSubActive = get(/databases/$(database)/documents/organizations/$(user.organizationId)).data.subscriptionStatus == 'active';
+      
+      return isSignedIn() && isSameOrg && isSubActive;
+    }
+
+    function onlyFieldsUpdated(allowedFields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowedFields);
+    }
+
+    // One-use functions for simplicity in rules
+
+    function userUpdateValid() {
+      return onlyFieldsUpdated(['name', 'email', 'fcmToken', 'lastLogin']);
+    }
+
     function maintainerToolboxUpdateValid() {
-      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(
-        ['status', 'currentUserId', 'currentCheckoutId', 'lastAuditId']
-      );
+      return onlyFieldsUpdated(['status', 'currentUserId', 'currentCheckoutId', 'lastAuditId']);
     }
 
     // --- COLLECTION RULES ---
@@ -56,43 +64,43 @@ service cloud.firestore {
     // Users: You can only read/write your OWN profile.
     match /users/{userId} {
       allow read, create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isSignedIn() && request.auth.uid == userId && userCoreUnchanged();
+      allow update: if isSignedIn() && request.auth.uid == userId && userUpdateValid();
     }
 
     match /templates/{templateId} {
       // Anyone in the organization can read templates.
-      allow read: if belongsToOrg(resource.data);
+      allow read: if hasActiveOrgAccess(resource.data);
 
       // Only 'admin' users can create, update, or delete templates.
-      allow create: if hasRole('admin') && belongsToOrg(request.resource.data);
-      allow update: if hasRole('admin') && belongsToOrg(request.resource.data) && belongsToOrg(resource.data);
-      allow delete: if hasRole('admin') && belongsToOrg(resource.data);
+      allow create: if hasRole('admin') && hasActiveOrgAccess(request.resource.data);
+      allow update: if hasRole('admin') && hasActiveOrgAccess(request.resource.data) && hasActiveOrgAccess(resource.data);
+      allow delete: if hasRole('admin') && hasActiveOrgAccess(resource.data);
     }
 
     match /toolboxes/{toolboxId} {
       // Anyone in the organization can read toolboxes.
-      allow read: if belongsToOrg(resource.data);
+      allow read: if hasActiveOrgAccess(resource.data);
 
       // Only 'admin' users can create, update, or delete toolboxes.
-      allow create: if hasRole('admin') && belongsToOrg(request.resource.data);
-      allow update: if (hasRole('admin') || maintainerToolboxUpdateValid()) && belongsToOrg(request.resource.data) && belongsToOrg(resource.data);
-      allow delete: if hasRole('admin') && belongsToOrg(resource.data);
+      allow create: if hasRole('admin') && hasActiveOrgAccess(request.resource.data);
+      allow update: if (hasRole('admin') || maintainerToolboxUpdateValid()) && hasActiveOrgAccess(request.resource.data) && hasActiveOrgAccess(resource.data);
+      allow delete: if hasRole('admin') && hasActiveOrgAccess(resource.data);
     }
 
     match /checkouts/{checkoutId} {
       // Anyone in the organization can create, read, or update checkouts.
-      allow read: if belongsToOrg(resource.data);
-      allow update: if belongsToOrg(resource.data) && belongsToOrg(request.resource.data);
+      allow read: if hasActiveOrgAccess(resource.data);
+      allow update: if hasActiveOrgAccess(resource.data) && hasActiveOrgAccess(request.resource.data);
 
       // Only 'maintainer' users can create checkouts.
-      allow create: if hasRole('maintainer') && belongsToOrg(request.resource.data);
+      allow create: if hasRole('maintainer') && hasActiveOrgAccess(request.resource.data);
     }
 
     // Audits: Must match Org ID.
     match /audits/{auditId} {
-      allow read: if belongsToOrg(resource.data);
-      allow create: if belongsToOrg(request.resource.data);
-      allow update: if belongsToOrg(resource.data) && belongsToOrg(request.resource.data);
+      allow read: if hasActiveOrgAccess(resource.data);
+      allow create: if hasActiveOrgAccess(request.resource.data);
+      allow update: if hasActiveOrgAccess(resource.data) && hasActiveOrgAccess(request.resource.data);
     }
   }
 }

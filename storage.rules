@@ -14,14 +14,18 @@ service firebase.storage {
       return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data;
     }
 
-    // Check if the User's org matches the folder's org
-    function belongsToOrg(orgId) {
-      return isSignedIn() && getUserData().organizationId == orgId;
-    }
-
     // Check if the user has a specific role (e.g., 'admin', 'maintainer')
     function hasRole(role) {
       return isSignedIn() && getUserData().role == role;
+    }
+
+    // Check if the User's org matches the folder's org and that org is active
+    function hasActiveOrgAccess(orgId) {
+      let user = getUserData();
+      let isSameOrg = user.organizationId == orgId;
+      let isSubActive = firestore.get(/databases/(default)/documents/organizations/$(user.organizationId)).data.subscriptionStatus == 'active';
+      
+      return isSignedIn() && isSameOrg && isSubActive;
     }
 
     // --- STORAGE RULES ---
@@ -30,18 +34,18 @@ service firebase.storage {
       
       match /audits/{auditId}/{allPaths=**} {
         // Anyone in the organization can see drawer audit photos
-        allow read: if belongsToOrg(orgId);
+        allow read: if hasActiveOrgAccess(orgId);
         
         // Any maintainer in the organization can upload drawer audit photos
-        allow write: if belongsToOrg(orgId) && hasRole('maintainer');
+        allow write: if hasActiveOrgAccess(orgId) && hasRole('maintainer');
       }
 
       match /templates/{templateId}/{allPaths=**} {
         // Anyone in the organization can see template images
-        allow read: if belongsToOrg(orgId);
+        allow read: if hasActiveOrgAccess(orgId);
         
         // Any admin in the organization can upload template images
-        allow write: if belongsToOrg(orgId) && hasRole('admin');
+        allow write: if hasActiveOrgAccess(orgId) && hasRole('admin');
       }
     }
   }
