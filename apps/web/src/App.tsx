@@ -128,7 +128,7 @@ export default function App() {
             case AppView.REPORTS:
                 return <Reports />;
             case AppView.SETTINGS:
-                return <Settings />;
+                return <Settings orgId={orgId!} />;
             default:
                 return <Dashboard onNavigate={setCurrentView} orgId={orgId!} />;
         }

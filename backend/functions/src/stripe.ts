@@ -101,3 +101,40 @@ export const stripeWebhook = onRequest(async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+/**
+ * Generates a Stripe Customer Portal URL so users can manage/cancel
+ * their subscription
+ */
+export const createPortalSession = onCall({cors: true}, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "User must be logged in.");
+  }
+
+  const {orgId} = request.data;
+  if (!orgId) {
+    throw new HttpsError("invalid-argument", "Organization ID is required");
+  }
+
+  // Fetch the Stripe customer ID for the org from Firestore
+  const orgDoc = await db.collection("organizations").doc(orgId).get();
+  const orgData = orgDoc.data();
+
+  if (!orgData || !orgData.stripeCustomerId) {
+    throw new HttpsError("failed-precondition", "No billing account found.");
+  }
+
+  const stripe = getStripe();
+
+  try {
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: orgData.stripeCustomerId,
+      return_url: "https://toolsight-teng.web.app/",
+    });
+
+    return {url: portalSession.url};
+  } catch (error: any) {
+    console.error("Stripe Portal Creation Failed:", error);
+    throw new HttpsError("internal", error.message);
+  }
+});

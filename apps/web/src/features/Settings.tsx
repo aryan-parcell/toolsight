@@ -1,44 +1,65 @@
-import { Settings2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { CreditCard } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
-export function Settings() {
+interface SettingsProps {
+    orgId: string;
+}
+
+export function Settings({ orgId }: SettingsProps) {
+    const [loadingPortal, setLoadingPortal] = useState(false);
+
+    const handleManageSubscription = async () => {
+        setLoadingPortal(true);
+        try {
+            const functions = getFunctions();
+            const createPortalSession = httpsCallable(functions, 'createPortalSession');
+
+            const response = await createPortalSession({ orgId });
+            const data = response.data as { url: string };
+
+            if (data.url) {
+                window.location.href = data.url; // Redirect to Stripe Portal
+            }
+        } catch (err) {
+            console.error("Failed to open billing portal:", err);
+            alert("Could not connect to billing portal. Please try again later.");
+        } finally {
+            setLoadingPortal(false);
+        }
+    };
+
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-4xl font-black text-axiom-headingLight dark:text-white">Settings</h2>
-                    <p className="text-axiom-textLight dark:text-axiom-textDark">Edit app settings.</p>
+                    <p className="text-axiom-textLight dark:text-axiom-textDark">Edit app and billing preferences.</p>
                 </div>
             </div>
 
-            {/* Content */}
+            {/* Billing Card */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Settings2 className="h-5 w-5" /> Preferences</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5" /> Billing & Subscription</CardTitle>
+                    <CardDescription>Manage your ToolSight Pro plan, payment methods, and invoices.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
+                <CardContent>
+                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg">
                         <div>
-                            <div className="text-sm font-medium">High-contrast mode</div>
-                            <div className="text-xs text-zinc-500">Improves visibility in bright or dim conditions</div>
+                            <div className="font-semibold text-gray-900 dark:text-white">ToolSight Subscription (Active)</div>
+                            <div className="text-sm text-gray-500">Billed securely via Stripe</div>
                         </div>
-                        <Switch />
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="text-sm font-medium">Glove-friendly controls</div>
-                            <div className="text-xs text-zinc-500">Increases hit targets to 48–56px</div>
-                        </div>
-                        <Switch defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="text-sm font-medium">Edge processing</div>
-                            <div className="text-xs text-zinc-500">Analyze photos locally when possible</div>
-                        </div>
-                        <Switch />
+                        <Button
+                            variant="outline"
+                            onClick={handleManageSubscription}
+                            disabled={loadingPortal}
+                        >
+                            {loadingPortal ? "Connecting..." : "Manage Subscription"}
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
