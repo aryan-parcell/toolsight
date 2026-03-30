@@ -17,11 +17,10 @@ const ParcellLogo = () => (
 );
 
 interface LoginProps {
-    onLoginSuccess: () => void;
     onBack: () => void;
 }
 
-export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onBack }) => {
+export const Login: React.FC<LoginProps> = ({ onBack }) => {
     const [isSignUp, setIsSignUp] = useState(false);
     const [orgName, setOrgName] = useState('');
     const [email, setEmail] = useState('');
@@ -65,8 +64,6 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onBack }) => {
                 organizationId: orgRef.id,
                 role: 'admin',
             });
-
-            onLoginSuccess();
         } catch (err: any) {
             setError(err.message || 'Failed to create account');
         } finally {
@@ -81,7 +78,6 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess, onBack }) => {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            onLoginSuccess();
         } catch (err: any) {
             setError(err.message || 'Failed to sign in');
         } finally {

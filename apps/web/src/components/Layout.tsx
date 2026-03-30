@@ -13,10 +13,7 @@ import {
     Target
 } from 'lucide-react';
 import { AppView } from '../App';
-import { signOut } from 'firebase/auth';
-import { auth, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import type { User as AppUser } from '@shared/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ParcellLogo = () => (
     <svg width="32" height="32" viewBox="0 0 1113.57 1295.11" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-axiom-headingLight dark:text-white">
@@ -53,11 +50,12 @@ const getInitialTheme = (): boolean => {
 interface LayoutProps {
     children: React.ReactNode;
     currentView: AppView;
-    user: AppUser | null;
     onNavigate: (view: AppView) => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, currentView, user, onNavigate }) => {
+const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) => {
+    const {appUser, organization, logout} = useAuth();
+
     const [isDark, setIsDark] = useState(getInitialTheme());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -69,9 +67,9 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, user, onNavigate
     const toggleTheme = () => setIsDark((d) => !d);
 
     useEffect(() => {
-        if (!user) return;
+        if (!appUser) return;
 
-        const name = user.displayName || user.email || 'Admin User';
+        const name = appUser.displayName || appUser.email || 'Admin User';
         setDisplayName(name);
 
         const initials = name
@@ -82,13 +80,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, user, onNavigate
             .substring(0, 2);
         setUserInitials(initials);
 
-        const orgRef = doc(db, 'organizations', user.organizationId);
-        getDoc(orgRef).then((orgSnap) => {
-            if (orgSnap.exists()) {
-                setOrgName(orgSnap.data().name);
-            }
-        });
-    }, [user]);
+        setOrgName(organization?.name || 'Organization');
+    }, [appUser, organization]);
 
     useEffect(() => {
         const html = document.documentElement;
@@ -153,7 +146,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, user, onNavigate
                             </div>
                         </div>
                         <button
-                            onClick={() => signOut(auth)}
+                            onClick={logout}
                             className="ml-auto opacity-50 hover:opacity-100 cursor-pointer"
                             title="Sign out"
                         >
