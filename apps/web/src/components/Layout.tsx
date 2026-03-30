@@ -119,8 +119,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, user, onNavigate
             <NavItem view={AppView.TOOLBOX_OVERVIEW} icon={LayoutGrid} label="Toolbox Overview" />
             <NavItem view={AppView.TEMPLATE_BUILDER} icon={Hammer} label="Template Builder" />
             <NavItem view={AppView.INVENTORY} icon={Package} label="Template Inventory" />
-            <NavItem view={AppView.CALIBRATION} icon={Target} label="Calibration" />
-            <NavItem view={AppView.REPORTS} icon={FileText} label="Reports" />
+            {/* <NavItem view={AppView.CALIBRATION} icon={Target} label="Calibration" /> */}
+            {/* <NavItem view={AppView.REPORTS} icon={FileText} label="Reports" /> */}
             <NavItem view={AppView.SETTINGS} icon={Settings} label="Settings" />
         </div>
     );

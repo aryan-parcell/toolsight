@@ -312,11 +312,11 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
                                     </button>
                                     <button
                                         onClick={() => {
-                                            if (anchors.length < 4) {
-                                                alert("Please define exactly 4 anchor points before proceeding.");
-                                                setEditorMode('anchors');
-                                                return;
-                                            }
+                                            // if (anchors.length < 4) {
+                                            //     alert("Please define exactly 4 anchor points before proceeding.");
+                                            //     setEditorMode('anchors');
+                                            //     return;
+                                            // }
                                             setStep(BuilderStep.ASSIGNMENT);
                                         }}
                                         className="bg-green-600 text-white px-6 py-2 rounded-full text-sm flex items-center justify-center gap-1"
