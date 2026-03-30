@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronRight, Settings, ChevronLeft, ChevronDown } from 'lucide-react';
-import type { Drawer, ToolBox, Tool, DrawerState } from '@shared/types';
+import type { Drawer, ToolBox, Tool } from '@shared/types';
 import { AppView } from '../App';
-import { db } from '../firebase';
-import { collection, doc, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { useToolboxes } from '@/hooks/useToolboxes';
 
 interface ToolboxWizardProps {
     onNavigate: (view: AppView) => void;
@@ -19,6 +18,8 @@ const foamColors = [
 ];
 
 const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate, orgId }) => {
+    const { createToolbox } = useToolboxes(orgId);
+
     const [step, setStep] = useState(1);
     const [activeDrawer, setActiveDrawer] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,54 +79,15 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate, orgId }) => {
         }
     }
 
-    const createInitialAuditFromToolbox = (tb: ToolBox) => {
-        // Use drawer and tool data to create initial audit state
-        const drawerStates: Record<string, DrawerState> = {};
-        tb.drawers.forEach((drawer: Drawer) => {
-            drawerStates[drawer.drawerId] = {
-                drawerStatus: "user-validated",
-                imageStoragePath: null,
-                results: {}
-            };
-        });
-        tb.tools.forEach((tool: Tool) => {
-            drawerStates[tool.drawerId].results![tool.toolId] = {
-                toolId: tool.toolId,
-                status: "present",
-                confidence: 1,
-                toolInfo: tool.toolInfo,
-            };
-        });
-
-        return {
-            organizationId: orgId,
-            checkoutId: null,
-            startTime: serverTimestamp(),
-            endTime: serverTimestamp(),
-            drawerStates: drawerStates,
-        };
-    }
-
     const handleCreate = async () => {
         if (isSubmitting) return;
         setIsSubmitting(true);
 
         try {
             const newToolbox: ToolBox = createToolboxFromFormData();
-            const initialAudit = createInitialAuditFromToolbox(newToolbox);
 
-            const batch = writeBatch(db);
+            await createToolbox(orgId, formData.eid, newToolbox);
 
-            const newToolboxRef = doc(db, 'toolboxes', formData.eid);
-            const newAuditRef = doc(collection(db, 'audits'));
-
-            newToolbox.lastAuditId = newAuditRef.id;
-
-            batch.set(newAuditRef, initialAudit);
-            batch.set(newToolboxRef, newToolbox);
-
-            await batch.commit();
-            console.log("Toolbox created successfully");
             onNavigate(AppView.TOOLBOX_OVERVIEW);
 
         } catch (error) {

@@ -2,12 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import AutosaveInput from '@/components/AutosaveInput';
 import type { ToolBox } from '@shared/types';
+import { useToolboxes } from '@/hooks/useToolboxes';
 import { DialogTrigger } from '@radix-ui/react-dialog';
-import { collection, deleteDoc, doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { ChevronDown, Plus, User } from 'lucide-react';
-import React, { forwardRef, useEffect, useState } from 'react';
+import { forwardRef } from 'react';
 import { AppView } from '../App';
-import { db } from '../firebase';
 import TemplateDisplay from '@/components/TemplateDisplay';
 
 const foamColors = [
@@ -17,11 +16,6 @@ const foamColors = [
     { name: 'Grey', value: 'Grey', hex: '#4B5563' },
     { name: 'Yellow', value: 'Yellow', hex: '#CA8A04' },
 ];
-
-interface DashboardProps {
-    onNavigate: (view: AppView) => void;
-    orgId: string;
-}
 
 const ToolboxDetailView = forwardRef<HTMLDivElement, { toolbox: ToolBox }>(({ toolbox, ...props }, ref) => {
     const { id, name, drawers, tools, status } = toolbox;
@@ -54,38 +48,31 @@ const ToolboxDetailView = forwardRef<HTMLDivElement, { toolbox: ToolBox }>(({ to
     );
 });
 
-const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
-    const { id, name, drawers, tools, type, foamColors: toolboxFoamColors, auditProfile } = toolbox;
+interface EditDialogProps {
+    toolbox: ToolBox;
+    updateToolbox: (id: string, data: Partial<ToolBox>) => Promise<void>;
+    deleteToolbox: (id: string) => Promise<void>;
+}
 
-    const toolboxRef = doc(db, 'toolboxes', id as string);
+export function ToolboxEditDialog({ toolbox, updateToolbox, deleteToolbox }: EditDialogProps) {
+    const { id, name, drawers, tools, type, foamColors: toolboxFoamColors, auditProfile } = toolbox;
 
     const getHexColor = (colorName: string) => {
         return foamColors.find(c => c.value === colorName)?.hex || '#000000';
     };
 
-    const handleUpdateToolbox = async (fields: Partial<ToolBox>) => {
-        try {
-            await updateDoc(toolboxRef, fields);
-        } catch (error) {
-            console.error("Error updating toolbox:", error);
-        }
-    };
-
     const handleUpdateToolName = async (toolId: string, newName: string) => {
-        try {
-            // Firestore requires us to write back the entire array to update an object inside it
-            const updatedTools = tools.map(t =>
-                t.toolId === toolId ? { ...t, toolName: newName } : t
-            );
+        // Firestore requires us to write back the entire array to update an object inside it
+        const updatedTools = tools.map(t =>
+            t.toolId === toolId ? { ...t, toolInfo: { ...t.toolInfo, name: newName } } : t
+        );
 
-            await updateDoc(toolboxRef, { tools: updatedTools });
-        } catch (error) {
-            console.error("Error updating tool name:", error);
-        }
+        await updateToolbox(id!, { tools: updatedTools });
+
     };
 
     const handleUnlinkDrawerTemplate = async (drawerId: string) => {
-        // Update local state (assuming 'drawers' is your state variable)
+        // Firestore requires us to write back the entire array to update an object inside it
         const updatedDrawers = drawers.map(d => {
             if (d.drawerId === drawerId) {
                 const { templateId, ...rest } = d;
@@ -94,16 +81,7 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
             return d;
         });
 
-        console.log(`Unlinking template from toolbox: ${toolbox.name}`);
-        handleUpdateToolbox({ drawers: updatedDrawers })
-    };
-
-    const handleDeleteToolbox = async () => {
-        try {
-            await deleteDoc(toolboxRef);
-        } catch (error) {
-            console.error("Error deleting toolbox:", error);
-        }
+        await updateToolbox(id!, { drawers: updatedDrawers });
     };
 
     return (
@@ -114,14 +92,14 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
                 <div className="bg-gray-200 dark:bg-gray-700 p-5 rounded-lg space-y-4">
                     <div>
                         <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Toolbox Name</label>
-                        <AutosaveInput value={name} onSave={(val) => handleUpdateToolbox({ name: val })} />
+                        <AutosaveInput value={name} onSave={(val) => updateToolbox(id!, { name: val })} />
                     </div>
 
                     <div>
                         <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Toolbox Type</label>
                         <select
                             value={type}
-                            onChange={e => handleUpdateToolbox({ type: e.target.value })}
+                            onChange={e => updateToolbox(id!, { type: e.target.value })}
                             className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
                         >
                             <option>Rolling Tool Cart</option>
@@ -136,7 +114,7 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
                             <div className="relative">
                                 <select
                                     value={toolboxFoamColors.primary}
-                                    onChange={e => handleUpdateToolbox({ foamColors: { ...toolboxFoamColors, primary: e.target.value } })}
+                                    onChange={e => updateToolbox(id!, { foamColors: { ...toolboxFoamColors, primary: e.target.value } })}
                                     className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
                                 >
                                     {foamColors.map(c => (
@@ -155,7 +133,7 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
                             <div className="relative">
                                 <select
                                     value={toolboxFoamColors.secondary}
-                                    onChange={e => handleUpdateToolbox({ foamColors: { ...toolboxFoamColors, secondary: e.target.value } })}
+                                    onChange={e => updateToolbox(id!, { foamColors: { ...toolboxFoamColors, secondary: e.target.value } })}
                                     className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
                                 >
                                     {foamColors.map(c => (
@@ -177,14 +155,14 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
 
                         <div className="grid grid-cols-2 gap-4">
                             <button
-                                onClick={() => handleUpdateToolbox({ auditProfile: { ...auditProfile, requireOnCheckout: !auditProfile.requireOnCheckout } })}
+                                onClick={() => updateToolbox(id!, { auditProfile: { ...auditProfile, requireOnCheckout: !auditProfile.requireOnCheckout } })}
                                 className={`p-2 rounded-lg text-sm transition-colors 
                                     ${auditProfile.requireOnCheckout ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-600 dark:text-gray-300'}`}
                             >
                                 Audit on Checkout
                             </button>
                             <button
-                                onClick={() => handleUpdateToolbox({ auditProfile: { ...auditProfile, requireOnReturn: !auditProfile.requireOnReturn } })}
+                                onClick={() => updateToolbox(id!, { auditProfile: { ...auditProfile, requireOnReturn: !auditProfile.requireOnReturn } })}
                                 className={`p-2 rounded-lg text-sm transition-colors 
                                     ${auditProfile.requireOnReturn ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-600 dark:text-gray-300 '}`}
                             >
@@ -199,7 +177,7 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
                         <div className="relative">
                             <select
                                 value={auditProfile.periodicFrequencyHours || 0}
-                                onChange={e => handleUpdateToolbox({
+                                onChange={e => updateToolbox(id!, {
                                     auditProfile: {
                                         ...auditProfile,
                                         shiftAuditType: parseInt(e.target.value) === 0 ? 'at-will' : 'periodic',
@@ -270,7 +248,7 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
 
                 <button
                     onClick={() => {
-                        if (confirm('Are you sure you want to delete this toolbox?')) handleDeleteToolbox();
+                        if (confirm('Are you sure you want to delete this toolbox?')) deleteToolbox(id!);
                     }}
                     className="w-full px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
                 >
@@ -281,7 +259,13 @@ const ToolboxEditDialog: React.FC<{ toolbox: ToolBox }> = ({ toolbox }) => {
     );
 };
 
-const ToolboxCard: React.FC<ToolBox> = (toolbox) => {
+interface ToolboxCardProps {
+    toolbox: ToolBox;
+    updateToolbox: (id: string, data: Partial<ToolBox>) => Promise<void>;
+    deleteToolbox: (id: string) => Promise<void>;
+}
+
+export function ToolboxCard({ toolbox, updateToolbox, deleteToolbox }: ToolboxCardProps) {
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -291,32 +275,19 @@ const ToolboxCard: React.FC<ToolBox> = (toolbox) => {
                 className="bg-axiom-surfaceLight dark:bg-axiom-surfaceDark rounded-lg p-6 max-h-[85vh] overflow-y-auto w-full"
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
-                <ToolboxEditDialog toolbox={toolbox} />
+                <ToolboxEditDialog toolbox={toolbox} updateToolbox={updateToolbox} deleteToolbox={deleteToolbox} />
             </DialogContent>
         </Dialog>
     );
 };
 
-const Dashboard: React.FC<DashboardProps> = ({ onNavigate, orgId }) => {
-    const [toolboxes, setToolboxes] = useState<ToolBox[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+interface DashboardProps {
+    onNavigate: (view: AppView) => void;
+    orgId: string;
+}
 
-    useEffect(() => {
-        const toolboxesRef = collection(db, 'toolboxes');
-
-        const q = query(toolboxesRef, where("organizationId", "==", orgId));
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const tbs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ToolBox));
-            setToolboxes(tbs);
-            setLoading(false);
-        }, (error) => {
-            console.error("Error fetching toolboxes: ", error);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, [orgId]);
+export default function Dashboard({ onNavigate, orgId }: DashboardProps) {
+    const { toolboxes, loading, updateToolbox, deleteToolbox } = useToolboxes(orgId);
 
     return (
         <div className="animate-in fade-in duration-500 space-y-10">
@@ -345,12 +316,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, orgId }) => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {toolboxes.map((tb) => (
-                        <ToolboxCard key={tb.id} {...tb} />
+                        <ToolboxCard key={tb.id} toolbox={tb} updateToolbox={updateToolbox} deleteToolbox={deleteToolbox} />
                     ))}
                 </div>
             )}
         </div>
     );
 };
-
-export default Dashboard;
