@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, CheckCircle2, ScanLine, ShieldCheck, Zap, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
+import { MarketingRepository } from '../repositories/MarketingRepository';
 import SystemGrid from '@/components/SystemGrid';
 
 const ParcellLogo = () => (
@@ -41,11 +40,7 @@ export default function LandingPage({ onLogin }: { onLogin: () => void }) {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await addDoc(collection(db, "demo_bookings"), {
-                ...formData,
-                status: "new",
-                createdAt: serverTimestamp()
-            });
+            await MarketingRepository.bookDemo(formData.fullName, formData.email, formData.company, formData.environment);
             setIsSuccess(true);
             setFormData({ fullName: '', email: '', company: '', environment: '' });
         } catch (error) {
