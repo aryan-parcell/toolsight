@@ -9,6 +9,7 @@ interface AuthContextType {
     appUser: AppUser | null;
     organization: Organization | null;
     loading: boolean;
+    error: string | null;
     logout: () => void;
 }
 
@@ -19,69 +20,103 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [appUser, setAppUser] = useState<AppUser | null>(null);
     const [organization, setOrganization] = useState<Organization | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
+    const handleError = (msg: string, shouldSignOut: boolean = false) => {
+        console.error(msg);
+        setError(msg);
+        setLoading(false);
+        if (shouldSignOut) auth.signOut();
+    };
+
+    const handleLoggedOutState = () => {
+        setAppUser(null);
+        setOrganization(null);
+        setLoading(false);
+    };
+
+    const subscribeToUser = (uid: string) => {
+        const userRef = doc(db, 'users', uid);
+        return onSnapshot(
+            userRef,
+            (userDoc) => {
+                if (userDoc.exists()) {
+                    const userData = userDoc.data() as AppUser;
+                    setAppUser(userData);
+                } else {
+                    handleError('User document not found.', false);
+                }
+            },
+            (err) => handleError(`Error fetching user data: ${err.message}`, false)
+        );
+    };
+
+    const subscribeToOrganization = (orgId: string) => {
+        const orgRef = doc(db, 'organizations', orgId);
+        return onSnapshot(
+            orgRef,
+            (orgDoc) => {
+                if (orgDoc.exists()) {
+                    const orgData = { id: orgDoc.id, ...orgDoc.data() } as Organization;
+                    setOrganization(orgData);
+                    setLoading(false);
+                } else {
+                    handleError('Organization document not found.', false);
+                }
+            },
+            (err) => handleError(`Error fetching org data: ${err.message}`, false)
+        );
+    };
+
+    // AuthUser & AppUser Subscription
     useEffect(() => {
-        let unsubscribeDoc: (() => void) | null = null;
+        let unsubscribeUser: (() => void) | null = null;
 
         const unsubscribeAuth = auth.onAuthStateChanged((currentUser) => {
             setAuthUser(currentUser);
+            setError(null);
 
-            if (unsubscribeDoc) {
-                unsubscribeDoc();
-                unsubscribeDoc = null;
+            // Cleanup previous user listener if it exists
+            if (unsubscribeUser) {
+                unsubscribeUser();
+                unsubscribeUser = null;
             }
 
-            if (currentUser) {
-                const userRef = doc(db, 'users', currentUser.uid);
-                unsubscribeDoc = onSnapshot(userRef, (userDoc) => {
-                    if (userDoc.exists()) {
-                        const userData = userDoc.data() as AppUser;
-                        if (!userData.organizationId) {
-                            console.error('User does not have an organizationId:', userData);
-                            auth.signOut();
-                            return;
-                        }
-                        setAppUser(userData);
-                    }
-                }, (error) => {
-                    console.error('Error fetching user data:', error);
-                    setLoading(false);
-                });
-            } else {
-                setAppUser(null);
-                setOrganization(null);
-                setLoading(false);
+            if (!currentUser) {
+                handleLoggedOutState();
+                return;
             }
+
+            // User logged in, subscribe to their user document
+            unsubscribeUser = subscribeToUser(currentUser.uid);
         });
 
         return () => {
             unsubscribeAuth();
-            if (unsubscribeDoc) unsubscribeDoc();
+            if (unsubscribeUser) unsubscribeUser();
         };
     }, []);
 
+    // Organization Subscription
     useEffect(() => {
-        if (!appUser?.organizationId) return;
+        if (!appUser) return;
+        if (!appUser.organizationId) {
+            handleError('User does not have an organizationId.', true);
+            return;
+        }
 
-        const orgRef = doc(db, 'organizations', appUser.organizationId);
-        const unsubscribe = onSnapshot(orgRef, (orgDoc) => {
-            if (orgDoc.exists()) {
-                const orgData = { id: orgDoc.id, ...orgDoc.data() } as Organization;
-                setOrganization(orgData);
-                setLoading(false);
-            }
-        }, (error) => {
-            console.error('Error fetching org data:', error);
-            setLoading(false);
-        });
+        const unsubscribeOrg = subscribeToOrganization(appUser.organizationId);
 
-        return () => unsubscribe();
-    }, [appUser?.organizationId]);
+        return () => unsubscribeOrg();
+    }, [appUser]);
 
-    const logout = () => auth.signOut();
+    const logout = () => {
+        setError(null);
+        auth.signOut();
+    };
 
     return (
-        <AuthContext.Provider value={{ authUser, appUser, organization, loading, logout }}>
+        <AuthContext.Provider value={{ authUser, appUser, organization, loading, error, logout }}>
             {children}
         </AuthContext.Provider>
     );
