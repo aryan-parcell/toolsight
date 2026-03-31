@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { FunctionsRepository } from '../repositories/FunctionsRepository';
 
 interface PaymentGateProps {
     orgId: string;
@@ -19,11 +19,7 @@ export const PaymentGate: React.FC<PaymentGateProps> = ({ orgId, orgName }) => {
         console.log(`Initiating subscription for orgId: ${orgId}`);
 
         try {
-            const functions = getFunctions();
-            const createCheckoutSession = httpsCallable(functions, 'createCheckoutSession');
-
-            const response = await createCheckoutSession({ orgId });
-            const data = response.data as { url: string };
+            const data = await FunctionsRepository.createCheckoutSession(orgId);
 
             if (data.url) {
                 window.location.href = data.url; // Redirect to Stripe

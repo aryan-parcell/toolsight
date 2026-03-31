@@ -2,7 +2,7 @@ import { CreditCard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import { FunctionsRepository } from "@/repositories/FunctionsRepository";
 
 interface SettingsProps {
     orgId: string;
@@ -14,11 +14,7 @@ export function Settings({ orgId }: SettingsProps) {
     const handleManageSubscription = async () => {
         setLoadingPortal(true);
         try {
-            const functions = getFunctions();
-            const createPortalSession = httpsCallable(functions, 'createPortalSession');
-
-            const response = await createPortalSession({ orgId });
-            const data = response.data as { url: string };
+            const data = await FunctionsRepository.createPortalSession(orgId);
 
             if (data.url) {
                 window.location.href = data.url; // Redirect to Stripe Portal
