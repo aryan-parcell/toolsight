@@ -87,7 +87,7 @@ export default function ToolboxWizard({ onNavigate }: ToolboxWizardProps) {
         try {
             const newToolbox: ToolBox = createToolboxFromFormData();
 
-            await createToolbox(organization!.id, formData.eid, newToolbox);
+            await createToolbox(formData.eid, newToolbox);
 
             onNavigate(AppView.TOOLBOX_OVERVIEW);
 

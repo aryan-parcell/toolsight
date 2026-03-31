@@ -36,9 +36,9 @@ export function useToolboxes(orgId: string | undefined) {
         return () => unsubscribe();
     }, [orgId]);
 
-    const createToolbox = async (orgId: string, toolboxId: string, data: Omit<ToolBox, 'id'>) => {
+    const createToolbox = async (toolboxId: string, data: Omit<ToolBox, 'id'>) => {
         try {
-            await ToolboxRepository.createToolbox(orgId, toolboxId, data);
+            await ToolboxRepository.createToolbox(toolboxId, data);
         } catch (err) {
             console.error("Error creating toolbox:", err);
             setError(err instanceof Error ? err.message : String(err));

@@ -2,7 +2,7 @@ import { collection, doc, query, where, onSnapshot, addDoc, updateDoc, deleteDoc
 import { db } from '../firebase';
 import type { ToolBox, DrawerState, Drawer, Tool } from '@shared/types';
 
-const createInitialAuditFromToolbox = (orgId: string, tb: ToolBox) => {
+const createInitialAuditFromToolbox = (tb: ToolBox) => {
     // Use drawer and tool data to create initial audit state
     const drawerStates: Record<string, DrawerState> = {};
     tb.drawers.forEach((drawer: Drawer) => {
@@ -22,7 +22,7 @@ const createInitialAuditFromToolbox = (orgId: string, tb: ToolBox) => {
     });
 
     return {
-        organizationId: orgId,
+        organizationId: tb.organizationId,
         checkoutId: null,
         startTime: serverTimestamp(),
         endTime: serverTimestamp(),
@@ -55,9 +55,9 @@ export const ToolboxRepository = {
     /**
      * Creates a new toolbox
      */
-    createToolbox: async (orgId: string, toolboxId: string, data: Omit<ToolBox, 'id'>) => {
+    createToolbox: async (toolboxId: string, data: Omit<ToolBox, 'id'>) => {
         // Create an initial audit document that captures the starting state of the toolbox.
-        const initialAudit = createInitialAuditFromToolbox(orgId, data);
+        const initialAudit = createInitialAuditFromToolbox(data);
 
         const batch = writeBatch(db);
 
