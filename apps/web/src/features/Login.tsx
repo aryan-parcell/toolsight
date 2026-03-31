@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { OrganizationRepository } from '@/repositories/OrganizationRepository';
+import { UserRepository } from '@/repositories/UserRepository';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '../firebase';
-import { Mail, Lock, AlertCircle, Loader, Building, ArrowLeft } from 'lucide-react';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { AlertCircle, ArrowLeft, Building, Loader, Lock, Mail } from 'lucide-react';
+import { auth } from '../firebase';
 
 const ParcellLogo = () => (
     <svg width="64" height="64" viewBox="0 0 1113.57 1295.11" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,16 +53,13 @@ export const Login: React.FC<LoginProps> = ({ onBack }) => {
             const uid = userCred.user.uid;
 
             // 2. Create organization document
-            const orgRef = doc(collection(db, 'organizations'));
-            await setDoc(orgRef, {
-                name: orgName,
-            });
+            const orgId = await OrganizationRepository.createOrganization(orgName);
 
             // 3. Create user document linked to organization
-            await setDoc(doc(db, 'users', uid), {
+            await UserRepository.setUser(uid, {
                 email,
                 displayName: email.split('@')[0],
-                organizationId: orgRef.id,
+                organizationId: orgId,
                 role: 'admin',
             });
         } catch (err: any) {

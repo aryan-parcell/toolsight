@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth, db } from '../firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { OrganizationRepository } from '@/repositories/OrganizationRepository';
+import { UserRepository } from '@/repositories/UserRepository';
+import { auth } from '../firebase';
 import type { User as AuthUser } from 'firebase/auth';
 import type { User as AppUser, Organization } from '@shared/types';
 
@@ -36,35 +37,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const subscribeToUser = (uid: string) => {
-        const userRef = doc(db, 'users', uid);
-        return onSnapshot(
-            userRef,
-            (userDoc) => {
-                if (userDoc.exists()) {
-                    const userData = userDoc.data() as AppUser;
+        return UserRepository.subscribeToUser(
+            uid,
+            (userData) => {
+                if (userData) {
                     setAppUser(userData);
                 } else {
-                    handleError('User document not found.', false);
+                    handleError('User document not found.');
                 }
             },
-            (err) => handleError(`Error fetching user data: ${err.message}`, false)
+            (err) => handleError(`Error fetching user data: ${err.message}`)
         );
     };
 
-    const subscribeToOrganization = (orgId: string) => {
-        const orgRef = doc(db, 'organizations', orgId);
-        return onSnapshot(
-            orgRef,
-            (orgDoc) => {
-                if (orgDoc.exists()) {
-                    const orgData = { id: orgDoc.id, ...orgDoc.data() } as Organization;
+   const subscribeToOrganization = (orgId: string) => {
+        return OrganizationRepository.subscribeToOrganization(
+            orgId,
+            (orgData) => {
+                if (orgData) {
                     setOrganization(orgData);
                     setLoading(false);
                 } else {
-                    handleError('Organization document not found.', false);
+                    handleError('Organization document not found.');
                 }
             },
-            (err) => handleError(`Error fetching org data: ${err.message}`, false)
+            (err) => handleError(`Error fetching org data: ${err.message}`)
         );
     };
 
