@@ -1,15 +1,13 @@
-
 import React, { useState } from 'react';
 import { ArrowRight, Trash2, Plus, Edit, Anchor } from 'lucide-react';
-import type { Detection, AnchorPoint, Template } from '@shared/types';
+import type { Detection, AnchorPoint } from '@shared/types';
 import ImageUploadDropzone from '@/components/ImageUploadDropzone';
 import ImageAnalysisStep from '@/components/ImageAnalysisStep';
 import ToolDetection from '@/components/ToolDetection';
 import AnchorPointOverlay from '@/components/AnchorPointManager';
-import { httpsCallable, getFunctions } from "firebase/functions";
-import { getDownloadURL, ref, uploadString } from 'firebase/storage';
-import { db, storage } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { FunctionsRepository } from '../repositories/FunctionsRepository';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTemplates } from '@/hooks/useTemplates';
 
 // Workflow Steps
 enum BuilderStep {
@@ -24,6 +22,9 @@ interface TemplateBuilderProps {
 }
 
 const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
+    const { organization } = useAuth();
+    const { createTemplate } = useTemplates(organization?.id);
+
     const [step, setStep] = useState(BuilderStep.UPLOAD);
     const [image, setImage] = useState<string | null>(null);
 
@@ -53,12 +54,7 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
         if (!image) return;
         setIsAnalyzing(true);
         try {
-            const mimeType = image.split(';')[0].split(':')[1] || "image/png";
-
-            const functions = getFunctions();
-            const discoverTools = httpsCallable(functions, 'discoverTools');
-            const response = await discoverTools({ image: image, mimeType: mimeType });
-            const data = response.data as { tools: Detection[] };
+            const data = await FunctionsRepository.discoverTools(image);
             const detectedTools: Detection[] = data.tools || [];
 
             if (detectedTools.length > 0) {
@@ -129,24 +125,7 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
         setIsSaving(true);
 
         try {
-            // Upload Clean Template Image to Firebase Storage
-            const templateId = `${templateName}-${Date.now()}`;
-
-            const storagePath = `organizations/${orgId}/templates/${templateId}.jpg`;
-            const storageRef = ref(storage, storagePath);
-            await uploadString(storageRef, image, 'data_url');
-            const downloadUrl = await getDownloadURL(storageRef);
-
-            // Save Metadata to Firestore
-            const templateData: Template = {
-                name: templateName,
-                organizationId: orgId,
-                storagePath: storagePath,
-                imageUrl: downloadUrl,
-                tools: tools.map(t => t.toolInfo),
-            };
-
-            await setDoc(doc(db, "templates", templateId), templateData);
+            await createTemplate(orgId, templateName, image, tools.map(t => t.toolInfo));
 
             // Reset
             setImage(null);

@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import type { Detection, Template } from '@shared/types';
 import ToolDetection from './ToolDetection';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTemplates } from '@/hooks/useTemplates';
 
 interface TemplateDisplayProps {
     templateId: string;
 }
 
 export default function TemplateDisplay({ templateId }: TemplateDisplayProps) {
+    const { organization } = useAuth();
+    const { getTemplate } = useTemplates(organization?.id);
+
     const [template, setTemplate] = useState<Template | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -18,9 +21,11 @@ export default function TemplateDisplay({ templateId }: TemplateDisplayProps) {
         const fetchTemplate = async () => {
             try {
                 setLoading(true);
-                const snap = await getDoc(doc(db, 'templates', templateId));
-                if (snap.exists()) {
-                    setTemplate({ id: snap.id, ...snap.data() } as Template);
+
+                const data = await getTemplate(templateId);
+
+                if (data) {
+                    setTemplate(data);
                 } else {
                     setError("Template reference not found (Deleted?)");
                 }
