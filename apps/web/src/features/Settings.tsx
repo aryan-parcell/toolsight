@@ -3,18 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { FunctionsRepository } from "@/repositories/FunctionsRepository";
+import { useAuth } from "@/contexts/AuthContext";
 
-interface SettingsProps {
-    orgId: string;
-}
-
-export function Settings({ orgId }: SettingsProps) {
+export default function Settings() {
+    const { organization } = useAuth();
     const [loadingPortal, setLoadingPortal] = useState(false);
 
     const handleManageSubscription = async () => {
         setLoadingPortal(true);
         try {
-            const data = await FunctionsRepository.createPortalSession(orgId);
+            const data = await FunctionsRepository.createPortalSession(organization!.id);
 
             if (data.url) {
                 window.location.href = data.url; // Redirect to Stripe Portal

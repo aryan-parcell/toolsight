@@ -3,10 +3,10 @@ import { ChevronRight, Settings, ChevronLeft, ChevronDown } from 'lucide-react';
 import type { Drawer, ToolBox, Tool } from '@shared/types';
 import { AppView } from '../App';
 import { useToolboxes } from '@/hooks/useToolboxes';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ToolboxWizardProps {
     onNavigate: (view: AppView) => void;
-    orgId: string;
 }
 
 const foamColors = [
@@ -17,8 +17,9 @@ const foamColors = [
     { name: 'Yellow', value: 'Yellow', hex: '#CA8A04' },
 ];
 
-const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate, orgId }) => {
-    const { createToolbox } = useToolboxes(orgId);
+const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
+    const { organization } = useAuth();
+    const { createToolbox } = useToolboxes(organization?.id);
 
     const [step, setStep] = useState(1);
     const [activeDrawer, setActiveDrawer] = useState(0);
@@ -57,7 +58,7 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate, orgId }) => {
         );
 
         return {
-            organizationId: orgId,
+            organizationId: organization!.id,
             name: formData.name,
             drawers: drawers,
             tools: tools,
@@ -86,7 +87,7 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate, orgId }) => {
         try {
             const newToolbox: ToolBox = createToolboxFromFormData();
 
-            await createToolbox(orgId, formData.eid, newToolbox);
+            await createToolbox(organization!.id, formData.eid, newToolbox);
 
             onNavigate(AppView.TOOLBOX_OVERVIEW);
 

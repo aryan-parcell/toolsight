@@ -1,16 +1,16 @@
-import Dashboard from "./features/Dashboard";
 import { useState } from "react";
 import Layout from "./components/Layout";
-import ToolboxWizard from "./features/ToolboxWizard";
-import TemplateBuilder from "./features/TemplateBuilder";
-import { Reports } from "./features/Reports";
-import { Settings } from "./features/Settings";
-import { CalibrationManagement } from "./features/CalibrationManagement";
-import { Login } from "./features/Login";
-import LandingPage from "./features/LandingPage";
-import TemplateInventory from "./features/TemplateInventory";
-import { PaymentGate } from "./features/PaymentGate";
 import { useAuth } from "./contexts/AuthContext";
+import { CalibrationManagement } from "./features/CalibrationManagement";
+import Dashboard from "./features/Dashboard";
+import LandingPage from "./features/LandingPage";
+import { Login } from "./features/Login";
+import { PaymentGate } from "./features/PaymentGate";
+import { Reports } from "./features/Reports";
+import Settings from "./features/Settings";
+import TemplateBuilder from "./features/TemplateBuilder";
+import TemplateInventory from "./features/TemplateInventory";
+import ToolboxWizard from "./features/ToolboxWizard";
 
 export enum AppView {
     TOOLBOX_OVERVIEW = 'TOOLBOX_OVERVIEW',
@@ -38,25 +38,23 @@ export default function App() {
     const [showAuth, setShowAuth] = useState(false);
 
     const renderContent = () => {
-        const orgId = appUser?.organizationId ?? '';
-
         switch (currentView) {
             case AppView.TOOLBOX_OVERVIEW:
-                return <Dashboard onNavigate={setCurrentView} orgId={orgId!} />;
+                return <Dashboard onNavigate={setCurrentView} />;
             case AppView.TOOLBOX_WIZARD:
-                return <ToolboxWizard onNavigate={setCurrentView} orgId={orgId!} />;
+                return <ToolboxWizard onNavigate={setCurrentView} />;
             case AppView.TEMPLATE_BUILDER:
-                return <TemplateBuilder orgId={orgId!} />;
+                return <TemplateBuilder />;
             case AppView.CALIBRATION:
                 return <CalibrationManagement />;
             case AppView.INVENTORY:
-                return <TemplateInventory orgId={orgId!} />;
+                return <TemplateInventory />;
             case AppView.REPORTS:
                 return <Reports />;
             case AppView.SETTINGS:
-                return <Settings orgId={orgId!} />;
+                return <Settings />;
             default:
-                return <Dashboard onNavigate={setCurrentView} orgId={orgId!} />;
+                return <Dashboard onNavigate={setCurrentView} />;
         }
     };
 

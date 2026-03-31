@@ -17,11 +17,7 @@ enum BuilderStep {
     ASSIGNMENT = 3
 }
 
-interface TemplateBuilderProps {
-    orgId: string;
-}
-
-const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
+export default function TemplateBuilder() {
     const { organization } = useAuth();
     const { createTemplate } = useTemplates(organization?.id);
 
@@ -125,7 +121,7 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
         setIsSaving(true);
 
         try {
-            await createTemplate(orgId, templateName, image, tools.map(t => t.toolInfo));
+            await createTemplate(organization!.id, templateName, image, tools.map(t => t.toolInfo));
 
             alert("Template saved successfully!");
 
@@ -511,5 +507,3 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
         </div>
     );
 };
-
-export default TemplateBuilder;

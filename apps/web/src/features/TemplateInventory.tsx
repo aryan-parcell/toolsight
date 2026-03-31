@@ -7,14 +7,12 @@ import { Button } from '@/components/ui/button';
 import { LayoutGrid, CheckCircle2, Loader2 } from 'lucide-react';
 import type { Tool, Template } from '@shared/types';
 import TemplateDisplay from '@/components/TemplateDisplay';
+import { useAuth } from '@/contexts/AuthContext';
 
-interface TemplateInventoryProps {
-    orgId: string;
-}
-
-export default function TemplateInventory({ orgId }: TemplateInventoryProps) {
-    const { templates, loading: templatesLoading, deleteTemplate } = useTemplates(orgId);
-    const { toolboxes, loading: toolboxesLoading, updateToolbox } = useToolboxes(orgId);
+export default function TemplateInventory() {
+    const { organization } = useAuth();
+    const { templates, loading: templatesLoading, deleteTemplate } = useTemplates(organization?.id);
+    const { toolboxes, loading: toolboxesLoading, updateToolbox } = useToolboxes(organization?.id);
 
     // Assignment State
     const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
@@ -69,7 +67,7 @@ export default function TemplateInventory({ orgId }: TemplateInventoryProps) {
         if (!confirm("Are you sure you want to delete this template? This cannot be undone.")) return;
 
         try {
-            await deleteTemplate(orgId, templateId);
+            await deleteTemplate(organization!.id, templateId);
         } catch (error) {
             console.error("Delete failed", error);
             alert("Failed to delete template.");

@@ -8,6 +8,7 @@ import { ChevronDown, Plus, User } from 'lucide-react';
 import { forwardRef } from 'react';
 import { AppView } from '../App';
 import TemplateDisplay from '@/components/TemplateDisplay';
+import { useAuth } from '@/contexts/AuthContext';
 
 const foamColors = [
     { name: 'Black', value: 'Black', hex: '#18181B' },
@@ -283,11 +284,11 @@ export function ToolboxCard({ toolbox, updateToolbox, deleteToolbox }: ToolboxCa
 
 interface DashboardProps {
     onNavigate: (view: AppView) => void;
-    orgId: string;
 }
 
-export default function Dashboard({ onNavigate, orgId }: DashboardProps) {
-    const { toolboxes, loading, updateToolbox, deleteToolbox } = useToolboxes(orgId);
+export default function Dashboard({ onNavigate }: DashboardProps) {
+    const { organization } = useAuth();
+    const { toolboxes, loading, updateToolbox, deleteToolbox } = useToolboxes(organization?.id);
 
     return (
         <div className="animate-in fade-in duration-500 space-y-10">
