@@ -127,6 +127,8 @@ const TemplateBuilder: React.FC<TemplateBuilderProps> = ({ orgId }) => {
         try {
             await createTemplate(orgId, templateName, image, tools.map(t => t.toolInfo));
 
+            alert("Template saved successfully!");
+
             // Reset
             setImage(null);
             setTools([]);
