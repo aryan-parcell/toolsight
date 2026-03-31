@@ -9,7 +9,7 @@ export const CALIBRATION = [
     { sku: "DIAL-IND-10MM", name: "Dial Indicator 10mm", due: "2025-09-30", status: "Overdue", certificateUrl: "#" },
 ];
 
-export function CalibrationManagement() {
+export default function CalibrationManagement() {
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
             {/* Header */}

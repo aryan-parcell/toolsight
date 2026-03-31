@@ -1,12 +1,12 @@
 import { useState } from "react";
 import Layout from "./components/Layout";
 import { useAuth } from "./contexts/AuthContext";
-import { CalibrationManagement } from "./features/CalibrationManagement";
+import CalibrationManagement from "./features/CalibrationManagement";
 import Dashboard from "./features/Dashboard";
 import LandingPage from "./features/LandingPage";
-import { Login } from "./features/Login";
-import { PaymentGate } from "./features/PaymentGate";
-import { Reports } from "./features/Reports";
+import Login from "./features/Login";
+import PaymentGate from "./features/PaymentGate";
+import Reports from "./features/Reports";
 import Settings from "./features/Settings";
 import TemplateBuilder from "./features/TemplateBuilder";
 import TemplateInventory from "./features/TemplateInventory";

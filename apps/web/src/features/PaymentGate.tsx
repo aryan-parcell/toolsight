@@ -8,7 +8,7 @@ interface PaymentGateProps {
     orgName: string;
 }
 
-export const PaymentGate: React.FC<PaymentGateProps> = ({ orgId, orgName }) => {
+export default function PaymentGate({ orgId, orgName }: PaymentGateProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 

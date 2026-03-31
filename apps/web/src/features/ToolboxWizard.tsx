@@ -17,7 +17,7 @@ const foamColors = [
     { name: 'Yellow', value: 'Yellow', hex: '#CA8A04' },
 ];
 
-const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
+export default function ToolboxWizard({ onNavigate }: ToolboxWizardProps) {
     const { organization } = useAuth();
     const { createToolbox } = useToolboxes(organization?.id);
 
@@ -461,5 +461,3 @@ const ToolboxWizard: React.FC<ToolboxWizardProps> = ({ onNavigate }) => {
         </div>
     );
 };
-
-export default ToolboxWizard;

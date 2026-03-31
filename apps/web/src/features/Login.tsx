@@ -21,7 +21,7 @@ interface LoginProps {
     onBack: () => void;
 }
 
-export const Login: React.FC<LoginProps> = ({ onBack }) => {
+export default function Login({ onBack }: LoginProps) {
     const [isSignUp, setIsSignUp] = useState(false);
     const [orgName, setOrgName] = useState('');
     const [email, setEmail] = useState('');

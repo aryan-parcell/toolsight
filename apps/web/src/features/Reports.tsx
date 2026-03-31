@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export function Reports() {
+export default function Reports() {
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
             {/* Header */}
