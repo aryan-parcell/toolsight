@@ -66,7 +66,7 @@ export default function App() {
                 </div>
             ) : authUser && appUser && organization ? (
                 organization.subscriptionStatus !== 'active' ? (
-                    <PaymentGate orgId={organization.id} orgName={organization.name} />
+                    <PaymentGate />
                 ) : (
                     // Logged In Flow (Active Subscription)
                     <Layout currentView={currentView} onNavigate={setCurrentView}>

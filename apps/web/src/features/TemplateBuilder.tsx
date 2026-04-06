@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Trash2, Plus, Edit, Anchor } from 'lucide-react';
 import type { Detection, AnchorPoint } from '@shared/types';
 import ImageUploadDropzone from '@/components/ImageUploadDropzone';
 import ImageAnalysisStep from '@/components/ImageAnalysisStep';
 import ToolDetection from '@/components/ToolDetection';
 import AnchorPointOverlay from '@/components/AnchorPointManager';
-import { FunctionsRepository } from '../repositories/FunctionsRepository';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTemplates } from '@/hooks/useTemplates';
+import { useFunctions } from '@/hooks/useFunctions';
 
 // Workflow Steps
 enum BuilderStep {
@@ -20,6 +20,7 @@ enum BuilderStep {
 export default function TemplateBuilder() {
     const { organization } = useAuth();
     const { createTemplate } = useTemplates(organization?.id);
+    const { discoverTools, loading: isAnalyzing, error: analysisError } = useFunctions();
 
     const [step, setStep] = useState(BuilderStep.UPLOAD);
     const [image, setImage] = useState<string | null>(null);
@@ -32,12 +33,15 @@ export default function TemplateBuilder() {
     const [editorMode, setEditorMode] = useState<'tools' | 'anchors'>('tools');
     const [selectedToolIndex, setSelectedToolIndex] = useState<number | null>(null);
     const [selectedAnchorId, setSelectedAnchorId] = useState<string | null>(null);
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     // Assignment State
     const [selectedDrawer, setSelectedDrawer] = useState('');
     const [templateName, setTemplateName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (analysisError) alert(`AI Analysis failed: ${analysisError}`);
+    }, [analysisError]);
 
     const handleImageSelected = (dataUrl: string) => {
         setImage(dataUrl);
@@ -48,24 +52,18 @@ export default function TemplateBuilder() {
 
     const runAnalysis = async () => {
         if (!image) return;
-        setIsAnalyzing(true);
-        try {
-            const data = await FunctionsRepository.discoverTools(image);
-            const detectedTools: Detection[] = data.tools || [];
-
-            if (detectedTools.length > 0) {
-                setTools(detectedTools);
-            } else {
-                alert("No tools detected by AI. Please add tools manually.");
-            }
-        } catch (error: any) {
-            console.error("Analysis failed:", error);
-            alert(`AI Analysis failed: ${error.message || "Unknown error"}`);
-        } finally {
-            setIsAnalyzing(false);
-            setStep(BuilderStep.VERIFICATION);
-            setEditorMode('tools');
+        
+        const data = await discoverTools(image);
+        const detectedTools: Detection[] = data?.tools || [];
+        
+        if (detectedTools.length > 0) {
+            setTools(detectedTools);
+        } else {
+            alert("No tools detected by AI. Please add tools manually.");
         }
+
+        setStep(BuilderStep.VERIFICATION);
+        setEditorMode('tools');
     };
 
     const handleToolUpdated = (index: number, updates: Partial<Detection>) => {

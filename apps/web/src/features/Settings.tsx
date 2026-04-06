@@ -1,28 +1,22 @@
 import { CreditCard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { FunctionsRepository } from "@/repositories/FunctionsRepository";
+import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFunctions } from "@/hooks/useFunctions";
 
 export default function Settings() {
     const { organization } = useAuth();
-    const [loadingPortal, setLoadingPortal] = useState(false);
+    const { createPortalSession, loading: loadingPortal, error: portalError } = useFunctions();
+
+    useEffect(() => {
+        if (portalError) alert(`Could not connect to billing portal: ${portalError}`);
+    }, [portalError]);
 
     const handleManageSubscription = async () => {
-        setLoadingPortal(true);
-        try {
-            const data = await FunctionsRepository.createPortalSession(organization!.id);
+        const data = await createPortalSession(organization!.id);
 
-            if (data.url) {
-                window.location.href = data.url; // Redirect to Stripe Portal
-            }
-        } catch (err) {
-            console.error("Failed to open billing portal:", err);
-            alert("Could not connect to billing portal. Please try again later.");
-        } finally {
-            setLoadingPortal(false);
-        }
+        if (data?.url) window.location.href = data.url; // Redirect to Stripe Portal
     };
 
     return (
