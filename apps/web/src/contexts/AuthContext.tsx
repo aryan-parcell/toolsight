@@ -57,6 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 if (orgData) {
                     setOrganization(orgData);
                     setLoading(false);
+                    setError(null);
                 } else {
                     handleError('Organization document not found.');
                 }
