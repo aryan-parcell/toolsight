@@ -1,8 +1,31 @@
 import type { User as AppUser } from '@shared/types';
-import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc, query, collection, where } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export const UserRepository = {
+    /**
+     * Subscribes to all users in an organization.
+     */
+    subscribeToOrgUsers: (
+        orgId: string,
+        onUpdate: (users: AppUser[]) => void,
+        onError: (err: Error) => void
+    ) => {
+        const usersQuery = query(
+            collection(db, 'users'),
+            where('organizationId', '==', orgId)
+        );
+
+        return onSnapshot(
+            usersQuery,
+            (snapshot) => {
+                const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AppUser));
+                onUpdate(users);
+            },
+            onError,
+        );
+    },
+
     /**
      * Subscribes to a user document in real-time.
      */

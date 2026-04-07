@@ -61,9 +61,10 @@ service cloud.firestore {
       allow create: if isSignedIn(); 
     }
 
-    // Users: You can only read/write your OWN profile.
     match /users/{userId} {
-      allow read, create: if isSignedIn() && request.auth.uid == userId;
+      // Users can read their own profile, and admins can read any profile in their org.
+      allow read: if (isSignedIn() && request.auth.uid == userId) || (hasRole('admin') && hasActiveOrgAccess(resource.data));
+      allow create: if isSignedIn() && request.auth.uid == userId;
       allow update: if isSignedIn() && request.auth.uid == userId && userUpdateValid();
     }
 
