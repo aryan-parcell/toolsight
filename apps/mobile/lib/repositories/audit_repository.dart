@@ -39,6 +39,7 @@ class AuditRepository {
       // If not, start a new "At-Will" audit
       t.set(auditDoc, {
         'checkoutId': currentCheckoutId,
+        'toolboxId': toolboxId,
         'startTime': now,
         'endTime': null,
         'drawerStates': createAuditDrawerStatesFromToolbox(toolbox),

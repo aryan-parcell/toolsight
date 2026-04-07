@@ -77,6 +77,7 @@ class CheckoutRepository {
         nextDue = now;
 
         t.set(auditDoc, {
+          'toolboxId': eid,
           'checkoutId': checkoutDoc.id,
           'startTime': now,
           'endTime': null,

@@ -23,6 +23,7 @@ const createInitialAuditFromToolbox = (tb: ToolBox) => {
 
     return {
         organizationId: tb.organizationId,
+        toolboxId: tb.id,
         checkoutId: null,
         startTime: serverTimestamp(),
         endTime: serverTimestamp(),
@@ -57,7 +58,7 @@ export const ToolboxRepository = {
      */
     createToolbox: async (toolboxId: string, data: Omit<ToolBox, 'id'>) => {
         // Create an initial audit document that captures the starting state of the toolbox.
-        const initialAudit = createInitialAuditFromToolbox(data);
+        const initialAudit = createInitialAuditFromToolbox({ ...data, id: toolboxId });
 
         const batch = writeBatch(db);
 

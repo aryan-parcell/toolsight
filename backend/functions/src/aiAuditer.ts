@@ -30,11 +30,9 @@ export const aiAuditer = onObjectFinalized(async (event) => {
     // 4. Fetch context from FirestoreDB (The "RAG" Step)
     const auditSnap = await db.collection("audits").doc(auditId).get();
     if (!auditSnap.exists) throw new Error("Audit not found");
-    const checkoutId = auditSnap.data()?.checkoutId;
+    const toolboxId = auditSnap.data()?.toolboxId;
 
-    const checkoutSnap = await db.collection("checkouts").doc(checkoutId).get();
-    if (!checkoutSnap.exists) throw new Error("Checkout not found");
-    const toolboxId = checkoutSnap.data()?.toolboxId;
+    if (!toolboxId) throw new Error("Toolbox ID not found on audit");
 
     const toolboxSnap = await db.collection("toolboxes").doc(toolboxId).get();
     if (!toolboxSnap.exists) throw new Error("Toolbox not found");

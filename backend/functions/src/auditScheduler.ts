@@ -33,6 +33,7 @@ async function issuePeriodicAudit(checkoutDoc: DocumentSnapshot, now: Date) {
     const newAuditRef = db.collection("audits").doc();
     t.set(newAuditRef, {
       checkoutId: checkoutDoc.id,
+      toolboxId: checkout.toolboxId,
       startTime: now,
       endTime: null,
       drawerStates: createDrawerStates(toolbox),
