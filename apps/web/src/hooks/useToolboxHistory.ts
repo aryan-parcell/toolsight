@@ -13,7 +13,7 @@ export function useToolboxHistory(toolboxId: string | undefined) {
     const [audits, setAudits] = useState<Audit[]>([]);
     const [auditsLoaded, setAuditsLoaded] = useState(false);
 
-    const [error, setError] = useState<Error | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!toolboxId || !organization?.id) {
@@ -40,7 +40,7 @@ export function useToolboxHistory(toolboxId: string | undefined) {
             },
             (err) => {
                 console.error("Error fetching checkouts:", err);
-                setError(err);
+                setError(err.message);
                 setCheckoutsLoaded(true);
             }
         );
@@ -54,7 +54,7 @@ export function useToolboxHistory(toolboxId: string | undefined) {
             },
             (err) => {
                 console.error("Error fetching audits:", err);
-                setError(err);
+                setError(err.message);
                 setAuditsLoaded(true);
             }
         );
