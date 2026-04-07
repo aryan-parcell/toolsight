@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription } from '@/components/ui/dialog';
 import type { ToolBox } from '@shared/types';
 import { useToolboxes } from '@/hooks/useToolboxes';
 import { DialogTrigger } from '@radix-ui/react-dialog';
@@ -56,6 +56,10 @@ export function ToolboxCard({ toolbox, updateToolbox, deleteToolbox }: ToolboxCa
                 className="bg-axiom-surfaceLight dark:bg-axiom-surfaceDark rounded-lg p-6 max-h-[85vh] overflow-hidden w-full max-w-7xl"
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
+                <DialogDescription className="sr-only">
+                    Toolbox command center dialog for managing toolboxes.
+                </DialogDescription>
+
                 <ToolboxCommandCenter
                     toolbox={toolbox}
                     updateToolbox={updateToolbox}
