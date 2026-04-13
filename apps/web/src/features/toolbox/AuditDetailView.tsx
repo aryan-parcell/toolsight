@@ -17,7 +17,7 @@ function AuditImage({ storagePath, results }: { storagePath: string, results: Re
     const [error, setError] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
     const [imageRect, setImageRect] = useState<{ width: number, height: number, top: number, left: number } | null>(null);
-    
+
     const imageRef = useRef<HTMLImageElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -26,7 +26,7 @@ function AuditImage({ storagePath, results }: { storagePath: string, results: Re
 
         const img = imageRef.current;
         const container = containerRef.current;
-        
+
         const containerWidth = container.clientWidth;
         const containerHeight = container.clientHeight;
         const imageWidth = img.naturalWidth;
@@ -94,7 +94,7 @@ function AuditImage({ storagePath, results }: { storagePath: string, results: Re
             </div>
 
             {!isMinimized && (
-                <div 
+                <div
                     ref={containerRef}
                     className="relative w-full bg-black rounded-xl overflow-hidden aspect-video group"
                 >
@@ -105,7 +105,7 @@ function AuditImage({ storagePath, results }: { storagePath: string, results: Re
                             <p className="text-xs text-gray-400 font-medium font-mono">Resolving Image...</p>
                         </div>
                     )}
-                    
+
                     {url && (
                         <>
                             <img
@@ -118,9 +118,9 @@ function AuditImage({ storagePath, results }: { storagePath: string, results: Re
                                 alt="Audit"
                                 className="w-full h-full object-contain"
                             />
-                            
+
                             {imageLoaded && toolDetections.length > 0 && imageRect && (
-                                <div 
+                                <div
                                     className="absolute z-20 pointer-events-none"
                                     style={{
                                         top: imageRect.top,
@@ -129,7 +129,7 @@ function AuditImage({ storagePath, results }: { storagePath: string, results: Re
                                         height: imageRect.height
                                     }}
                                 >
-                                    <ToolDetection 
+                                    <ToolDetection
                                         toolPositions={toolDetections}
                                         isEditMode={false}
                                         containerClassName="w-full h-full"
@@ -151,10 +151,6 @@ export function AuditDetailView({ audit, toolbox, onBack }: AuditDetailViewProps
         return format(d, 'MMM d, h:mm a');
     };
 
-    const getDrawerName = (drawerId: string) => {
-        return toolbox.drawers.find(d => d.drawerId === drawerId)?.drawerName || `Drawer ${drawerId}`;
-    };
-
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'present': return 'text-green-500';
@@ -163,8 +159,6 @@ export function AuditDetailView({ audit, toolbox, onBack }: AuditDetailViewProps
             default: return 'text-gray-500';
         }
     };
-
-    const drawerEntries = Object.entries(audit.drawerStates);
 
     return (
         <div className="flex flex-col h-full animate-in slide-in-from-right duration-300 space-y-5">
@@ -186,17 +180,43 @@ export function AuditDetailView({ audit, toolbox, onBack }: AuditDetailViewProps
             </div>
 
             <div className="flex-1 overflow-y-auto custom-scrollbar space-y-5">
-                {drawerEntries.map(([id, state]) => {
+                {toolbox.drawers.map((drawer) => {
+                    const state = audit.drawerStates[drawer.drawerId];
+
+                    if (!state) {
+                        return (
+                            <div key={drawer.drawerId} className="bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden opacity-60">
+                                <div className="p-3 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-gray-400/10 rounded-lg text-gray-400">
+                                            <Package size={18} />
+                                        </div>
+                                        <h4 className="font-bold dark:text-white">{drawer.drawerName}</h4>
+                                    </div>
+
+                                    <p className="text-xs text-gray-500 uppercase font-bold">
+                                        No Data
+                                    </p>
+                                </div>
+
+                                <div className="p-6 flex flex-col items-center justify-center text-gray-500">
+                                    <AlertCircle size={24} className="mb-2 opacity-20" />
+                                    <p className="text-xs italic">This drawer was not included in this audit</p>
+                                </div>
+                            </div>
+                        );
+                    }
+
                     const tools = state.results ? Object.values(state.results) : [];
 
                     return (
-                        <div key={id} className="bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
+                        <div key={drawer.drawerId} className="bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
                             <div className="p-3 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-axiom-cyan/10 rounded-lg text-axiom-cyan">
                                         <Package size={18} />
                                     </div>
-                                    <h4 className="font-bold dark:text-white">{getDrawerName(id)}</h4>
+                                    <h4 className="font-bold dark:text-white">{drawer.drawerName}</h4>
                                 </div>
 
                                 <p className="text-xs text-gray-500 uppercase font-bold">
