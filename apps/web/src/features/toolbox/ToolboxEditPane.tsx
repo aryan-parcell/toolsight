@@ -46,35 +46,44 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
         await updateToolbox(id!, { drawers: updatedDrawers });
     };
 
+    function Label({ label }: { label: string }) {
+        return <label className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400 font-bold mb-2 block">
+            {label}
+        </label>;
+    }
+
     return (
         <div className="space-y-5 h-full overflow-y-auto pr-4 custom-scrollbar">
-            <div className="bg-gray-200 dark:bg-gray-700 p-5 rounded-lg space-y-4">
+            <div className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 p-5 rounded-xl space-y-5">
                 <div>
-                    <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Toolbox Name</label>
+                    <Label label="Toolbox Name" />
                     <AutosaveInput value={name} onSave={(val) => updateToolbox(id!, { name: val })} />
                 </div>
 
                 <div>
-                    <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Toolbox Type</label>
-                    <select
-                        value={type}
-                        onChange={e => updateToolbox(id!, { type: e.target.value })}
-                        className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
-                    >
-                        <option>Rolling Tool Cart</option>
-                        <option>Dispatchable Toolbox</option>
-                        <option>Handheld Toolbox</option>
-                    </select>
+                    <Label label="Toolbox Type" />
+                    <div className="relative group">
+                        <select
+                            value={type}
+                            onChange={e => updateToolbox(id!, { type: e.target.value })}
+                            className="w-full rounded-lg p-2 text-sm bg-gray-50 dark:bg-white/5 dark:text-white border border-gray-200 dark:border-gray-800 appearance-none cursor-pointer hover:border-axiom-cyan/30 transition-colors"
+                        >
+                            <option>Rolling Tool Cart</option>
+                            <option>Dispatchable Toolbox</option>
+                            <option>Handheld Toolbox</option>
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover:text-axiom-cyan transition-colors" size={14} />
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Primary Color</label>
-                        <div className="relative">
+                        <Label label="Primary Color" />
+                        <div className="relative group">
                             <select
                                 value={toolboxFoamColors.primary}
                                 onChange={e => updateToolbox(id!, { foamColors: { ...toolboxFoamColors, primary: e.target.value } })}
-                                className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
+                                className="w-full rounded-lg p-2 text-sm bg-gray-50 dark:bg-white/5 dark:text-white border border-gray-200 dark:border-gray-800 appearance-none cursor-pointer hover:border-axiom-cyan/30 transition-colors"
                             >
                                 {foamColors.map(c => (
                                     <option key={c.value} value={c.value}>{c.name}</option>
@@ -82,18 +91,18 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
                             </select>
                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
                                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getHexColor(toolboxFoamColors.primary) }} />
-                                <ChevronDown className="text-gray-400" size={14} />
+                                <ChevronDown className="text-gray-400 group-hover:text-axiom-cyan transition-colors" size={14} />
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Secondary Color</label>
-                        <div className="relative">
+                        <Label label="Secondary Color" />
+                        <div className="relative group">
                             <select
                                 value={toolboxFoamColors.secondary}
                                 onChange={e => updateToolbox(id!, { foamColors: { ...toolboxFoamColors, secondary: e.target.value } })}
-                                className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
+                                className="w-full rounded-lg p-2 text-sm bg-gray-50 dark:bg-white/5 dark:text-white border border-gray-200 dark:border-gray-800 appearance-none cursor-pointer hover:border-axiom-cyan/30 transition-colors"
                             >
                                 {foamColors.map(c => (
                                     <option key={c.value} value={c.value}>{c.name}</option>
@@ -101,37 +110,41 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
                             </select>
                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-1">
                                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getHexColor(toolboxFoamColors.secondary) }} />
-                                <ChevronDown className="text-gray-400" size={14} />
+                                <ChevronDown className="text-gray-400 group-hover:text-axiom-cyan transition-colors" size={14} />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-gray-200 dark:bg-gray-700 p-5 rounded-lg space-y-4">
+            <div className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 p-5 rounded-xl space-y-5">
                 <div>
-                    <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">General Audit Options</label>
+                    <Label label="Event-Based Audits" />
                     <div className="grid grid-cols-2 gap-4">
                         <button
                             onClick={() => updateToolbox(id!, { auditProfile: { ...auditProfile, requireOnCheckout: !auditProfile.requireOnCheckout } })}
-                            className={`p-2 rounded-lg text-sm transition-colors 
-                                ${auditProfile.requireOnCheckout ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-600 dark:text-gray-300'}`}
+                            className={`p-2 rounded-lg text-xs font-bold transition-all border
+                                ${auditProfile.requireOnCheckout
+                                    ? 'bg-axiom-cyan/10 text-axiom-cyan border-axiom-cyan/30'
+                                    : 'bg-gray-50 dark:bg-white/5 text-gray-400 dark:border-white/10'}`}
                         >
-                            Audit on Checkout
+                            AUDIT ON CHECKOUT
                         </button>
                         <button
                             onClick={() => updateToolbox(id!, { auditProfile: { ...auditProfile, requireOnReturn: !auditProfile.requireOnReturn } })}
-                            className={`p-2 rounded-lg text-sm transition-colors 
-                                ${auditProfile.requireOnReturn ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-600 dark:text-gray-300 '}`}
+                            className={`p-2 rounded-lg text-xs font-bold transition-all border
+                                ${auditProfile.requireOnReturn
+                                    ? 'bg-axiom-cyan/10 text-axiom-cyan border-axiom-cyan/30'
+                                    : 'bg-gray-50 dark:bg-white/5 text-gray-400 dark:border-white/10'}`}
                         >
-                            Audit on Return
+                            AUDIT ON RETURN
                         </button>
                     </div>
                 </div>
 
                 <div>
-                    <label className="block mb-2 font-medium text-axiom-textLight dark:text-axiom-textDark">Shift Audit Options</label>
-                    <div className="relative">
+                    <Label label="Shift Audits" />
+                    <div className="relative group">
                         <select
                             value={auditProfile.periodicFrequencyHours || 0}
                             onChange={e => updateToolbox(id!, {
@@ -141,30 +154,28 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
                                     periodicFrequencyHours: parseInt(e.target.value)
                                 }
                             })}
-                            className="w-full rounded-lg p-2 text-sm bg-white dark:bg-black/50 dark:text-white border border-gray-300 dark:border-gray-500 appearance-none cursor-pointer"
+                            className="w-full rounded-lg p-2 text-sm bg-gray-50 dark:bg-white/5 dark:text-white border border-gray-200 dark:border-gray-800 appearance-none cursor-pointer hover:border-axiom-cyan/30 transition-colors"
                         >
-                            <option value={0}>No Period (At Will)</option>
+                            <option value={0}>At Will (No Schedule)</option>
                             <option value={2}>Every 2 hours</option>
                             <option value={4}>Every 4 hours</option>
                             <option value={6}>Every 6 hours</option>
                             <option value={8}>Every 8 hours</option>
                         </select>
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none flex items-center gap-2">
-                            <ChevronDown className="text-gray-400" size={14} />
-                        </div>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-hover:text-axiom-cyan transition-colors" size={14} />
                     </div>
                 </div>
             </div>
 
-            <div className="border-t border-gray-200 dark:border-gray-700" />
-
             {drawers?.map((drawer) => {
                 const drawerTools = tools?.filter(tool => tool.drawerId === drawer.drawerId) || [];
                 return (
-                    <div key={drawer.drawerId} className="bg-gray-200 dark:bg-gray-700 p-5 space-y-5 rounded-lg">
+                    <div key={drawer.drawerId} className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 p-5 space-y-5 rounded-xl">
                         <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-axiom-textLight dark:text-axiom-textDark">{drawer.drawerName}</h4>
-                            <span className="text-xs text-gray-400">{drawerTools.length} items</span>
+                            <h4 className="font-bold text-xs text-gray-500 dark:text-gray-400 uppercase tracking-widest">{drawer.drawerName}</h4>
+                            <span className="text-xs bg-gray-100 dark:bg-white/5 p-2 rounded text-gray-500 uppercase font-bold tracking-tighter">
+                                {drawerTools.length} ITEMS
+                            </span>
                         </div>
                         <div className="space-y-2">
                             {drawer.templateId ? (
@@ -172,7 +183,7 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
                                     <TemplateDisplay templateId={drawer.templateId} />
                                     <button
                                         onClick={() => handleUnlinkDrawerTemplate(drawer.drawerId)}
-                                        className="w-full p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm"
+                                        className="w-full p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 rounded-lg text-xs font-bold transition-all uppercase tracking-widest"
                                     >
                                         Unlink Template
                                     </button>
@@ -181,7 +192,7 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
                                 drawerTools.length > 0 ? (
                                     drawerTools.map((tool) => (
                                         <div key={tool.toolId} className="flex items-center gap-3">
-                                            <div className="w-1 h-1 rounded-full bg-gray-500"></div>
+                                            <div className="w-1 h-1 rounded-full bg-axiom-cyan/40" />
                                             <AutosaveInput
                                                 value={tool.toolInfo.name}
                                                 onSave={(val) => handleUpdateToolName(tool.toolId, val)}
@@ -190,7 +201,9 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-sm text-gray-400 italic pl-4">No tools configured</p>
+                                    <p className="text-xs text-gray-400 italic py-2 text-center bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed border-gray-200 dark:border-gray-800">
+                                        No tools configured
+                                    </p>
                                 )
                             }
                         </div>
@@ -198,13 +211,11 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
                 );
             })}
 
-            <div className="border-t border-gray-200 dark:border-gray-700" />
-
             <button
                 onClick={() => {
                     if (confirm('Are you sure you want to delete this toolbox?')) deleteToolbox(id!);
                 }}
-                className="w-full px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                className="w-full p-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 rounded-xl font-bold transition-all uppercase tracking-widest text-xs"
             >
                 Delete Toolbox
             </button>
