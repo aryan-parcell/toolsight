@@ -1,5 +1,6 @@
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
-import { db } from '../firebase';
+import { ref, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../firebase';
 import type { Audit } from '@shared/types';
 
 export const AuditRepository = {
@@ -27,5 +28,13 @@ export const AuditRepository = {
             },
             onError,
         );
+    },
+
+    /**
+     * Gets the download URL for an audit image.
+     */
+    getAuditImageUrl: async (storagePath: string) => {
+        const imageRef = ref(storage, storagePath);
+        return await getDownloadURL(imageRef);
     }
 };

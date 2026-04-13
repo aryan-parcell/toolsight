@@ -1,11 +1,147 @@
-import type { Audit, ToolBox } from '@shared/types';
+import type { Audit, Detection, ToolBox } from '@shared/types';
 import { format } from 'date-fns';
-import { AlertCircle, ArrowLeft, ImageIcon, Package } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ChevronDown, ChevronUp, ImageIcon, Package } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { AuditRepository } from '../../repositories/AuditRepository';
+import ToolDetection from '@/components/ToolDetection';
 
 interface AuditDetailViewProps {
     audit: Audit;
     toolbox: ToolBox;
     onBack: () => void;
+}
+
+function AuditImage({ storagePath, results }: { storagePath: string, results: Record<string, Detection> | null }) {
+    const [url, setUrl] = useState<string | null>(null);
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [error, setError] = useState(false);
+    const [isMinimized, setIsMinimized] = useState(false);
+    const [imageRect, setImageRect] = useState<{ width: number, height: number, top: number, left: number } | null>(null);
+    
+    const imageRef = useRef<HTMLImageElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const calculateImageRect = () => {
+        if (!imageRef.current || !containerRef.current) return;
+
+        const img = imageRef.current;
+        const container = containerRef.current;
+        
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        const imageWidth = img.naturalWidth;
+        const imageHeight = img.naturalHeight;
+
+        if (!imageWidth || !imageHeight) return;
+
+        const containerRatio = containerWidth / containerHeight;
+        const imageRatio = imageWidth / imageHeight;
+
+        let finalWidth, finalHeight, top, left;
+
+        if (imageRatio > containerRatio) {
+            // Image is wider than container ratio (pillarboxing)
+            finalWidth = containerWidth;
+            finalHeight = containerWidth / imageRatio;
+            left = 0;
+            top = (containerHeight - finalHeight) / 2;
+        } else {
+            // Image is taller than container ratio (letterboxing)
+            finalHeight = containerHeight;
+            finalWidth = containerHeight * imageRatio;
+            top = 0;
+            left = (containerWidth - finalWidth) / 2;
+        }
+
+        setImageRect({
+            width: finalWidth,
+            height: finalHeight,
+            top: top,
+            left: left
+        });
+    };
+
+    useEffect(() => {
+        AuditRepository.getAuditImageUrl(storagePath)
+            .then(u => setUrl(u))
+            .catch((err) => setError(true))
+    }, [storagePath]);
+
+    if (error) {
+        return (
+            <div className="w-full aspect-video bg-gray-100 dark:bg-white/5 rounded-xl flex flex-col items-center justify-center text-gray-400 gap-2 border border-gray-200 dark:border-gray-800">
+                <AlertCircle size={24} className="opacity-50" />
+                <p className="text-xs italic">Failed to load audit image</p>
+            </div>
+        );
+    }
+
+    const toolDetections = results ? Object.values(results) : [];
+
+    return (
+        <div className="space-y-3">
+            <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-xs uppercase font-bold text-gray-400 tracking-wider">
+                    <ImageIcon size={14} />
+                    Audit Capture
+                </div>
+                <button
+                    onClick={() => setIsMinimized(!isMinimized)}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-md transition-colors text-gray-400"
+                >
+                    {isMinimized ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+                </button>
+            </div>
+
+            {!isMinimized && (
+                <div 
+                    ref={containerRef}
+                    className="relative w-full bg-black rounded-xl overflow-hidden aspect-video group"
+                >
+                    {/* Persistent Loading Overlay */}
+                    {!imageLoaded && (
+                        <div className="absolute inset-0 bg-gray-100 dark:bg-white/5 flex flex-col items-center justify-center gap-3">
+                            <ImageIcon size={24} className="text-gray-300 animate-bounce" />
+                            <p className="text-xs text-gray-400 font-medium font-mono">Resolving Image...</p>
+                        </div>
+                    )}
+                    
+                    {url && (
+                        <>
+                            <img
+                                ref={imageRef}
+                                src={url}
+                                onLoad={() => {
+                                    setImageLoaded(true);
+                                    calculateImageRect();
+                                }}
+                                alt="Audit"
+                                className="w-full h-full object-contain"
+                            />
+                            
+                            {imageLoaded && toolDetections.length > 0 && imageRect && (
+                                <div 
+                                    className="absolute z-20 pointer-events-none"
+                                    style={{
+                                        top: imageRect.top,
+                                        left: imageRect.left,
+                                        width: imageRect.width,
+                                        height: imageRect.height
+                                    }}
+                                >
+                                    <ToolDetection 
+                                        toolPositions={toolDetections}
+                                        isEditMode={false}
+                                        containerClassName="w-full h-full"
+                                    />
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            )}
+        </div>
+    );
 }
 
 export function AuditDetailView({ audit, toolbox, onBack }: AuditDetailViewProps) {
@@ -70,13 +206,7 @@ export function AuditDetailView({ audit, toolbox, onBack }: AuditDetailViewProps
 
                             <div className="p-3">
                                 {state.imageStoragePath && (
-                                    <div className="p-3 bg-axiom-cyan/5 border border-axiom-cyan/20 rounded-lg flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-xs text-axiom-cyan font-medium">
-                                            <ImageIcon size={14} />
-                                            Audit Image Available
-                                        </div>
-                                        <span className="text-xs text-gray-400 font-mono">{state.imageStoragePath.split('/').slice(2).join('/')}</span>
-                                    </div>
+                                    <AuditImage storagePath={state.imageStoragePath} results={state.results} />
                                 )}
 
                                 <div className='space-y-3 p-3'>
