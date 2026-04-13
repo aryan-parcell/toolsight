@@ -1,9 +1,9 @@
-import { CreditCard } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFunctions } from "@/hooks/useFunctions";
+import { Building, Copy } from "lucide-react";
+import { useEffect } from "react";
 
 export default function Settings() {
     const { organization } = useAuth();
@@ -14,7 +14,8 @@ export default function Settings() {
     }, [portalError]);
 
     const handleManageSubscription = async () => {
-        const data = await createPortalSession(organization!.id);
+        if (!organization?.id) return;
+        const data = await createPortalSession(organization.id);
 
         if (data?.url) window.location.href = data.url; // Redirect to Stripe Portal
     };
@@ -29,25 +30,48 @@ export default function Settings() {
                 </div>
             </div>
 
-            {/* Billing Card */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><CreditCard className="h-5 w-5" /> Billing & Subscription</CardTitle>
-                    <CardDescription>Manage your ToolSight Pro plan, payment methods, and invoices.</CardDescription>
+                    <CardTitle className="flex items-center gap-2"><Building className="h-5 w-5" /> Organization Information</CardTitle>
+                    <CardDescription>View key information regarding the organization.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-zinc-900 rounded-lg">
-                        <div>
-                            <div className="font-semibold text-gray-900 dark:text-white">ToolSight Subscription (Active)</div>
-                            <div className="text-sm text-gray-500">Billed securely via Stripe</div>
+                    <div className="space-y-5">
+                        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-lg">
+                            <div className="font-semibold text-gray-900 dark:text-white">Organization Name</div>
+                            <div className="text-sm text-gray-500">{organization?.name}</div>
                         </div>
-                        <Button
-                            variant="outline"
-                            onClick={handleManageSubscription}
-                            disabled={loadingPortal}
-                        >
-                            {loadingPortal ? "Connecting..." : "Manage Subscription"}
-                        </Button>
+
+                        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-lg">
+                            <div>
+                                <div className="font-semibold text-gray-900 dark:text-white">Organization ID</div>
+                                <div className="text-sm text-gray-500">Used by maintainer during registration</div>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <div className="text-sm text-gray-500">{organization?.id}</div>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => navigator.clipboard.writeText(organization?.id || "")}
+                                >
+                                    <Copy className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-lg">
+                            <div>
+                                <div className="font-semibold text-gray-900 dark:text-white">ToolSight Subscription (Active)</div>
+                                <div className="text-sm text-gray-500">Billed securely via Stripe</div>
+                            </div>
+                            <Button
+                                variant="outline"
+                                onClick={handleManageSubscription}
+                                disabled={loadingPortal}
+                            >
+                                {loadingPortal ? "Connecting..." : "Manage Subscription"}
+                            </Button>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
