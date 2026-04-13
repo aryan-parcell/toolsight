@@ -54,6 +54,8 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
 
     return (
         <div className="space-y-5 h-full overflow-y-auto pr-4 custom-scrollbar">
+            <h3 className="text-lg font-black dark:text-white mb-6">Edit Toolbox</h3>
+
             <div className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 p-5 rounded-xl space-y-5">
                 <div>
                     <Label label="Toolbox Name" />
