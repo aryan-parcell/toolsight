@@ -53,7 +53,7 @@ export function ToolboxCard({ toolbox, updateToolbox, deleteToolbox }: ToolboxCa
                 <ToolboxDetailView toolbox={toolbox} />
             </DialogTrigger>
             <DialogContent
-                className="bg-axiom-surfaceLight dark:bg-axiom-surfaceDark rounded-lg p-6 max-h-[85vh] overflow-hidden w-full max-w-7xl"
+                className="bg-axiom-surfaceLight dark:bg-axiom-surfaceDark rounded-lg p-6 overflow-hidden w-full max-w-7xl"
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
                 <DialogDescription className="sr-only">
