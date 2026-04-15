@@ -92,7 +92,10 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                         <Plus />
                         Add New Toolbox
                     </button>
-                    <button className="w-12 h-12 rounded-full bg-axiom-surfaceLight dark:bg-axiom-surfaceDark border border-axiom-borderLight dark:border-axiom-borderDark flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">
+                    <button
+                        className="w-12 h-12 rounded-full bg-axiom-surfaceLight dark:bg-axiom-surfaceDark border border-axiom-borderLight dark:border-axiom-borderDark flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                        onClick={() => onNavigate(AppView.SETTINGS)}
+                    >
                         <User />
                     </button>
                 </div>

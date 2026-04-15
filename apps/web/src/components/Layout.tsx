@@ -54,7 +54,7 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) => {
-    const {appUser, organization, logout} = useAuth();
+    const { appUser, organization, logout } = useAuth();
 
     const [isDark, setIsDark] = useState(getInitialTheme());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -138,7 +138,8 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) =>
 
                     {/* User Profile */}
                     <div className="flex items-center px-3 py-3 gap-3">
-                        <div className="w-full flex items-center hover:bg-axiom-borderLight dark:hover:bg-axiom-surfaceDark">
+                        {/* Add an onClick to navigate to settings */}
+                        <div className="w-full flex items-center hover:bg-axiom-borderLight dark:hover:bg-axiom-surfaceDark" onClick={() => onNavigate(AppView.SETTINGS)}>
                             <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-700 text-white">{userInitials}</div>
                             <div className="ml-3">
                                 <div className="font-bold text-axiom-dark dark:text-white">{displayName}</div>
