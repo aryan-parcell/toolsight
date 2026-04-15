@@ -2,11 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFunctions } from "@/hooks/useFunctions";
+import { useUsers } from "@/hooks/useUsers";
 import { Building, Copy } from "lucide-react";
 import { useEffect } from "react";
 
 export default function Settings() {
     const { organization } = useAuth();
+    const { users } = useUsers(organization?.id);
     const { createPortalSession, loading: loadingPortal, error: portalError } = useFunctions();
 
     useEffect(() => {
@@ -56,6 +58,25 @@ export default function Settings() {
                                 >
                                     <Copy className="h-4 w-4" />
                                 </Button>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-lg">
+                            <div>
+                                <div className="font-semibold text-gray-900 dark:text-white mb-1">Organization Members</div>
+                                {users.map((user) => (
+                                    <div key={user.id} className="text-sm text-gray-500">
+                                        {user.displayName}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <div className="text-sm text-gray-500 mb-1">{users.length} {users.length === 1 ? "member" : "members"}</div>
+                                {users.map((user) => (
+                                    <div key={user.id} className="text-sm text-gray-500">
+                                        {user.email}
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
