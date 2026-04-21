@@ -38,73 +38,75 @@ class _ToolboxPageState extends State<ToolboxPage> {
           final toolbox = snapshot.data!.data()!;
           final currentCheckoutId = toolbox['currentCheckoutId'];
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 20,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 10,
-                children: [
-                  Text(toolbox['name'], style: Theme.of(context).textTheme.headlineLarge),
-                  if (currentCheckoutId != null) CheckoutBanner(checkoutId: currentCheckoutId),
-                ],
-              ),
-              Row(
-                children: [
-                  WideButton(
-                    text: "Capture Drawer Images",
-                    onPressed: () async {
-                      await _auditRepository.ensureActiveAudit(widget.toolboxId);
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 20,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    Text(toolbox['name'], style: Theme.of(context).textTheme.headlineLarge),
+                    if (currentCheckoutId != null) CheckoutBanner(checkoutId: currentCheckoutId),
+                  ],
+                ),
+                Row(
+                  children: [
+                    WideButton(
+                      text: "Capture Drawer Images",
+                      onPressed: () async {
+                        await _auditRepository.ensureActiveAudit(widget.toolboxId);
 
-                      if (context.mounted) {
-                        context.pushNamed(
-                          AppRoute.capture.name,
-                          pathParameters: {'toolbox_id': widget.toolboxId},
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
-              Divider(),
-              Column(
-                spacing: 10,
-                children: [
-                  for (final drawer in toolbox['drawers'])
-                    DrawerDisplay(
-                      widget.toolboxId,
-                      drawer['drawerId'],
-                      drawer['drawerName'],
-                      (toolbox['tools'] as List).where((t) => t['drawerId'] == drawer['drawerId']).length,
-                    ),
-                ],
-              ),
-              Divider(),
-              Row(
-                children: [
-                  WideButton(
-                    text: "Close ${toolbox['name']}",
-                    color: Colors.orange,
-                    onPressed: () async {
-                      try {
-                        await _checkoutRepository.closeToolbox(widget.toolboxId);
                         if (context.mounted) {
-                          // context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
-                          context.goNamed(AppRoute.home.name);
-                        }
-                      } on StateError catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.message)),
+                          context.pushNamed(
+                            AppRoute.capture.name,
+                            pathParameters: {'toolbox_id': widget.toolboxId},
                           );
                         }
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ],
+                      },
+                    ),
+                  ],
+                ),
+                Divider(),
+                Column(
+                  spacing: 10,
+                  children: [
+                    for (final drawer in toolbox['drawers'])
+                      DrawerDisplay(
+                        widget.toolboxId,
+                        drawer['drawerId'],
+                        drawer['drawerName'],
+                        (toolbox['tools'] as List).where((t) => t['drawerId'] == drawer['drawerId']).length,
+                      ),
+                  ],
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    WideButton(
+                      text: "Close ${toolbox['name']}",
+                      color: Colors.orange,
+                      onPressed: () async {
+                        try {
+                          await _checkoutRepository.closeToolbox(widget.toolboxId);
+                          if (context.mounted) {
+                            // context.pushNamed(AppRoute.complete.name, pathParameters: {'toolbox_id': widget.toolboxId});
+                            context.goNamed(AppRoute.home.name);
+                          }
+                        } on StateError catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.message)),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           );
         },
       ),

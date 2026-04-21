@@ -56,55 +56,57 @@ class _DrawerPageState extends State<DrawerPage> {
 
           final drawer = _toolbox['drawers'].firstWhere((drawer) => drawer['drawerId'] == widget.drawerId);
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 20,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 10,
-                children: [
-                  Text(drawer['drawerName'], style: Theme.of(context).textTheme.headlineLarge),
-                ],
-              ),
-              if (isAuditActive)
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 20,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    Text(drawer['drawerName'], style: Theme.of(context).textTheme.headlineLarge),
+                  ],
+                ),
+                if (isAuditActive)
+                  Row(
+                    children: [
+                      WideButton(
+                        text: "Retake Drawer Images",
+                        color: Colors.orange,
+                        onPressed: () {
+                          context.pushNamed(
+                            AppRoute.capture.name,
+                            pathParameters: {'toolbox_id': widget.toolboxId},
+                            extra: widget.drawerId,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                imageDisplay(drawerAudit['imageStoragePath'], drawerAudit),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    Text("Results", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    if (drawerAudit['results'].isEmpty) Text("No results found.", style: Theme.of(context).textTheme.bodySmall),
+                    for (final entry in drawerAudit['results'].entries) resultDisplay(entry, auditId, isAuditActive),
+                  ],
+                ),
                 Row(
                   children: [
                     WideButton(
-                      text: "Retake Drawer Images",
-                      color: Colors.orange,
-                      onPressed: () {
-                        context.pushNamed(
-                          AppRoute.capture.name,
-                          pathParameters: {'toolbox_id': widget.toolboxId},
-                          extra: widget.drawerId,
-                        );
+                      text: drawerAudit['drawerStatus'] == 'user-validated' ? "Confirmed Results" : "Confirm Results",
+                      onPressed: () async {
+                        await _auditRepository.confirmDrawerResults(auditId, widget.drawerId, audit, _toolbox);
+                        if (context.mounted) context.pop();
                       },
                     ),
                   ],
                 ),
-              imageDisplay(drawerAudit['imageStoragePath'], drawerAudit),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 10,
-                children: [
-                  Text("Results", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  if (drawerAudit['results'].isEmpty) Text("No results found.", style: Theme.of(context).textTheme.bodySmall),
-                  for (final entry in drawerAudit['results'].entries) resultDisplay(entry, auditId, isAuditActive),
-                ],
-              ),
-              Row(
-                children: [
-                  WideButton(
-                    text: drawerAudit['drawerStatus'] == 'user-validated' ? "Confirmed Results" : "Confirm Results",
-                    onPressed: () async {
-                      await _auditRepository.confirmDrawerResults(auditId, widget.drawerId, audit, _toolbox);
-                      if (context.mounted) context.pop();
-                    },
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),

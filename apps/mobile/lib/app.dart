@@ -56,6 +56,8 @@ class _AppState extends State<App> {
             appBarTheme: const AppBarTheme(
               backgroundColor: lightBg,
               foregroundColor: Colors.black,
+              surfaceTintColor: Colors.transparent,
+              scrolledUnderElevation: 0,
             ),
           ),
           darkTheme: ThemeData(
@@ -71,6 +73,8 @@ class _AppState extends State<App> {
             appBarTheme: const AppBarTheme(
               backgroundColor: darkBg,
               foregroundColor: Colors.white,
+              surfaceTintColor: Colors.transparent,
+              scrolledUnderElevation: 0,
             ),
           ),
           routerConfig: _router,
