@@ -55,7 +55,7 @@ class _LoginState extends State<Login> {
       );
 
       // Sync user data, token, and org id before navigating home
-      _userRepo.syncCurrentUser(_orgIdController.text.trim());
+      await _userRepo.syncCurrentUser(_orgIdController.text.trim());
 
       if (mounted) context.goNamed(AppRoute.home.name);
     } on FirebaseAuthException catch (e) {

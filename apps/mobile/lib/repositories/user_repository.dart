@@ -20,17 +20,18 @@ class UserRepository {
       sound: true,
     );
 
+    String? token;
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      final token = await _fcm.getToken();
-
-      await _db.collection('users').doc(user.uid).set({
-        if (organizationId != null) 'organizationId': organizationId,
-        'email': user.email,
-        'displayName': user.displayName ?? 'Maintainer',
-        'role': 'maintainer',
-        'fcmToken': token,
-        'lastLogin': DateTime.now(),
-      }, SetOptions(merge: true));
+      token = await _fcm.getToken();
     }
+
+    await _db.collection('users').doc(user.uid).set({
+      if (organizationId != null) 'organizationId': organizationId,
+      'email': user.email,
+      'displayName': user.displayName ?? 'Maintainer',
+      'role': 'maintainer',
+      if (token != null) 'fcmToken': token,
+      'lastLogin': DateTime.now(),
+    }, SetOptions(merge: true));
   }
 }
