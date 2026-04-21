@@ -24,6 +24,8 @@ class AppScaffold extends StatefulWidget {
 class _AppScaffoldState extends State<AppScaffold> {
   @override
   Widget build(BuildContext context) {
+    const padding = 25.0;
+
     return Scaffold(
       appBar: AppBar(
         title: GestureDetector(
@@ -33,10 +35,9 @@ class _AppScaffoldState extends State<AppScaffold> {
           child: ParcellHeader(),
         ),
         centerTitle: true,
-        leadingWidth: 100,
         leading: widget.allowBack
             ? Padding(
-                padding: const EdgeInsets.only(left: 15),
+                padding: const EdgeInsets.only(left: padding - 8),
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () => context.pop(),
@@ -46,7 +47,7 @@ class _AppScaffoldState extends State<AppScaffold> {
         actions: [
           if (widget.allowLogout)
             Padding(
-              padding: const EdgeInsets.only(right: 35),
+              padding: const EdgeInsets.only(right: padding - 8),
               child: IconButton(
                 icon: const Icon(Icons.logout),
                 onPressed: () {
@@ -57,9 +58,11 @@ class _AppScaffoldState extends State<AppScaffold> {
             ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 25),
-        child: widget.child,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: padding, vertical: padding),
+          child: widget.child,
+        ),
       ),
     );
   }
