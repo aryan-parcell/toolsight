@@ -52,10 +52,10 @@ export default function TemplateBuilder() {
 
     const runAnalysis = async () => {
         if (!image) return;
-        
+
         const data = await discoverTools(image);
         const detectedTools: Detection[] = data?.tools || [];
-        
+
         if (detectedTools.length > 0) {
             setTools(detectedTools);
         } else {
@@ -230,14 +230,14 @@ export default function TemplateBuilder() {
                             </div>
 
                             {/* Canvas */}
-                            <div className="flex-1 rounded-lg relative overflow-hidden flex items-center justify-center">
-                                <div className="relative inline-block w-full h-full">
+                            <div className="flex-1 rounded-lg relative overflow-hidden flex items-start justify-center">
+                                <div className="relative inline-block w-full">
                                     {image && (
                                         <>
                                             <img
                                                 src={image}
                                                 alt="Workspace"
-                                                className="w-full h-full object-contain select-none pointer-events-none"
+                                                className="w-full h-auto block select-none pointer-events-none"
                                             />
 
                                             {/* Tool Overlay */}
