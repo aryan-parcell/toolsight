@@ -68,7 +68,6 @@ class _ToolboxPageState extends State<ToolboxPage> {
                     ),
                   ],
                 ),
-                Divider(),
                 Column(
                   spacing: 10,
                   children: [
@@ -81,7 +80,6 @@ class _ToolboxPageState extends State<ToolboxPage> {
                       ),
                   ],
                 ),
-                Divider(),
                 Row(
                   children: [
                     WideButton(
