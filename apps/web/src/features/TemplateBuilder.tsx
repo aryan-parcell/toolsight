@@ -185,260 +185,261 @@ export default function TemplateBuilder() {
                 )}
 
                 {step === BuilderStep.VERIFICATION && (
-                    <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-0">
-                        {/* LEFT COLUMN: Canvas & Toolbar */}
-                        <div className="lg:col-span-3 flex flex-col gap-2">
-                            {/* Toolbar */}
-                            <div className=" 
-                                bg-axiom-surfaceLight dark:bg-axiom-surfaceDark 
-                                border border-axiom-borderLight dark:border-axiom-borderDark 
-                                rounded-lg p-2 flex justify-between items-center
-                            ">
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => {
-                                            setEditorMode('tools');
-                                            setSelectedAnchorId(null);
-                                        }}
-                                        className={`p-2 rounded-md text-sm font-medium flex items-center ${editorMode === 'tools' ? 'bg-axiom-cyan text-black' : ''}`}
-                                    >
-                                        <Edit size={16} className="mr-2" />
-                                        Edit Tools
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setEditorMode('anchors');
-                                            setSelectedToolIndex(null);
-                                        }}
-                                        className={`p-2 rounded-md text-sm font-medium flex items-center ${editorMode === 'anchors' ? 'bg-axiom-cyan text-black' : ''}`}
-                                    >
-                                        <Anchor size={16} className="mr-2" />
-                                        Edit Anchors
-                                    </button>
-                                </div>
-                                <div className="flex gap-2">
-                                    {editorMode === 'tools' && (
+                    <div className="flex flex-col gap-4">
+                        {/* Workspace Grid */}
+                        <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-4">
+                            {/* LEFT COLUMN: Toolbar & Canvas */}
+                            <div className="flex flex-col gap-4">
+                                {/* Toolbar */}
+                                <div className=" 
+                                    bg-axiom-surfaceLight dark:bg-axiom-surfaceDark 
+                                    border border-axiom-borderLight dark:border-axiom-borderDark 
+                                    rounded-lg p-2 flex justify-between items-center
+                                ">
+                                    <div className="flex gap-2">
                                         <button
-                                            onClick={() => handleAddTool()}
-                                            className="p-2 rounded-md text-sm font-medium bg-axiom-cyan text-black flex items-center"
+                                            onClick={() => {
+                                                setEditorMode('tools');
+                                                setSelectedAnchorId(null);
+                                            }}
+                                            className={`p-2 rounded-md text-sm font-medium flex items-center ${editorMode === 'tools' ? 'bg-axiom-cyan text-black' : ''}`}
                                         >
-                                            <Plus size={16} className="mr-2" />
-                                            Add Tool
+                                            <Edit size={16} className="mr-2" />
+                                            Edit Tools
                                         </button>
-                                    )}
+                                        <button
+                                            onClick={() => {
+                                                setEditorMode('anchors');
+                                                setSelectedToolIndex(null);
+                                            }}
+                                            className={`p-2 rounded-md text-sm font-medium flex items-center ${editorMode === 'anchors' ? 'bg-axiom-cyan text-black' : ''}`}
+                                        >
+                                            <Anchor size={16} className="mr-2" />
+                                            Edit Anchors
+                                        </button>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {editorMode === 'tools' && (
+                                            <button
+                                                onClick={() => handleAddTool()}
+                                                className="p-2 rounded-md text-sm font-medium bg-axiom-cyan text-black flex items-center"
+                                            >
+                                                <Plus size={16} className="mr-2" />
+                                                Add Tool
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Canvas */}
+                                <div className="rounded-lg relative overflow-hidden flex items-start justify-center">
+                                    <div className="relative inline-block w-full">
+                                        {image && (
+                                            <>
+                                                <img
+                                                    src={image}
+                                                    alt="Workspace"
+                                                    className="w-full h-auto block select-none pointer-events-none"
+                                                />
+
+                                                {/* Tool Overlay */}
+                                                <ToolDetection
+                                                    toolPositions={tools}
+                                                    isEditMode={editorMode === 'tools'}
+                                                    onCanvasClick={handleCanvasClick}
+                                                    onToolUpdated={handleToolUpdated}
+                                                    selectedToolId={selectedToolIndex}
+                                                    onSelectTool={setSelectedToolIndex}
+                                                    containerClassName={`absolute inset-0 ${editorMode === 'tools' ? 'z-20 pointer-events-auto' : 'z-10 pointer-events-none opacity-50'}`}
+                                                />
+
+                                                {/* Anchor Overlay */}
+                                                <AnchorPointOverlay
+                                                    anchorPoints={anchors}
+                                                    onAnchorPointsChange={setAnchors}
+                                                    isEditMode={editorMode === 'anchors'}
+                                                    onCanvasClick={handleCanvasClick}
+                                                    selectedAnchorId={selectedAnchorId}
+                                                    onSelectAnchor={setSelectedAnchorId}
+                                                    className={`${editorMode === 'anchors' ? 'z-30 pointer-events-auto' : 'z-10 pointer-events-none'}`}
+                                                />
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Canvas */}
-                            <div className="flex-1 rounded-lg relative overflow-hidden flex items-start justify-center">
-                                <div className="relative inline-block w-full">
-                                    {image && (
-                                        <>
-                                            <img
-                                                src={image}
-                                                alt="Workspace"
-                                                className="w-full h-auto block select-none pointer-events-none"
-                                            />
+                            {/* RIGHT COLUMN: Properties Panel */}
+                            <div className="relative">
+                                <div className="
+                                    xl:absolute xl:inset-0
+                                    bg-axiom-surfaceLight dark:bg-axiom-surfaceDark 
+                                    border border-axiom-borderLight dark:border-axiom-borderDark 
+                                    rounded-lg flex flex-col overflow-hidden
+                                ">
+                                    <div className="p-4 border-b border-gray-700">
+                                        <h3 className="font-bold dark:text-white">
+                                            {editorMode === 'tools' ? 'Tool Properties' : 'Anchor Properties'}
+                                        </h3>
+                                    </div>
 
-                                            {/* Tool Overlay */}
-                                            <ToolDetection
-                                                toolPositions={tools}
-                                                isEditMode={editorMode === 'tools'}
-                                                onCanvasClick={handleCanvasClick}
-                                                onToolUpdated={handleToolUpdated}
-                                                selectedToolId={selectedToolIndex}
-                                                onSelectTool={setSelectedToolIndex}
-                                                // Pass dynamic classes to control stacking context. 
-                                                // If editing tools, z-20 and interactive. If editing anchors, z-10 and non-interactive.
-                                                containerClassName={`absolute inset-0 ${editorMode === 'tools' ? 'z-20 pointer-events-auto' : 'z-10 pointer-events-none opacity-50'}`}
-                                            />
+                                    {/* SCROLLABLE AREA */}
+                                    <div className="flex-1 overflow-y-auto p-4">
+                                        {editorMode === 'tools' ? (
+                                            selectedToolIndex !== null && tools[selectedToolIndex] ? (
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <label className="block text-sm mb-2">Name</label>
+                                                        <input
+                                                            type="text"
+                                                            value={tools[selectedToolIndex].toolInfo.name}
+                                                            onChange={(e) => {
+                                                                const upd = [...tools];
+                                                                upd[selectedToolIndex].toolInfo.name = e.target.value;
+                                                                setTools(upd);
+                                                            }}
+                                                            className='w-full rounded-lg p-2 text-sm border dark:bg-white/10 dark:border-axiom-borderDark dark:text-white'
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm mb-2">Shape</label>
+                                                        <div className="flex gap-2 rounded-lg border">
+                                                            <button
+                                                                onClick={() => handleToolUpdated(selectedToolIndex, {
+                                                                    toolInfo: {
+                                                                        ...tools[selectedToolIndex].toolInfo,
+                                                                        shape: 'rectangle',
+                                                                    }
+                                                                })}
+                                                                className={`flex-1 py-1.5 text-xs rounded transition-colors ${tools[selectedToolIndex].toolInfo.shape === 'rectangle' ? 'bg-axiom-cyan text-black font-bold' : 'text-gray-400'}`}
+                                                            >
+                                                                Rectangle
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleToolUpdated(selectedToolIndex, {
+                                                                    toolInfo: {
+                                                                        ...tools[selectedToolIndex].toolInfo,
+                                                                        shape: 'ellipse',
+                                                                    }
+                                                                })}
+                                                                className={`flex-1 py-1.5 text-xs rounded transition-colors ${tools[selectedToolIndex].toolInfo.shape === 'ellipse' ? 'bg-axiom-cyan text-black font-bold' : 'text-gray-400'}`}
+                                                            >
+                                                                Ellipse
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => {
+                                                            const upd = tools.filter((_, i) => i !== selectedToolIndex);
+                                                            setTools(upd);
+                                                            setSelectedToolIndex(null);
+                                                        }}
+                                                        className="w-full text-red-500 border border-red-500 bg-red-500/10 py-2 rounded hover:bg-red-500/20 text-sm"
+                                                    >
+                                                        Delete Tool
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-4">
+                                                    <p className="text-xs text-gray-500 font-medium mb-2 uppercase tracking-wider">
+                                                        Detected Tools ({tools.length})
+                                                    </p>
+                                                    {tools.map((tool, idx) => (
+                                                        <div
+                                                            key={idx}
+                                                            onClick={() => setSelectedToolIndex(idx)}
+                                                            className="group flex items-center justify-between p-3 rounded-lg bg-white dark:bg-axiom-dark border border-gray-500 cursor-pointer"
+                                                        >
+                                                            <div className="flex items-center gap-3 overflow-hidden">
+                                                                <span className="flex-shrink-0 w-6 h-6 rounded bg-gray-500 text-white text-xs flex items-center justify-center font-mono">
+                                                                    {idx + 1}
+                                                                </span>
+                                                                <span className="text-sm">
+                                                                    {tool.toolInfo.name}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                    {tools.length === 0 && (
+                                                        <div className="text-center py-10 text-gray-500 text-sm">
+                                                            No tools yet.
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )
+                                        ) : (
+                                            <div className="space-y-2">
+                                                {anchors.length === 0 && <div className="text-gray-500 text-sm text-center">No anchors defined. </div>}
+                                                {anchors.map((anchor, idx) => (
+                                                    <div
+                                                        key={anchor.id}
+                                                        onClick={() => setSelectedAnchorId(anchor.id)}
+                                                        className={`
+                                                            w-full rounded-lg
+                                                            ${selectedAnchorId === anchor.id ? ' bg-axiom-cyan' : 'bg-axiom-surfaceLight dark:bg-axiom-surfaceDark'}
+                                                        `}
+                                                    >
+                                                        <div className="flex justify-between items-center gap-2">
+                                                            <input
+                                                                type="text"
+                                                                value={anchor.label}
+                                                                onChange={(e) => {
+                                                                    const upd = [...anchors];
+                                                                    upd[idx].label = e.target.value;
+                                                                    setAnchors(upd);
+                                                                }}
+                                                                className='w-full rounded-lg p-2 text-xs border dark:bg-white/10'
+                                                                placeholder="Enter label..."
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            />
 
-                                            {/* Anchor Overlay */}
-                                            <AnchorPointOverlay
-                                                anchorPoints={anchors}
-                                                onAnchorPointsChange={setAnchors}
-                                                isEditMode={editorMode === 'anchors'}
-                                                onCanvasClick={handleCanvasClick}
-                                                selectedAnchorId={selectedAnchorId}
-                                                onSelectAnchor={setSelectedAnchorId}
-                                                // Pass dynamic classes to control stacking context.
-                                                // If editing anchors, z-30 (above tools) and interactive.
-                                                className={`${editorMode === 'anchors' ? 'z-30 pointer-events-auto' : 'z-10 pointer-events-none'}`}
-                                            />
-                                        </>
-                                    )}
-                                </div>
-                            </div>
+                                                            <button
+                                                                className="text-gray-500 hover:text-red-500"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setAnchors(anchors.filter(a => a.id !== anchor.id));
+                                                                }}>
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
 
-                            <div className=" 
-                                bg-axiom-surfaceLight dark:bg-axiom-surfaceDark 
-                                border border-axiom-borderLight dark:border-axiom-borderDark 
-                                rounded-lg p-2 flex justify-between items-center
-                            ">
-                                <span className="text-gray-500 text-sm">
-                                    {editorMode === 'tools' ? 'Drag to move/resize tools. Click "Add Tool" to create new.' : 'Click 4 distinct points to serve as anchors.'}
-                                </span>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setStep(BuilderStep.UPLOAD)}
-                                        className="p-2 text-gray-500 text-sm"
-                                    >
-                                        Restart
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            // if (anchors.length < 4) {
-                                            //     alert("Please define exactly 4 anchor points before proceeding.");
-                                            //     setEditorMode('anchors');
-                                            //     return;
-                                            // }
-                                            setStep(BuilderStep.ASSIGNMENT);
-                                        }}
-                                        className="bg-green-600 text-white px-6 py-2 rounded-full text-sm flex items-center justify-center gap-1"
-                                    >
-                                        Finish Verification
-                                        <ArrowRight size={16} />
-                                    </button>
+                                                    </div>
+                                                ))}
+                                                {anchors.length < 4 && anchors.length > 0 && (
+                                                    <div className="text-gray-500 text-xs text-center">Need {4 - anchors.length} more anchors</div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Properties Panel */}
-                        <div className="
+                        {/* FOOTER */}
+                        <div className=" 
                             bg-axiom-surfaceLight dark:bg-axiom-surfaceDark 
                             border border-axiom-borderLight dark:border-axiom-borderDark 
-                            rounded-lg p-2 flex flex-col overflow-hidden
+                            rounded-lg p-4 flex justify-between items-center
                         ">
-                            <h3 className="font-bold dark:text-white mb-4 border-b border-gray-700 pb-2">
-                                {editorMode === 'tools' ? 'Tool Properties' : 'Anchor Properties'}
-                            </h3>
-
-                            <div className="flex-1">
-                                {editorMode === 'tools' ? (
-                                    selectedToolIndex !== null && tools[selectedToolIndex] ? (
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm mb-2">Name</label>
-                                                <input
-                                                    type="text"
-                                                    value={tools[selectedToolIndex].toolInfo.name}
-                                                    onChange={(e) => {
-                                                        const upd = [...tools];
-                                                        upd[selectedToolIndex].toolInfo.name = e.target.value;
-                                                        setTools(upd);
-                                                    }}
-                                                    className='w-full rounded-lg p-2 text-sm border dark:bg-white/10 dark:border-axiom-borderDark dark:text-white'
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm mb-2">Shape</label>
-                                                <div className="flex gap-2 rounded-lg border">
-                                                    <button
-                                                        onClick={() => handleToolUpdated(selectedToolIndex, {
-                                                            toolInfo: {
-                                                                ...tools[selectedToolIndex].toolInfo,
-                                                                shape: 'rectangle',
-                                                            }
-                                                        })}
-                                                        className={`flex-1 py-1.5 text-xs rounded transition-colors ${tools[selectedToolIndex].toolInfo.shape === 'rectangle' ? 'bg-axiom-cyan text-black font-bold' : 'text-gray-400'}`}
-                                                    >
-                                                        Rectangle
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleToolUpdated(selectedToolIndex, {
-                                                            toolInfo: {
-                                                                ...tools[selectedToolIndex].toolInfo,
-                                                                shape: 'ellipse',
-                                                            }
-                                                        })}
-                                                        className={`flex-1 py-1.5 text-xs rounded transition-colors ${tools[selectedToolIndex].toolInfo.shape === 'ellipse' ? 'bg-axiom-cyan text-black font-bold' : 'text-gray-400'}`}
-                                                    >
-                                                        Ellipse
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <button
-                                                onClick={() => {
-                                                    const upd = tools.filter((_, i) => i !== selectedToolIndex);
-                                                    setTools(upd);
-                                                    setSelectedToolIndex(null);
-                                                }}
-                                                className="w-full text-red-500 border border-red-500 bg-red-500/10 py-2 rounded hover:bg-red-500/20 text-sm"
-                                            >
-                                                Delete Tool
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-4">
-                                            <p className="text-xs text-gray-500 font-medium mb-2 uppercase tracking-wider">
-                                                Detected Tools ({tools.length})
-                                            </p>
-                                            {tools.map((tool, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    onClick={() => setSelectedToolIndex(idx)}
-                                                    className="group flex items-center justify-between p-3 rounded-lg bg-white dark:bg-axiom-dark border border-gray-500"
-                                                >
-                                                    <div className="flex items-center gap-3 overflow-hidden">
-                                                        <span className="flex-shrink-0 w-6 h-6 rounded bg-gray-500 text-white text-xs flex items-center justify-center font-mono">
-                                                            {idx + 1}
-                                                        </span>
-                                                        <span className="text-sm">
-                                                            {tool.toolInfo.name}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            {tools.length === 0 && (
-                                                <div className="text-center py-10 text-gray-500 text-sm">
-                                                    No tools yet.
-                                                </div>
-                                            )}
-                                        </div>
-                                    )
-                                ) : (
-                                    <div className="space-y-2">
-                                        {anchors.length === 0 && <div className="text-gray-500 text-sm text-center">No anchors defined. </div>}
-                                        {anchors.map((anchor, idx) => (
-                                            <div
-                                                key={anchor.id}
-                                                onClick={() => setSelectedAnchorId(anchor.id)}
-                                                className={`
-                                                    w-full rounded-lg
-                                                    ${selectedAnchorId === anchor.id ? ' bg-axiom-cyan' : 'bg-axiom-surfaceLight dark:bg-axiom-surfaceDark'}
-                                                `}
-                                            >
-                                                <div className="flex justify-between items-center gap-2">
-                                                    <input
-                                                        type="text"
-                                                        value={anchor.label}
-                                                        onChange={(e) => {
-                                                            const upd = [...anchors];
-                                                            upd[idx].label = e.target.value;
-                                                            setAnchors(upd);
-                                                        }}
-                                                        className='w-full rounded-lg p-2 text-xs border dark:bg-white/10'
-                                                        placeholder="Enter label..."
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    />
-
-                                                    <button
-                                                        className="text-gray-500 hover:text-red-500"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setAnchors(anchors.filter(a => a.id !== anchor.id));
-                                                        }}>
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-
-                                            </div>
-                                        ))}
-                                        {anchors.length < 4 && anchors.length > 0 && (
-                                            <div className="text-gray-500 text-xs text-center">Need {4 - anchors.length} more anchors</div>
-                                        )}
-                                    </div>
-                                )}
+                            <span className="text-gray-500 text-sm font-medium">
+                                {editorMode === 'tools' ? 'Drag to move/resize tools. Click "Add Tool" to create new.' : 'Click 4 distinct points to serve as anchors.'}
+                            </span>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setStep(BuilderStep.UPLOAD)}
+                                    className="px-4 py-2 text-gray-500 text-sm font-bold hover:text-axiom-cyan transition-colors"
+                                >
+                                    Restart
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setStep(BuilderStep.ASSIGNMENT);
+                                    }}
+                                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-2.5 rounded-full text-sm font-bold flex items-center justify-center gap-2 shadow-lg transition-all"
+                                >
+                                    Finish Verification
+                                    <ArrowRight size={20} />
+                                </button>
                             </div>
                         </div>
                     </div>
