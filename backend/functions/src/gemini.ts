@@ -77,6 +77,22 @@ export async function analyzeToolImage(
 
   // --- 1. Build System Prompt ---
 
+  const coordinateInstructions = `
+    - ALL coordinates MUST be in PERCENTAGE format (0 to 100).
+    - x, y coordinates represent the distance from the TOP-LEFT corner 
+      of the drawer to the TOP-LEFT corner of the tool's bounding box.
+    - width, height coordinates represent the size of the tool.
+    - Example: A tool at image center would have x+(w/2)≈50, y+(h/2)≈50.
+    - NEVER return values like 0.1, 0.25, 0.67 (normalized, not percentages)
+    - ALWAYS return values like 10, 25, 67 (percentages, not normalized)
+    - The sum of x + width should NOT exceed 100.
+    - The sum of y + height should NOT exceed 100.
+    - Coordinates should never be, nor sum to, a negative number.
+    - angle represents the rotation of the bounding box
+    - angle is in degrees (0-360) clockwise and 0 means unrotated/horizontal.
+    - shape: Must be exactly "rectangle" or "ellipse".
+  `;
+
   let systemPrompt = "";
   if (expectedTools.length > 0) {
     // Create a RAG context string from the database definitions
@@ -130,15 +146,7 @@ export async function analyzeToolImage(
     6. If you see a tool that is NOT in the context, mark it as "unknown" 
 
     CRITICAL COORDINATE SYSTEM REQUIREMENTS:
-    - ALL coordinates MUST be in PERCENTAGE format (0 to 100)
-    - x, y coordinates represent the TOP-LEFT corner as percentages (0 to 100)
-    - width, height represent the size as percentages (0 to 100).
-    - Example: A tool at image center would have x≈50, y≈50.
-    - NEVER return values like 0.1, 0.5, 0.8 (normalized, not percentages)
-    - ALWAYS return values like 10, 25, 67 (percentages, not normalized)
-    - angle represents the rotation of the bounding box
-    - angle is in degrees (0-360) clockwise and 0 means unrotated/horizontal.
-    - shape: Must be exactly "rectangle" or "ellipse".
+    ${coordinateInstructions}
 
     OUTPUT:
     - Return ONLY a valid JSON array of objects. 
@@ -166,15 +174,7 @@ export async function analyzeToolImage(
     2. Generate a concise, professional name for each tool
 
     CRITICAL COORDINATE SYSTEM REQUIREMENTS:
-    - ALL coordinates MUST be in PERCENTAGE format (0 to 100)
-    - x, y coordinates represent the TOP-LEFT corner as percentages (0 to 100)
-    - width, height represent the size as percentages (0 to 100).
-    - Example: A tool at image center would have x≈50, y≈50.
-    - NEVER return values like 0.1, 0.5, 0.8 (normalized, not percentages)
-    - ALWAYS return values like 10, 25, 67 (percentages, not normalized)
-    - angle represents the rotation of the bounding box
-    - angle is in degrees (0-360) clockwise and 0 means unrotated/horizontal.
-    - shape: Must be exactly "rectangle" or "ellipse".
+    ${coordinateInstructions}
 
     OUTPUT:
     - Return ONLY a valid JSON array of objects. 
