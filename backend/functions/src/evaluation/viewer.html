@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Tool Detection Evaluation Viewer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #controls {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      width: 80%;
+      max-width: 800px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #image-wrapper {
+      position: relative;
+      display: inline-block;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    img {
+      max-width: 90vw;
+      max-height: 80vh;
+      display: block;
+    }
+
+    .bbox {
+      position: absolute;
+      border: 2px solid #00ff00;
+      background: rgba(0, 255, 0, 0.1);
+      pointer-events: none;
+    }
+
+    .bbox-label {
+      position: absolute;
+      background: #00ff00;
+      color: #000;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 2px 4px;
+      top: -20px;
+      left: -2px;
+      white-space: nowrap;
+    }
+
+    .tool-list {
+      background: white;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 800px;
+    }
+
+    .tool-item {
+      border-bottom: 1px solid #ddd;
+      padding: 5px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="container">
+    <div id="controls">
+      <button id="prevBtn">&laquo; Previous</button>
+      <div style="text-align: center;">
+        <h3 id="image-name" style="margin: 0 0 5px 0;">Loading...</h3>
+        <select id="image-select"></select>
+      </div>
+      <button id="nextBtn">Next &raquo;</button>
+    </div>
+
+    <div id="image-wrapper">
+      <img id="main-image" src="" alt="Drawer" />
+      <div id="bboxes-container"></div>
+    </div>
+
+    <div class="tool-list">
+      <h4>Detected Tools (<span id="tool-count">0</span>)</h4>
+      <div id="tools-container"></div>
+    </div>
+  </div>
+
+  <script>
+    let resultsData = {};
+    let imageNames = [];
+    let currentIndex = 0;
+
+    async function loadData() {
+      try {
+        const response = await fetch('./initial_results.json');
+        if (!response.ok) throw new Error("Could not load initial_results.json");
+        resultsData = await response.json();
+        imageNames = Object.keys(resultsData).sort();
+
+        console.log("Loaded results for images:", imageNames);
+
+        if (imageNames.length === 0) {
+          document.getElementById('image-name').innerText = "No results found. Run generation script first.";
+          return;
+        }
+
+        const select = document.getElementById('image-select');
+        imageNames.forEach((name, idx) => {
+          const option = document.createElement('option');
+          option.value = idx;
+          option.innerText = name;
+          select.appendChild(option);
+        });
+
+        select.addEventListener('change', (e) => {
+          currentIndex = parseInt(e.target.value);
+          renderImage(currentIndex);
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+          if (currentIndex > 0) {
+            currentIndex--;
+            select.value = currentIndex;
+            renderImage(currentIndex);
+          }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+          if (currentIndex < imageNames.length - 1) {
+            currentIndex++;
+            select.value = currentIndex;
+            renderImage(currentIndex);
+          }
+        });
+
+        renderImage(currentIndex);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('image-name').innerText = "Error loading data: " + e.message;
+      }
+    }
+
+    function renderImage(index) {
+      const imageName = imageNames[index];
+      document.getElementById('image-name').innerText = imageName;
+
+      const imgElement = document.getElementById('main-image');
+      const bboxesContainer = document.getElementById('bboxes-container');
+      const toolsContainer = document.getElementById('tools-container');
+
+      // Clear old boxes
+      bboxesContainer.innerHTML = '';
+      toolsContainer.innerHTML = '';
+
+      const tools = resultsData[imageName] || [];
+      document.getElementById('tool-count').innerText = tools.length;
+
+      // Load image
+      imgElement.onload = () => {
+        const naturalWidth = imgElement.naturalWidth;
+        const naturalHeight = imgElement.naturalHeight;
+        const displayWidth = imgElement.clientWidth;
+        const displayHeight = imgElement.clientHeight;
+
+        // Draw boxes
+        tools.forEach((tool, i) => {
+          // Handle potentially different data structures based on the model's exact return type
+          const coords = tool.coordinates || tool.toolInfo;
+          const name = tool.name || (tool.toolInfo ? tool.toolInfo.name : 'Unknown');
+
+          if (!coords) return;
+
+          // AI returns percentages 0-100
+          const box = document.createElement('div');
+          box.className = 'bbox';
+
+          // Convert percentages to CSS positions
+          box.style.left = coords.x + '%';
+          box.style.top = coords.y + '%';
+          box.style.width = coords.width + '%';
+          box.style.height = coords.height + '%';
+
+          const label = document.createElement('div');
+          label.className = 'bbox-label';
+          label.innerText = `${name} (${Math.round((tool.confidence || 1) * 100)}%)`;
+          box.appendChild(label);
+
+          bboxesContainer.appendChild(box);
+
+          // List item
+          const listItem = document.createElement('div');
+          listItem.className = 'tool-item';
+          listItem.innerText = `${i + 1}. ${name} (Conf: ${Math.round((tool.confidence || 1) * 100)}%, Bbox: x=${coords.x}, y=${coords.y}, w=${coords.width}, h=${coords.height})`;
+          toolsContainer.appendChild(listItem);
+        });
+      };
+
+      imgElement.src = './images/' + imageName;
+    }
+
+    loadData();
+  </script>
+
+</body>
+
+</html>

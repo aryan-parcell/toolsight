@@ -1,0 +1,338 @@
+{
+  "drawer1.jpg": {
+    "completed": true,
+    "groundTruthCount": 4,
+    "findMode": {
+      "predictionsCount": 3,
+      "metrics": {
+        "precision": 0.6666666666666666,
+        "recall": 0.5,
+        "averageIoU": 0.5863556504235456,
+        "nameAccuracy": 1,
+        "truePositives": 2,
+        "falsePositives": 1,
+        "falseNegatives": 2
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 2,
+      "metrics": {
+        "precision": 0,
+        "recall": 0,
+        "averageIoU": 0,
+        "nameAccuracy": 0,
+        "truePositives": 0,
+        "falsePositives": 2,
+        "falseNegatives": 4
+      }
+    }
+  },
+  "drawer10.jpg": {
+    "completed": true,
+    "groundTruthCount": 5,
+    "findMode": {
+      "predictionsCount": 5,
+      "metrics": {
+        "precision": 0,
+        "recall": 0,
+        "averageIoU": 0,
+        "nameAccuracy": 0,
+        "truePositives": 0,
+        "falsePositives": 5,
+        "falseNegatives": 5
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 5,
+      "metrics": {
+        "precision": 0,
+        "recall": 0,
+        "averageIoU": 0,
+        "nameAccuracy": 0,
+        "truePositives": 0,
+        "falsePositives": 5,
+        "falseNegatives": 5
+      }
+    }
+  },
+  "drawer11.jpg": {
+    "completed": true,
+    "groundTruthCount": 7,
+    "findMode": {
+      "predictionsCount": 7,
+      "metrics": {
+        "precision": 0.14285714285714285,
+        "recall": 0.14285714285714285,
+        "averageIoU": 0.5103448275862069,
+        "nameAccuracy": 1,
+        "truePositives": 1,
+        "falsePositives": 6,
+        "falseNegatives": 6
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 7,
+      "metrics": {
+        "precision": 0.2857142857142857,
+        "recall": 0.2857142857142857,
+        "averageIoU": 0.5113122171945701,
+        "nameAccuracy": 0.5,
+        "truePositives": 2,
+        "falsePositives": 5,
+        "falseNegatives": 5
+      }
+    }
+  },
+  "drawer12.jpg": {
+    "completed": true,
+    "groundTruthCount": 12,
+    "findMode": {
+      "predictionsCount": 6,
+      "metrics": {
+        "precision": 0,
+        "recall": 0,
+        "averageIoU": 0,
+        "nameAccuracy": 0,
+        "truePositives": 0,
+        "falsePositives": 6,
+        "falseNegatives": 12
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 0,
+      "metrics": {
+        "precision": 0,
+        "recall": 0,
+        "averageIoU": 0,
+        "nameAccuracy": 0,
+        "truePositives": 0,
+        "falsePositives": 0,
+        "falseNegatives": 12
+      }
+    }
+  },
+  "drawer13.jpg": {
+    "completed": true,
+    "groundTruthCount": 7,
+    "findMode": {
+      "predictionsCount": 8,
+      "metrics": {
+        "precision": 0,
+        "recall": 0,
+        "averageIoU": 0,
+        "nameAccuracy": 0,
+        "truePositives": 0,
+        "falsePositives": 8,
+        "falseNegatives": 7
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 7,
+      "metrics": {
+        "precision": 0,
+        "recall": 0,
+        "averageIoU": 0,
+        "nameAccuracy": 0,
+        "truePositives": 0,
+        "falsePositives": 7,
+        "falseNegatives": 7
+      }
+    }
+  },
+  "drawer2.jpg": {
+    "completed": true,
+    "groundTruthCount": 9,
+    "findMode": {
+      "predictionsCount": 7,
+      "metrics": {
+        "precision": 0.2857142857142857,
+        "recall": 0.2222222222222222,
+        "averageIoU": 0.7586043046618508,
+        "nameAccuracy": 1,
+        "truePositives": 2,
+        "falsePositives": 5,
+        "falseNegatives": 7
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 9,
+      "metrics": {
+        "precision": 0.3333333333333333,
+        "recall": 0.3333333333333333,
+        "averageIoU": 0.686678055502617,
+        "nameAccuracy": 1,
+        "truePositives": 3,
+        "falsePositives": 6,
+        "falseNegatives": 6
+      }
+    }
+  },
+  "drawer3.jpg": {
+    "completed": true,
+    "groundTruthCount": 15,
+    "findMode": {
+      "predictionsCount": 14,
+      "metrics": {
+        "precision": 0.07142857142857142,
+        "recall": 0.06666666666666667,
+        "averageIoU": 0.7974395880937363,
+        "nameAccuracy": 1,
+        "truePositives": 1,
+        "falsePositives": 13,
+        "falseNegatives": 14
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 15,
+      "metrics": {
+        "precision": 0.26666666666666666,
+        "recall": 0.26666666666666666,
+        "averageIoU": 0.6046667492034938,
+        "nameAccuracy": 0,
+        "truePositives": 4,
+        "falsePositives": 11,
+        "falseNegatives": 11
+      }
+    }
+  },
+  "drawer4.jpg": {
+    "completed": true,
+    "groundTruthCount": 16,
+    "findMode": {
+      "predictionsCount": 11,
+      "metrics": {
+        "precision": 0.2727272727272727,
+        "recall": 0.1875,
+        "averageIoU": 0.6178660410441458,
+        "nameAccuracy": 0.6666666666666666,
+        "truePositives": 3,
+        "falsePositives": 8,
+        "falseNegatives": 13
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 16,
+      "metrics": {
+        "precision": 0,
+        "recall": 0,
+        "averageIoU": 0,
+        "nameAccuracy": 0,
+        "truePositives": 0,
+        "falsePositives": 16,
+        "falseNegatives": 16
+      }
+    }
+  },
+  "drawer5.jpg": {
+    "completed": true,
+    "groundTruthCount": 9,
+    "findMode": {
+      "predictionsCount": 9,
+      "metrics": {
+        "precision": 0.2222222222222222,
+        "recall": 0.2222222222222222,
+        "averageIoU": 0.6312076528184654,
+        "nameAccuracy": 1,
+        "truePositives": 2,
+        "falsePositives": 7,
+        "falseNegatives": 7
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 9,
+      "metrics": {
+        "precision": 0.1111111111111111,
+        "recall": 0.1111111111111111,
+        "averageIoU": 0.5752053538349519,
+        "nameAccuracy": 1,
+        "truePositives": 1,
+        "falsePositives": 8,
+        "falseNegatives": 8
+      }
+    }
+  },
+  "drawer6.jpg": {
+    "completed": true,
+    "groundTruthCount": 7,
+    "findMode": {
+      "predictionsCount": 7,
+      "metrics": {
+        "precision": 0.5714285714285714,
+        "recall": 0.5714285714285714,
+        "averageIoU": 0.6710626472925705,
+        "nameAccuracy": 0.75,
+        "truePositives": 4,
+        "falsePositives": 3,
+        "falseNegatives": 3
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 7,
+      "metrics": {
+        "precision": 0.5714285714285714,
+        "recall": 0.5714285714285714,
+        "averageIoU": 0.6132848777722797,
+        "nameAccuracy": 0.25,
+        "truePositives": 4,
+        "falsePositives": 3,
+        "falseNegatives": 3
+      }
+    }
+  },
+  "drawer8.jpg": {
+    "completed": true,
+    "groundTruthCount": 2,
+    "findMode": {
+      "predictionsCount": 2,
+      "metrics": {
+        "precision": 1,
+        "recall": 1,
+        "averageIoU": 0.73592909156844,
+        "nameAccuracy": 1,
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 2,
+      "metrics": {
+        "precision": 1,
+        "recall": 1,
+        "averageIoU": 0.8160972032242315,
+        "nameAccuracy": 1,
+        "truePositives": 2,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      }
+    }
+  },
+  "drawer9.jpg": {
+    "completed": true,
+    "groundTruthCount": 3,
+    "findMode": {
+      "predictionsCount": 3,
+      "metrics": {
+        "precision": 0.6666666666666666,
+        "recall": 0.6666666666666666,
+        "averageIoU": 0.5389944237076523,
+        "nameAccuracy": 1,
+        "truePositives": 2,
+        "falsePositives": 1,
+        "falseNegatives": 1
+      }
+    },
+    "matchMode": {
+      "predictionsCount": 3,
+      "metrics": {
+        "precision": 0.6666666666666666,
+        "recall": 0.6666666666666666,
+        "averageIoU": 0.5948081586079019,
+        "nameAccuracy": 1,
+        "truePositives": 2,
+        "falsePositives": 1,
+        "falseNegatives": 1
+      }
+    }
+  }
+}
