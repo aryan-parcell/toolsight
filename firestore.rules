@@ -37,7 +37,7 @@ service cloud.firestore {
     // One-use functions for simplicity in rules
 
     function userUpdateValid() {
-      return onlyFieldsUpdated(['name', 'email', 'fcmToken', 'lastLogin']);
+      return onlyFieldsUpdated(['displayName', 'email', 'fcmToken', 'lastLogin']);
     }
 
     function maintainerToolboxUpdateValid() {
@@ -54,17 +54,19 @@ service cloud.firestore {
     }
 
     match /organizations/{orgId} {
-      // Anyone can read organization data.
-      allow read: if true;
+      // Anyone can read their own organization data.
+      allow read: if getUserData().organizationId == orgId;
 
-      // Only newly created admins can create organizations, but the org is created before the user profile exists.
-      allow create: if isSignedIn(); 
+      // Only created via backend
+      allow create: if false; 
     }
 
     match /users/{userId} {
       // Users can read their own profile, and admins can read any profile in their org.
       allow read: if (isSignedIn() && request.auth.uid == userId) || (hasRole('admin') && hasActiveOrgAccess(resource.data));
-      allow create: if isSignedIn() && request.auth.uid == userId;
+      
+      // Only created via backend
+      allow create: if false;
       allow update: if isSignedIn() && request.auth.uid == userId && userUpdateValid();
     }
 
