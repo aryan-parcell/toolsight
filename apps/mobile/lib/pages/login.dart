@@ -18,6 +18,7 @@ class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _orgIdController = TextEditingController();
+  final _nameController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final _userRepo = UserRepository();
 
@@ -33,7 +34,7 @@ class _LoginState extends State<Login> {
       );
 
       // Sync user data & token before navigating home
-      _userRepo.syncCurrentUser(null);
+      _userRepo.syncCurrentUser();
 
       if (mounted) context.goNamed(AppRoute.home.name);
     } on FirebaseAuthException catch (e) {
@@ -46,7 +47,7 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _register() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty || _orgIdController.text.isEmpty) return;
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty || _orgIdController.text.isEmpty || _nameController.text.isEmpty) return;
 
     try {
       await _auth.createUserWithEmailAndPassword(
@@ -54,15 +55,21 @@ class _LoginState extends State<Login> {
         password: _passwordController.text.trim(),
       );
 
-      // Sync user data, token, and org id before navigating home
-      await _userRepo.syncCurrentUser(_orgIdController.text.trim());
+      // Create maintainer account
+      await _userRepo.handleMaintainerRegistration(
+        _orgIdController.text.trim(),
+        _nameController.text.trim(),
+      );
+
+      // Sync user data & token before navigating home
+      _userRepo.syncCurrentUser();
 
       if (mounted) context.goNamed(AppRoute.home.name);
-    } on FirebaseAuthException catch (e) {
+    } on Exception catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? "Registration failed.")),
+        SnackBar(content: Text(e.toString())),
       );
     }
   }
@@ -90,13 +97,20 @@ class _LoginState extends State<Login> {
                   Column(
                     spacing: 10,
                     children: [
-                      if (_isRegistering)
+                      if (_isRegistering) ...[
                         TextInputSection(
                           label: "Organization ID",
                           hintText: "Enter your organization ID",
                           controller: _orgIdController,
                           obscureText: false,
                         ),
+                        TextInputSection(
+                          label: "Display Name",
+                          hintText: "Enter your display name",
+                          controller: _nameController,
+                          obscureText: false,
+                        ),
+                      ],
                       TextInputSection(
                         label: "Email",
                         hintText: "Enter your email",
