@@ -71,7 +71,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
   }
 
   Future<void> _captureAndUploadImage(String drawerId) async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final image = await ImagePicker().pickImage(source: ImageSource.camera);
     if (image == null) return;
 
     final imageFile = File(image.path);
