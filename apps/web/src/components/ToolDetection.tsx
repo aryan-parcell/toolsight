@@ -222,6 +222,12 @@ export default function ToolDetection({
             {showOverlay && toolPositions.map((tool, index) => {
                 const isSelected = (activeIndex === index) || (selectedToolId === index);
                 const info = tool.toolInfo;
+                const status = tool.status;
+
+                let color = 'border-gray-400 bg-gray-400/20';
+                if (status === 'present') color = 'border-green-400 bg-green-400/20';
+                else if (status === 'absent') color = 'border-red-400 bg-red-400/20';
+                else if (status === 'unserviceable') color = 'border-orange-400 bg-orange-400/20';
 
                 return (
                     <div
@@ -243,7 +249,7 @@ export default function ToolDetection({
                         <div
                             className={`
                                 w-full h-full border-2
-                                ${isSelected ? "border-axiom-cyan bg-axiom-cyan/20 " : "border-green-400 bg-green-400/20"} 
+                                ${isSelected ? "border-axiom-cyan bg-axiom-cyan/20 " : color} 
                             `}
                             style={{ borderRadius: info.shape === 'ellipse' ? '50%' : '0' }}
                         />
