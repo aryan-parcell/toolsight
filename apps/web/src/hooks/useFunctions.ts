@@ -54,11 +54,28 @@ export const useFunctions = () => {
         }
     }, []);
 
+    const createAdminAndOrganization = useCallback(async (displayName: string, organizationName: string): Promise<{ success?: boolean } | null> => {
+        setLoading(true);
+        setError(null);
+        try {
+            const result = await FunctionsRepository.createAdminAndOrganization(displayName, organizationName);
+            return result;
+        } catch (err: any) {
+            const message = err.message || 'Failed to create admin and organization';
+            setError(message);
+            console.error('Error in createAdminAndOrganization:', err);
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     return {
         loading,
         error,
         discoverTools,
         createCheckoutSession,
         createPortalSession,
+        createAdminAndOrganization,
     };
 };

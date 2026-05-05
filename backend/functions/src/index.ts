@@ -20,6 +20,7 @@
 import {setGlobalOptions} from "firebase-functions/v2";
 import {auditScheduler} from "./auditScheduler";
 import {aiAuditer} from "./aiAuditer";
+import {createAdminAndOrganization, createMaintainer} from "./user";
 import {HttpsError, onCall} from "firebase-functions/https";
 import {analyzeToolImage} from "./gemini";
 import {
@@ -33,6 +34,7 @@ setGlobalOptions({maxInstances: 10});
 export {
   auditScheduler, aiAuditer,
   createCheckoutSession, stripeWebhook, createPortalSession,
+  createAdminAndOrganization, createMaintainer,
 };
 
 export const discoverTools = onCall({

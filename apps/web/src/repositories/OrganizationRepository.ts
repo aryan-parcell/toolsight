@@ -1,5 +1,5 @@
 import type { Organization } from '@shared/types';
-import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export const OrganizationRepository = {
@@ -25,13 +25,4 @@ export const OrganizationRepository = {
             onError,
         );
     },
-
-    /**
-     * Creates a new organization document and returns its ID.
-     */
-    createOrganization: async (name: string): Promise<string> => {
-        const orgRef = doc(collection(db, 'organizations'));
-        await setDoc(orgRef, { name });
-        return orgRef.id;
-    }
 };

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { OrganizationRepository } from '@/repositories/OrganizationRepository';
-import { UserRepository } from '@/repositories/UserRepository';
+import { useFunctions } from '@/hooks/useFunctions';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { AlertCircle, ArrowLeft, Building, Loader, Lock, Mail } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Building, Loader, Lock, Mail, User } from 'lucide-react';
 import { auth } from '../firebase';
 
 const ParcellLogo = () => (
@@ -22,8 +21,10 @@ interface LoginProps {
 }
 
 export default function Login({ onBack }: LoginProps) {
+    const { createAdminAndOrganization } = useFunctions();
     const [isSignUp, setIsSignUp] = useState(false);
     const [orgName, setOrgName] = useState('');
+    const [displayName, setDisplayName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -34,6 +35,12 @@ export default function Login({ onBack }: LoginProps) {
         e.preventDefault();
         setError('');
         setLoading(true);
+
+        if (!displayName.trim()) {
+            setError('Display name is required');
+            setLoading(false);
+            return;
+        }
 
         if (password !== confirmPassword) {
             setError('Passwords do not match');
@@ -48,20 +55,15 @@ export default function Login({ onBack }: LoginProps) {
         }
 
         try {
-            // 1. Create admin user account
-            const userCred = await createUserWithEmailAndPassword(auth, email, password);
-            const uid = userCred.user.uid;
+            // 1. Create firebase auth user
+            await createUserWithEmailAndPassword(auth, email, password);
 
-            // 2. Create organization document
-            const orgId = await OrganizationRepository.createOrganization(orgName);
+            // 2. Create organization and user document via Cloud Function
+            const result = await createAdminAndOrganization(displayName, orgName);
 
-            // 3. Create user document linked to organization
-            await UserRepository.setUser(uid, {
-                email,
-                displayName: email.split('@')[0],
-                organizationId: orgId,
-                role: 'admin',
-            });
+            if (!result?.success) {
+                setError('Failed to create user profile');
+            }
         } catch (err: any) {
             setError(err.message || 'Failed to create account');
         } finally {
@@ -127,24 +129,42 @@ export default function Login({ onBack }: LoginProps) {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {/* Organization Name Input (Sign Up Only) */}
+                        {/* Organization & Display Name Inputs (Sign Up Only) */}
                         {isSignUp && (
-                            <div>
-                                <label className="block text-sm font-medium text-axiom-textLight dark:text-axiom-textDark mb-2">
-                                    Organization Name
-                                </label>
-                                <div className="relative">
-                                    <Building className="absolute left-3 top-3 w-5 h-5 text-axiom-textLight/40 dark:text-axiom-textDark/40" />
-                                    <input
-                                        type="text"
-                                        value={orgName}
-                                        onChange={(e) => setOrgName(e.target.value)}
-                                        required
-                                        className="w-full pl-10 pr-4 py-2 border border-axiom-borderLight dark:border-axiom-borderDark rounded-lg bg-axiom-light dark:bg-axiom-dark text-axiom-textLight dark:text-axiom-textDark focus:outline-none focus:border-axiom-cyan focus:ring-2 focus:ring-axiom-cyan/20 transition-colors"
-                                        placeholder="Acme Corp Maintenance"
-                                    />
+                            <>
+                                <div>
+                                    <label className="block text-sm font-medium text-axiom-textLight dark:text-axiom-textDark mb-2">
+                                        Organization Name
+                                    </label>
+                                    <div className="relative">
+                                        <Building className="absolute left-3 top-3 w-5 h-5 text-axiom-textLight/40 dark:text-axiom-textDark/40" />
+                                        <input
+                                            type="text"
+                                            value={orgName}
+                                            onChange={(e) => setOrgName(e.target.value)}
+                                            required
+                                            className="w-full pl-10 pr-4 py-2 border border-axiom-borderLight dark:border-axiom-borderDark rounded-lg bg-axiom-light dark:bg-axiom-dark text-axiom-textLight dark:text-axiom-textDark focus:outline-none focus:border-axiom-cyan focus:ring-2 focus:ring-axiom-cyan/20 transition-colors"
+                                            placeholder="Acme Corp Maintenance"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-axiom-textLight dark:text-axiom-textDark mb-2">
+                                        Display Name
+                                    </label>
+                                    <div className="relative">
+                                        <User className="absolute left-3 top-3 w-5 h-5 text-axiom-textLight/40 dark:text-axiom-textDark/40" />
+                                        <input
+                                            type="text"
+                                            value={displayName}
+                                            onChange={(e) => setDisplayName(e.target.value)}
+                                            required
+                                            className="w-full pl-10 pr-4 py-2 border border-axiom-borderLight dark:border-axiom-borderDark rounded-lg bg-axiom-light dark:bg-axiom-dark text-axiom-textLight dark:text-axiom-textDark focus:outline-none focus:border-axiom-cyan focus:ring-2 focus:ring-axiom-cyan/20 transition-colors"
+                                            placeholder="John Doe"
+                                        />
+                                    </div>
+                                </div>
+                            </>
                         )}
 
                         {/* Email Input */}

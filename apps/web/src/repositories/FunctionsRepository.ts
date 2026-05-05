@@ -31,5 +31,14 @@ export const FunctionsRepository = {
         const createPortalSession = httpsCallable(functions, 'createPortalSession');
         const result = await createPortalSession({ orgId });
         return result.data as { url: string };
+    },
+
+    /**
+     * Calls the 'createAdminAndOrganization' cloud function.
+     */
+    createAdminAndOrganization: async (displayName: string, organizationName: string): Promise<{ success?: boolean }> => {
+        const createAdminAndOrganization = httpsCallable(functions, 'createAdminAndOrganization');
+        const result = await createAdminAndOrganization({ displayName, organizationName });
+        return result.data as { success?: boolean };
     }
 };
