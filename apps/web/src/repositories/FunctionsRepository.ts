@@ -40,5 +40,14 @@ export const FunctionsRepository = {
         const createAdminAndOrganization = httpsCallable(functions, 'createAdminAndOrganization');
         const result = await createAdminAndOrganization({ displayName, organizationName });
         return result.data as { success?: boolean };
+    },
+
+    /**
+     * Calls the 'assignTemplateToDrawer' cloud function.
+     */
+    assignTemplateToDrawer: async (toolboxId: string, drawerId: string, templateId: string): Promise<{ success?: boolean }> => {
+        const assignTemplateToDrawer = httpsCallable(functions, 'assignTemplateToDrawer');
+        const result = await assignTemplateToDrawer({ toolboxId, drawerId, templateId });
+        return result.data as { success?: boolean };
     }
 };

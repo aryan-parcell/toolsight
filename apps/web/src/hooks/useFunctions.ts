@@ -70,6 +70,22 @@ export const useFunctions = () => {
         }
     }, []);
 
+    const assignTemplateToDrawer = useCallback(async (toolboxId: string, drawerId: string, templateId: string): Promise<{ success?: boolean } | null> => {
+        setLoading(true);
+        setError(null);
+        try {
+            const result = await FunctionsRepository.assignTemplateToDrawer(toolboxId, drawerId, templateId);
+            return result;
+        } catch (err: any) {
+            const message = err.message || 'Failed to assign template to drawer';
+            setError(message);
+            console.error('Error in assignTemplateToDrawer:', err);
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     return {
         loading,
         error,
@@ -77,5 +93,6 @@ export const useFunctions = () => {
         createCheckoutSession,
         createPortalSession,
         createAdminAndOrganization,
+        assignTemplateToDrawer,
     };
 };

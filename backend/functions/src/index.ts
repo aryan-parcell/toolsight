@@ -21,6 +21,7 @@ import {setGlobalOptions} from "firebase-functions/v2";
 import {auditScheduler} from "./auditScheduler";
 import {aiAuditer} from "./aiAuditer";
 import {createAdminAndOrganization, createMaintainer} from "./user";
+import {assignTemplateToDrawer} from "./template";
 import {HttpsError, onCall} from "firebase-functions/https";
 import {analyzeToolImage} from "./gemini";
 import {
@@ -35,6 +36,7 @@ export {
   auditScheduler, aiAuditer,
   createCheckoutSession, stripeWebhook, createPortalSession,
   createAdminAndOrganization, createMaintainer,
+  assignTemplateToDrawer,
 };
 
 export const discoverTools = onCall({

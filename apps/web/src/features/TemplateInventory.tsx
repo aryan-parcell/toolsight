@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useTemplates } from '../hooks/useTemplates';
 import { useToolboxes } from '../hooks/useToolboxes';
+import { useFunctions } from '../hooks/useFunctions';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, CheckCircle2, Loader2 } from 'lucide-react';
-import type { Tool, Template } from '@shared/types';
+import type { Template } from '@shared/types';
 import TemplateDisplay from '@/components/TemplateDisplay';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -13,6 +14,7 @@ export default function TemplateInventory() {
     const { organization } = useAuth();
     const { templates, loading: templatesLoading, deleteTemplate } = useTemplates(organization?.id);
     const { toolboxes, loading: toolboxesLoading, updateToolbox } = useToolboxes(organization?.id);
+    const { assignTemplateToDrawer } = useFunctions();
 
     // Assignment State
     const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
@@ -26,29 +28,9 @@ export default function TemplateInventory() {
         setAssigning(true);
 
         try {
-            const toolbox = toolboxes.find(t => t.id === selectedToolboxId);
-            if (!toolbox) throw new Error("Toolbox not found");
-
-            // Find the drawer and attach the templateId to it
-            const updatedDrawers = toolbox.drawers.map(d => {
-                return d.drawerId === selectedDrawerId ? { ...d, templateId: selectedTemplate.id } : d;
-            });
-
-            // Filter OUT tools currently in this drawer
-            const otherTools = toolbox.tools.filter(t => t.drawerId !== selectedDrawerId);
-
-            // Create NEW tools from Template
-            const newTools: Tool[] = selectedTemplate.tools.map((t, i) => ({
-                drawerId: selectedDrawerId,
-                toolId: `t${selectedDrawerId.substring(1)}-${i}`,
-                toolInfo: t,
-            }));
-
-            // Write to Firestore
-            await updateToolbox(selectedToolboxId, {
-                drawers: updatedDrawers,
-                tools: [...otherTools, ...newTools]
-            });
+            const result = await assignTemplateToDrawer(selectedToolboxId, selectedDrawerId, selectedTemplate.id!);
+            
+            if (!result || !result.success) throw new Error("Template assignment failed.");
 
             // Close and Reset
             setSelectedTemplate(null);
