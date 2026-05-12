@@ -22,6 +22,7 @@ import {auditScheduler} from "./auditScheduler";
 import {aiAuditer} from "./aiAuditer";
 import {createAdminAndOrganization, createMaintainer} from "./user";
 import {assignTemplateToDrawer} from "./template";
+import {checkOutToolbox, returnToolbox} from "./checkout";
 import {HttpsError, onCall} from "firebase-functions/https";
 import {analyzeToolImage} from "./gemini";
 import {
@@ -37,6 +38,7 @@ export {
   createCheckoutSession, stripeWebhook, createPortalSession,
   createAdminAndOrganization, createMaintainer,
   assignTemplateToDrawer,
+  checkOutToolbox, returnToolbox,
 };
 
 export const discoverTools = onCall({
