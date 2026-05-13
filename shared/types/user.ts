@@ -9,3 +9,9 @@ export interface User {
     fcmToken?: string;
     lastLogin?: Date;
 }
+
+export interface Invitation {
+    id?: string;
+    email: string;
+    organizationId: string;
+}
