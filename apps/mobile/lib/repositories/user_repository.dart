@@ -9,14 +9,19 @@ class UserRepository {
   final _auth = FirebaseAuth.instance;
   final _functions = FirebaseFunctions.instance;
 
-  Future<void> handleMaintainerRegistration(String organizationId, String displayName) async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
-    await _functions.httpsCallable('createMaintainer').call({
-      'displayName': displayName,
-      'organizationId': organizationId,
+  Future<Map<String, dynamic>> registerMaintainer({
+    required String email,
+    required String name,
+    required String password,
+    String? organizationId,
+  }) async {
+    final result = await _functions.httpsCallable('registerMaintainer').call({
+      'email': email,
+      'name': name,
+      'password': password,
+      if (organizationId != null) 'organizationId': organizationId,
     });
+    return Map<String, dynamic>.from(result.data as Map);
   }
 
   /// Syncs the current user's profile and FCM token to Firestore.

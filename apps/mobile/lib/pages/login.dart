@@ -17,7 +17,6 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _orgIdController = TextEditingController();
   final _nameController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final _userRepo = UserRepository();
@@ -46,25 +45,87 @@ class _LoginState extends State<Login> {
     }
   }
 
-  Future<void> _register() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty || _orgIdController.text.isEmpty || _nameController.text.isEmpty) return;
+  Future<void> _register({String? selectedOrgId}) async {
+    var email = _emailController.text.trim();
+    var name = _nameController.text.trim();
+    var password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty || name.isEmpty) return;
 
     try {
-      await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+      final result = await _userRepo.registerMaintainer(
+        email: email,
+        name: name,
+        password: password,
+        organizationId: selectedOrgId,
       );
 
-      // Create maintainer account
-      await _userRepo.handleMaintainerRegistration(
-        _orgIdController.text.trim(),
-        _nameController.text.trim(),
-      );
+      if (result['success'] == true) {
+        // Sign in manually since the Cloud Function created the Auth user
+        await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
 
-      // Sync user data & token before navigating home
-      _userRepo.syncCurrentUser();
+        // Sync user data & token before navigating home
+        _userRepo.syncCurrentUser();
 
-      if (mounted) context.goNamed(AppRoute.home.name);
+        if (mounted) context.goNamed(AppRoute.home.name);
+      } else if (result['requiresSelection'] == true) {
+        final organizations = (result['organizations'] as List).cast<Map>();
+
+        if (!mounted) return;
+
+        String? localSelectedId;
+        final String? selectedId = await showDialog<String>(
+          context: context,
+          builder: (context) => StatefulBuilder(
+            builder: (context, setDialogState) {
+              return AlertDialog(
+                title: const Text("Select Organization"),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("You have multiple invitations. Please select which organization to join:"),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Choose Your Organization",
+                      ),
+                      items: organizations
+                          .map(
+                            (org) => DropdownMenuItem<String>(
+                              value: org['id'] as String,
+                              child: Text(org['name'] as String),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) => setDialogState(() => localSelectedId = value),
+                    ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel"),
+                  ),
+                  FilledButton(
+                    onPressed: localSelectedId == null ? null : () => Navigator.pop(context, localSelectedId),
+                    child: const Text("Confirm"),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+
+        if (selectedId != null) {
+          await _register(selectedOrgId: selectedId);
+        }
+      }
     } on Exception catch (e) {
       if (!mounted) return;
 
@@ -98,12 +159,6 @@ class _LoginState extends State<Login> {
                     spacing: 10,
                     children: [
                       if (_isRegistering) ...[
-                        TextInputSection(
-                          label: "Organization ID",
-                          hintText: "Enter your organization ID",
-                          controller: _orgIdController,
-                          obscureText: false,
-                        ),
                         TextInputSection(
                           label: "Display Name",
                           hintText: "Enter your display name",
