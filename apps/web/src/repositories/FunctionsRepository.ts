@@ -49,5 +49,14 @@ export const FunctionsRepository = {
         const assignTemplateToDrawer = httpsCallable(functions, 'assignTemplateToDrawer');
         const result = await assignTemplateToDrawer({ toolboxId, drawerId, templateId });
         return result.data as { success?: boolean };
+    },
+
+    /**
+     * Calls the 'inviteMaintainers' cloud function.
+     */
+    inviteMaintainers: async (emails: string[]): Promise<{ results: {email: string, success: boolean, error?: string}[] }> => {
+        const inviteMaintainers = httpsCallable(functions, 'inviteMaintainers');
+        const result = await inviteMaintainers({ emails });
+        return result.data as { results: {email: string, success: boolean, error?: string}[] };
     }
 };

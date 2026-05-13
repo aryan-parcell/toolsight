@@ -86,6 +86,22 @@ export const useFunctions = () => {
         }
     }, []);
 
+    const inviteMaintainers = useCallback(async (emails: string[]): Promise<{ results: {email: string, success: boolean, error?: string}[] } | null> => {
+        setLoading(true);
+        setError(null);
+        try {
+            const result = await FunctionsRepository.inviteMaintainers(emails);
+            return result;
+        } catch (err: any) {
+            const message = err.message || 'Failed to invite maintainers';
+            setError(message);
+            console.error('Error in inviteMaintainers:', err);
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     return {
         loading,
         error,
@@ -94,5 +110,6 @@ export const useFunctions = () => {
         createPortalSession,
         createAdminAndOrganization,
         assignTemplateToDrawer,
+        inviteMaintainers,
     };
 };

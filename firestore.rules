@@ -73,6 +73,12 @@ service cloud.firestore {
       allow create: if false; 
     }
 
+    match /invitations/{invitationId} {                                                                                                                                             
+      allow read, delete: if hasRole('admin') && hasActiveOrgAccess(resource.data);  
+                                                                                                     
+      allow create: if false; // Managed by Cloud Functions                                                                                                                         
+    } 
+
     match /users/{userId} {
       // Users can read their own profile, and admins can read any profile in their org.
       allow read: if (isSignedIn() && request.auth.uid == userId) || (hasRole('admin') && hasActiveOrgAccess(resource.data));
