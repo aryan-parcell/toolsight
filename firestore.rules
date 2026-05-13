@@ -40,20 +40,16 @@ service cloud.firestore {
       return onlyFieldsUpdated(['displayName', 'email', 'fcmToken', 'lastLogin']);
     }
 
-    function maintainerToolboxUpdateValid() {
-      return onlyFieldsUpdated(['status', 'currentUserId', 'currentCheckoutId', 'lastAuditId']);
+    function toolboxUpdateValid() {
+      return onlyFieldsUpdated(['lastAuditId']);
     }
 
-    function checkoutCoreUnchanged() {
-      return request.resource.data.userId == resource.data.userId
-          && request.resource.data.toolboxId == resource.data.toolboxId
-          && request.resource.data.organizationId == resource.data.organizationId;
+    function checkoutUpdateValid() {
+      return onlyFieldsUpdated(['lastAuditTime', 'nextAuditDue', 'currentAuditId', 'auditStatus']);
     }
 
-    function auditCoreUnchanged() {
-      return request.resource.data.toolboxId == resource.data.toolboxId
-          && request.resource.data.checkoutId == resource.data.checkoutId
-          && request.resource.data.organizationId == resource.data.organizationId;
+    function auditUpdateValid() {
+      return onlyFieldsUpdated(['startTime', 'endTime', 'drawerStates']);
     }
 
     // --- COLLECTION RULES ---
@@ -104,29 +100,29 @@ service cloud.firestore {
 
       // Only 'admin' users can create, update, or delete toolboxes.
       allow create: if hasRole('admin') && hasActiveOrgAccess(request.resource.data);
-      allow update: if (hasRole('admin') || maintainerToolboxUpdateValid()) && hasActiveOrgAccess(request.resource.data) && hasActiveOrgAccess(resource.data);
+      allow update: if (hasRole('admin') || toolboxUpdateValid()) && hasActiveOrgAccess(resource.data);
       allow delete: if hasRole('admin') && hasActiveOrgAccess(resource.data);
     }
 
     match /checkouts/{checkoutId} {
-      // Anyone in the organization can create, read, or update checkouts.
+      // Anyone in the organization can read checkouts.
       allow read: if hasActiveOrgAccess(resource.data);
 
-      // Only 'maintainer' users can create checkouts.
-      allow create: if hasRole('maintainer') && hasActiveOrgAccess(request.resource.data) && request.resource.data.userId == request.auth.uid;
+      // Managed by Cloud Functions
+      allow create: if false;
       
       // Enforce ownership for updates, and lock core identifiers
-      allow update: if hasActiveOrgAccess(request.resource.data)
-                    && hasActiveOrgAccess(resource.data) 
+      // Admins are currently restricted to the same fields as maintainers.
+      allow update: if hasActiveOrgAccess(resource.data)
                     && (resource.data.userId == request.auth.uid || hasRole('admin'))
-                    && checkoutCoreUnchanged();
-    }
+                    && checkoutUpdateValid()
+        }
 
     // Audits: Must match Org ID.
     match /audits/{auditId} {
       allow read: if hasActiveOrgAccess(resource.data);
       allow create: if hasActiveOrgAccess(request.resource.data);
-      allow update: if hasActiveOrgAccess(resource.data) && hasActiveOrgAccess(request.resource.data) && auditCoreUnchanged();
+      allow update: if hasActiveOrgAccess(resource.data) && auditUpdateValid();
     }
   }
 }
