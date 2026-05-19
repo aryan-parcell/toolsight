@@ -1,7 +1,7 @@
 import { collection, doc, query, where, onSnapshot, getDoc, setDoc, deleteDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '../firebase';
-import type { Template, ToolBox, ToolInfo } from '@shared/types';
+import type { Drawer, Template, ToolBox, ToolInfo } from '@shared/types';
 
 export const TemplateRepository = {
     /**
@@ -75,27 +75,32 @@ export const TemplateRepository = {
      */
     deleteTemplate: async (orgId: string, templateId: string): Promise<void> => {
         // 1. Find all toolboxes that might contain this template and unlink it
-        const q = query(collection(db, 'toolboxes'), where('organizationId', '==', orgId));
+        const q = query(
+            collection(db, 'toolboxes'),
+            where('organizationId', '==', orgId),
+            where('templateIds', 'array-contains', templateId)
+        );
         const snapshot = await getDocs(q);
 
         const updatePromises = snapshot.docs.map(async (docSnap) => {
             const toolbox = docSnap.data() as ToolBox;
-            let needsUpdate = false;
 
-            const updatedDrawers = toolbox.drawers.map(d => {
+            const updatedDrawers: Drawer[] = toolbox.drawers.map(d => {
                 if (d.templateId === templateId) {
-                    needsUpdate = true;
                     const { templateId, ...rest } = d;
                     return rest;
                 }
                 return d;
             });
 
-            if (needsUpdate) {
-                return updateDoc(doc(db, 'toolboxes', docSnap.id), {
-                    drawers: updatedDrawers
-                });
-            }
+            const updatedTemplateIds = Array.from(new Set(
+                updatedDrawers.filter(d => !!d.templateId).map(d => d.templateId!)
+            ));
+
+            return updateDoc(doc(db, 'toolboxes', docSnap.id), {
+                drawers: updatedDrawers,
+                templateIds: updatedTemplateIds
+            });
         });
 
         await Promise.all(updatePromises);

@@ -1,5 +1,5 @@
 import AutosaveInput from '@/components/AutosaveInput';
-import type { ToolBox } from '@shared/types';
+import type { Drawer, ToolBox } from '@shared/types';
 import { ChevronDown } from 'lucide-react';
 import TemplateDisplay from '@/components/TemplateDisplay';
 
@@ -35,7 +35,7 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
 
     const handleUnlinkDrawerTemplate = async (drawerId: string) => {
         // Firestore requires us to write back the entire array to update an object inside it
-        const updatedDrawers = drawers.map(d => {
+        const updatedDrawers: Drawer[] = drawers.map(d => {
             if (d.drawerId === drawerId) {
                 const { templateId, ...rest } = d;
                 return rest;
@@ -43,7 +43,11 @@ export function ToolboxEditPane({ toolbox, updateToolbox, deleteToolbox }: Toolb
             return d;
         });
 
-        await updateToolbox(id!, { drawers: updatedDrawers });
+        const updatedTemplateIds = Array.from(new Set(
+            updatedDrawers.filter(d => !!d.templateId).map(d => d.templateId!)
+        ));
+
+        await updateToolbox(id!, { drawers: updatedDrawers, templateIds: updatedTemplateIds });
     };
 
     function Label({ label }: { label: string }) {

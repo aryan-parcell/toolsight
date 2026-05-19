@@ -73,6 +73,7 @@ export default function ToolboxWizard({ onNavigate }: ToolboxWizardProps) {
                 shiftAuditType: formData.auditFrequencyHours === 0 ? 'at-will' : 'periodic',
                 periodicFrequencyHours: formData.auditFrequencyHours,
             },
+            templateIds: [],
             status: 'available',
             currentUserId: null,
             currentCheckoutId: null,

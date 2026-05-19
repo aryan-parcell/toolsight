@@ -37,6 +37,7 @@ export interface ToolBox {
   lastAuditId: string | null;
 
   // Denormalized Fields
+  templateIds: string[];
   status: "maintenance" | "available" | "checked_out" | string;
   currentUserId: string | null;
   currentCheckoutId: string | null;

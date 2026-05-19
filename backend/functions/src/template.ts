@@ -48,6 +48,10 @@ export const assignTemplateToDrawer = onCall(async (request) => {
       return d.drawerId === drawerId ? {...d, templateId: templateId} : d;
     });
 
+    const updatedTemplateIds = Array.from(new Set(
+      updatedDrawers.filter((d) => !!d.templateId).map((d) => d.templateId!)
+    ));
+
     const otherTools = toolbox.tools.filter((t) => t.drawerId !== drawerId);
 
     const newTools: Tool[] = template.tools.map((t, i) => ({
@@ -59,6 +63,7 @@ export const assignTemplateToDrawer = onCall(async (request) => {
     transaction.update(toolboxRef, {
       drawers: updatedDrawers,
       tools: [...otherTools, ...newTools],
+      templateIds: updatedTemplateIds,
     });
   });
 
