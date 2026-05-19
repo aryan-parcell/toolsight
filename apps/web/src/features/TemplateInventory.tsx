@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTemplates } from '../hooks/useTemplates';
 import { useToolboxes } from '../hooks/useToolboxes';
 import { useFunctions } from '../hooks/useFunctions';
@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, CheckCircle2, Loader2 } from 'lucide-react';
-import type { Template } from '@shared/types';
+import type { Template, ToolBox } from '@shared/types';
 import TemplateDisplay from '@/components/TemplateDisplay';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -25,6 +25,8 @@ export default function TemplateInventory({ onEdit }: TemplateInventoryProps) {
     const [selectedToolboxId, setSelectedToolboxId] = useState<string>("");
     const [selectedDrawerId, setSelectedDrawerId] = useState<string>("");
     const [assigning, setAssigning] = useState(false);
+
+    const [linkedToolboxes, setLinkedToolboxes] = useState<ToolBox[]>([]);
 
     // Execute Assignment
     const handleAssign = async () => {
@@ -59,6 +61,17 @@ export default function TemplateInventory({ onEdit }: TemplateInventoryProps) {
             alert("Failed to delete template.");
         }
     };
+
+    useEffect(() => {
+        if (!selectedTemplate) {
+            setLinkedToolboxes([]);
+            return;
+        }
+
+        const tbs = toolboxes.filter(tb => tb.templateIds.includes(selectedTemplate.id!));
+
+        setLinkedToolboxes(tbs);
+    }, [selectedTemplate]);
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
@@ -139,6 +152,19 @@ export default function TemplateInventory({ onEdit }: TemplateInventoryProps) {
                         <div className="space-y-4">
                             {/* Template Preview */}
                             <TemplateDisplay templateId={selectedTemplate.id!} />
+
+                            {linkedToolboxes.length > 0 && (
+                                <div className="space-y-2">
+                                    <h4 className="font-bold text-md dark:text-white">Linked Toolboxes ({linkedToolboxes.length})</h4>
+                                    <ul className="space-y-1">
+                                        {linkedToolboxes.map(tb => (
+                                            <li key={tb.id} className="text-sm text-gray-500">
+                                                {tb.name} - {tb.drawers.filter(d => d.templateId === selectedTemplate.id).map(d => d.drawerName).join(", ")}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
 
                             {/* Options */}
                             <div className="space-y-2">
