@@ -54,6 +54,15 @@ export function useTemplates(orgId: string | undefined) {
         }
     };
 
+    const updateTemplate = async (templateId: string, updates: Partial<Template>) => {
+        try {
+            await TemplateRepository.updateTemplate(templateId, updates);
+        } catch (err) {
+            console.error("Error updating template:", err);
+            setError(err instanceof Error ? err.message : String(err));
+        }
+    };
+
     const getTemplate = async (templateId: string) => {
         try {
             return await TemplateRepository.getTemplate(templateId);
@@ -69,6 +78,7 @@ export function useTemplates(orgId: string | undefined) {
         loading,
         error,
         createTemplate,
+        updateTemplate,
         deleteTemplate,
         getTemplate
     };

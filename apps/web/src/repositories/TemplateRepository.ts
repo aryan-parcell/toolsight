@@ -63,6 +63,14 @@ export const TemplateRepository = {
     },
 
     /**
+     * Updates an existing template.
+     */
+    updateTemplate: async (templateId: string, updates: Partial<Template>): Promise<void> => {
+        const templateRef = doc(db, 'templates', templateId);
+        await updateDoc(templateRef, updates);
+    },
+
+    /**
      * Deletes a template, its image, and unlinks it from all toolboxes in the organization.
      */
     deleteTemplate: async (orgId: string, templateId: string): Promise<void> => {
