@@ -35,7 +35,7 @@ export default function TemplateInventory({ onEdit }: TemplateInventoryProps) {
 
         try {
             const result = await assignTemplateToDrawer(selectedToolboxId, selectedDrawerId, selectedTemplate.id!);
-            
+
             if (!result || !result.success) throw new Error("Template assignment failed.");
 
             // Close and Reset
@@ -115,8 +115,7 @@ export default function TemplateInventory({ onEdit }: TemplateInventoryProps) {
 
                                 <div className="flex gap-2">
                                     <Button
-                                        variant="outline"
-                                        className="flex-1 text-xs border-gray-500"
+                                        className="flex-1 text-xs bg-red-500 text-white"
                                         onClick={() => handleDeleteTemplate(template.id!)}
                                     >
                                         Delete
