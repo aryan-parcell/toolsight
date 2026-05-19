@@ -11,6 +11,7 @@ import Settings from "./features/Settings";
 import TemplateBuilder from "./features/TemplateBuilder";
 import TemplateInventory from "./features/TemplateInventory";
 import ToolboxWizard from "./features/ToolboxWizard";
+import type { Template } from "@shared/types";
 
 export enum AppView {
     TOOLBOX_OVERVIEW = 'TOOLBOX_OVERVIEW',
@@ -37,18 +38,30 @@ export default function App() {
     const [currentView, setCurrentView] = useState<AppView>(AppView.TOOLBOX_OVERVIEW);
     const [showAuth, setShowAuth] = useState(false);
 
+    const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
+
+    const handleNavigate = (view: AppView) => {
+        setEditingTemplate(null);
+        setCurrentView(view);
+    };
+
+    const handleEditTemplate = (template: Template) => {
+        setEditingTemplate(template);
+        setCurrentView(AppView.TEMPLATE_BUILDER);
+    };
+
     const renderContent = () => {
         switch (currentView) {
             case AppView.TOOLBOX_OVERVIEW:
-                return <Dashboard onNavigate={setCurrentView} />;
+                return <Dashboard onNavigate={handleNavigate} />;
             case AppView.TOOLBOX_WIZARD:
-                return <ToolboxWizard onNavigate={setCurrentView} />;
+                return <ToolboxWizard onNavigate={handleNavigate} />;
             case AppView.TEMPLATE_BUILDER:
-                return <TemplateBuilder />;
+                return <TemplateBuilder templateToEdit={editingTemplate} onComplete={() => handleNavigate(AppView.INVENTORY)} />;
             case AppView.CALIBRATION:
                 return <CalibrationManagement />;
             case AppView.INVENTORY:
-                return <TemplateInventory />;
+                return <TemplateInventory onEdit={handleEditTemplate} />;
             case AppView.REPORTS:
                 return <Reports />;
             case AppView.SETTINGS:
@@ -69,7 +82,7 @@ export default function App() {
                     <PaymentGate />
                 ) : (
                     // Logged In Flow (Active Subscription)
-                    <Layout currentView={currentView} onNavigate={setCurrentView}>
+                    <Layout currentView={currentView} onNavigate={handleNavigate}>
                         {renderContent()}
                     </Layout>
                 )

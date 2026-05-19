@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Trash2, Plus, Edit, Anchor } from 'lucide-react';
-import type { Detection, AnchorPoint } from '@shared/types';
+import type { Detection, AnchorPoint, Template } from '@shared/types';
 import ImageUploadDropzone from '@/components/ImageUploadDropzone';
 import ImageAnalysisStep from '@/components/ImageAnalysisStep';
 import ToolDetection from '@/components/ToolDetection';
@@ -17,9 +17,14 @@ enum BuilderStep {
     ASSIGNMENT = 3
 }
 
-export default function TemplateBuilder() {
+interface TemplateBuilderProps {
+    templateToEdit: Template | null;
+    onComplete: () => void;
+}
+
+export default function TemplateBuilder({ templateToEdit, onComplete }: TemplateBuilderProps) {
     const { organization } = useAuth();
-    const { createTemplate } = useTemplates(organization?.id);
+    const { createTemplate, updateTemplate } = useTemplates(organization?.id);
     const { discoverTools, loading: isAnalyzing, error: analysisError } = useFunctions();
 
     const [step, setStep] = useState(BuilderStep.UPLOAD);
@@ -38,6 +43,26 @@ export default function TemplateBuilder() {
     const [selectedDrawer, setSelectedDrawer] = useState('');
     const [templateName, setTemplateName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (templateToEdit) {
+            setImage(templateToEdit.imageUrl);
+            setTemplateName(templateToEdit.name);
+            setTools(templateToEdit.tools.map((t, idx) => ({
+                toolId: `tool-${idx}`,
+                status: 'present',
+                confidence: 1,
+                toolInfo: t
+            })));
+            setStep(BuilderStep.VERIFICATION);
+        } else {
+            // Reset state if moving from Edit back to Create
+            setImage(null);
+            setTemplateName("");
+            setTools([]);
+            setStep(BuilderStep.UPLOAD);
+        }
+    }, [templateToEdit]);
 
     useEffect(() => {
         if (analysisError) alert(`AI Analysis failed: ${analysisError}`);
@@ -119,16 +144,23 @@ export default function TemplateBuilder() {
         setIsSaving(true);
 
         try {
-            await createTemplate(organization!.id, templateName, image, tools.map(t => t.toolInfo));
+            if (templateToEdit && templateToEdit.id) {
+                await updateTemplate(templateToEdit.id, {
+                    name: templateName,
+                    tools: tools.map(t => t.toolInfo)
+                });
+            } else {
+                await createTemplate(organization!.id, templateName, image, tools.map(t => t.toolInfo));
 
-            alert("Template saved successfully!");
+                // Reset
+                setImage(null);
+                setTools([]);
+                setAnchors([]);
+                setTemplateName("");
+                setStep(BuilderStep.UPLOAD);
+            }
 
-            // Reset
-            setImage(null);
-            setTools([]);
-            setAnchors([]);
-            setTemplateName("");
-            setStep(BuilderStep.UPLOAD);
+            onComplete();
         } catch (error) {
             console.error("Save failed:", error);
         } finally {
@@ -425,12 +457,14 @@ export default function TemplateBuilder() {
                                 {editorMode === 'tools' ? 'Drag to move/resize tools. Click "Add Tool" to create new.' : 'Click 4 distinct points to serve as anchors.'}
                             </span>
                             <div className="flex gap-4">
-                                <button
-                                    onClick={() => setStep(BuilderStep.UPLOAD)}
-                                    className="px-4 py-2 text-gray-500 text-sm font-bold hover:text-axiom-cyan transition-colors"
-                                >
-                                    Restart
-                                </button>
+                                {!templateToEdit && (
+                                    <button
+                                        onClick={() => setStep(BuilderStep.UPLOAD)}
+                                        className="px-4 py-2 text-gray-500 text-sm font-bold hover:text-axiom-cyan transition-colors"
+                                    >
+                                        Restart
+                                    </button>
+                                )}
                                 <button
                                     onClick={() => {
                                         setStep(BuilderStep.ASSIGNMENT);
@@ -448,7 +482,7 @@ export default function TemplateBuilder() {
                 {step === BuilderStep.ASSIGNMENT && (
                     <div className="flex-1 flex items-center justify-center">
                         <div className="bg-axiom-surfaceLight dark:bg-axiom-surfaceDark border border-axiom-borderLight dark:border-axiom-borderDark rounded-xl p-8 max-w-md w-full shadow-2xl space-y-6">
-                            <h3 className="text-xl font-bold dark:text-white">Save Template</h3>
+                            <h3 className="text-xl font-bold dark:text-white">{templateToEdit ? 'Update Template' : 'Save Template'}</h3>
 
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-500">Template Name</label>
@@ -496,7 +530,7 @@ export default function TemplateBuilder() {
                                     disabled={isSaving}
                                     className="flex-1 py-3 rounded-lg bg-axiom-cyan text-black font-bold"
                                 >
-                                    {isSaving ? 'Saving...' : 'Save Template'}
+                                    {isSaving ? 'Saving...' : templateToEdit ? 'Update Template' : 'Save Template'}
                                 </button>
                             </div>
                         </div>

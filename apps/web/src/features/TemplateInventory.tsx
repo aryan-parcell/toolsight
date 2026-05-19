@@ -10,7 +10,11 @@ import type { Template } from '@shared/types';
 import TemplateDisplay from '@/components/TemplateDisplay';
 import { useAuth } from '@/contexts/AuthContext';
 
-export default function TemplateInventory() {
+interface TemplateInventoryProps {
+    onEdit: (template: Template) => void;
+}
+
+export default function TemplateInventory({ onEdit }: TemplateInventoryProps) {
     const { organization } = useAuth();
     const { templates, loading: templatesLoading, deleteTemplate } = useTemplates(organization?.id);
     const { toolboxes, loading: toolboxesLoading, updateToolbox } = useToolboxes(organization?.id);
@@ -103,6 +107,13 @@ export default function TemplateInventory() {
                                         onClick={() => handleDeleteTemplate(template.id!)}
                                     >
                                         Delete
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        className="flex-1 text-xs border-gray-500"
+                                        onClick={() => onEdit(template)}
+                                    >
+                                        Edit
                                     </Button>
                                     <Button
                                         className="flex-1 text-xs bg-axiom-cyan text-black"
