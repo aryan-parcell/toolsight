@@ -14,10 +14,21 @@ Future<(List<int>, double)> _processImageIsolate(Uint8List bytes) async {
   final image = img.decodeImage(bytes);
   if (image == null) return (bytes, 4 / 3);
 
-  if (image.height <= image.width) return (bytes, image.width / image.height); // Already landscape
+  var processed = image;
 
-  final rotated = img.copyRotate(image, angle: 90);
-  return (img.encodeJpg(rotated), rotated.width / rotated.height);
+  // 1. Rotate to landscape if portrait
+  if (processed.height > processed.width) {
+    processed = img.copyRotate(processed, angle: 90);
+  }
+
+  // 2. Downscale to a maximum width of 1200px to save massive network bandwidth/size
+  if (processed.width > 1200) {
+    processed = img.copyResize(processed, width: 1200);
+  }
+
+  // 3. Encode to JPG with 85% quality (excellent quality, massive file size reduction)
+  final encoded = img.encodeJpg(processed, quality: 85);
+  return (encoded, processed.width / processed.height);
 }
 
 Future<(File, double)> _normalizeImage(File originalFile) async {
