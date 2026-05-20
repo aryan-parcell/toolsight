@@ -8,7 +8,7 @@ export type AuditDrawerStatus =
 
 export interface DrawerState {
     drawerStatus: AuditDrawerStatus;
-    imageStoragePath: string | null;
+    imageUrl: string | null;
     results: Record<string, Detection> | null;
 }
 

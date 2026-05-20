@@ -62,10 +62,6 @@ class AuditRepository {
     });
   }
 
-  Future<String> getImageUrl(String path) {
-    return FirebaseStorage.instance.ref().child(path).getDownloadURL();
-  }
-
   Future<void> uploadDrawerImage(String auditId, String drawerId, String organizationId, File imageFile) async {
     final extension = imageFile.path.split('.').last;
     final storagePath = 'organizations/$organizationId/audits/$auditId/$drawerId.$extension';
@@ -73,7 +69,9 @@ class AuditRepository {
     final ref = _storage.ref().child(storagePath);
     await ref.putFile(imageFile);
 
-    await _auditsCollection.doc(auditId).update({'drawerStates.$drawerId.imageStoragePath': storagePath});
+    final imageUrl = await ref.getDownloadURL();
+
+    await _auditsCollection.doc(auditId).update({'drawerStates.$drawerId.imageUrl': imageUrl});
   }
 
   Future<void> updateToolStatus(String auditId, String drawerId, String toolId, String newStatus) {

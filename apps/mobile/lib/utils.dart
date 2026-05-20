@@ -6,7 +6,7 @@ Map<String, dynamic> createAuditDrawerStatesFromToolbox(Map<String, dynamic> too
     final drawerId = drawer['drawerId'];
     drawerStates[drawerId] = {
       'drawerStatus': 'pending',
-      'imageStoragePath': null,
+      'imageUrl': null,
       'results': {},
     };
   }

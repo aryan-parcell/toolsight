@@ -59,7 +59,7 @@ export function createDrawerStates(
 
     drawerStates[drawer.drawerId] = {
       drawerStatus: "pending",
-      imageStoragePath: null,
+      imageUrl: null,
       results: results,
     };
   });

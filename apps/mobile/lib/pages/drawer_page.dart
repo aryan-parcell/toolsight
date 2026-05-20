@@ -85,7 +85,7 @@ class _DrawerPageState extends State<DrawerPage> {
                       ),
                     ],
                   ),
-                imageDisplay(drawerAudit['imageStoragePath'], drawerAudit),
+                imageDisplay(drawerAudit['imageUrl'], drawerAudit),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 10,
@@ -114,60 +114,52 @@ class _DrawerPageState extends State<DrawerPage> {
     );
   }
 
-  Widget imageDisplay(String? imageStoragePath, Map<String, dynamic> drawerAudit) {
+  Widget imageDisplay(String? imageUrl, Map<String, dynamic> drawerAudit) {
     final results = drawerAudit['results'] as Map<String, dynamic>? ?? {};
-    final isProcessing = drawerAudit['drawerStatus'] == 'pending' && imageStoragePath != null;
+    final isProcessing = drawerAudit['drawerStatus'] == 'pending' && imageUrl != null;
 
     final blankImage = Container(width: double.infinity, height: 200, color: Colors.grey);
 
-    if (imageStoragePath == null) return blankImage;
+    if (imageUrl == null) return blankImage;
 
-    return FutureBuilder(
-      future: _auditRepository.getImageUrl(imageStoragePath),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
-        if (snapshot.hasError || !snapshot.hasData) return blankImage;
+    return Stack(
+      children: [
+        Image.network(
+          imageUrl,
+          width: double.infinity,
+          fit: BoxFit.fitWidth,
+        ),
 
-        return Stack(
-          children: [
-            Image.network(
-              snapshot.data!,
-              width: double.infinity,
-              fit: BoxFit.fitWidth,
+        if (results.isNotEmpty)
+          Positioned.fill(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return BoundingBoxOverlay(
+                  results: results,
+                  imageWidth: constraints.biggest.width,
+                  imageHeight: constraints.biggest.height,
+                );
+              },
             ),
+          ),
 
-            if (results.isNotEmpty)
-              Positioned.fill(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return BoundingBoxOverlay(
-                      results: results,
-                      imageWidth: constraints.biggest.width,
-                      imageHeight: constraints.biggest.height,
-                    );
-                  },
+        if (isProcessing)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black26,
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 10,
+                  children: [
+                    CircularProgressIndicator(color: Colors.white),
+                    Text("AI Analyzing...", style: TextStyle(color: Colors.white)),
+                  ],
                 ),
               ),
-
-            if (isProcessing)
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black26,
-                  child: const Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 10,
-                      children: [
-                        CircularProgressIndicator(color: Colors.white),
-                        Text("AI Analyzing...", style: TextStyle(color: Colors.white)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        );
-      },
+            ),
+          ),
+      ],
     );
   }
 

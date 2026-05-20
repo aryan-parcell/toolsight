@@ -11,8 +11,7 @@ interface AuditDetailViewProps {
     onBack: () => void;
 }
 
-function AuditImage({ storagePath, results }: { storagePath: string, results: Record<string, Detection> | null }) {
-    const [url, setUrl] = useState<string | null>(null);
+function AuditImage({ imageUrl, results }: { imageUrl: string, results: Record<string, Detection> | null }) {
     const [imageLoaded, setImageLoaded] = useState(false);
     const [error, setError] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
@@ -61,12 +60,6 @@ function AuditImage({ storagePath, results }: { storagePath: string, results: Re
         });
     };
 
-    useEffect(() => {
-        AuditRepository.getAuditImageUrl(storagePath)
-            .then(u => setUrl(u))
-            .catch((err) => setError(true))
-    }, [storagePath]);
-
     if (error) {
         return (
             <div className="w-full aspect-video bg-gray-100 dark:bg-white/5 rounded-xl flex flex-col items-center justify-center text-gray-400 gap-2 border border-gray-200 dark:border-gray-800">
@@ -106,11 +99,11 @@ function AuditImage({ storagePath, results }: { storagePath: string, results: Re
                         </div>
                     )}
 
-                    {url && (
+                    {imageUrl && (
                         <>
                             <img
                                 ref={imageRef}
-                                src={url}
+                                src={imageUrl}
                                 onLoad={() => {
                                     setImageLoaded(true);
                                     calculateImageRect();
@@ -220,8 +213,8 @@ export function AuditDetailView({ audit, toolbox, onBack }: AuditDetailViewProps
                             </div>
 
                             <div className="p-3">
-                                {state.imageStoragePath && (
-                                    <AuditImage storagePath={state.imageStoragePath} results={state.results} />
+                                {state.imageUrl && (
+                                    <AuditImage imageUrl={state.imageUrl} results={state.results} />
                                 )}
 
                                 <div className='space-y-3 p-3'>

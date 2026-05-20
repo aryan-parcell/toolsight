@@ -29,12 +29,4 @@ export const AuditRepository = {
             onError,
         );
     },
-
-    /**
-     * Gets the download URL for an audit image.
-     */
-    getAuditImageUrl: async (storagePath: string) => {
-        const imageRef = ref(storage, storagePath);
-        return await getDownloadURL(imageRef);
-    }
 };

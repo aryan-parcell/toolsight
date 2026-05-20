@@ -150,7 +150,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
                   ),
                 ],
               ),
-              imageDisplay(drawerAudit['imageStoragePath']),
+              imageDisplay(drawerAudit['imageUrl']),
               Row(
                 children: [
                   WideButton(
@@ -166,7 +166,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
     );
   }
 
-  Widget imageDisplay(String? imageStoragePath) {
+  Widget imageDisplay(String? imageUrl) {
     if (_localDrawerImage != null) {
       return Stack(
         children: [
@@ -190,20 +190,12 @@ class _DrawerCaptureState extends State<DrawerCapture> {
 
     final blankImage = Container(width: double.infinity, height: 200, color: Colors.grey);
 
-    if (imageStoragePath == null) return blankImage;
+    if (imageUrl == null) return blankImage;
 
-    return FutureBuilder(
-      future: FirebaseStorage.instance.ref().child(imageStoragePath).getDownloadURL(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator());
-        if (snapshot.hasError || !snapshot.hasData) return blankImage;
-
-        return Image.network(
-          snapshot.data!,
-          width: double.infinity,
-          fit: BoxFit.contain,
-        );
-      },
+    return Image.network(
+      imageUrl,
+      width: double.infinity,
+      fit: BoxFit.contain,
     );
   }
 }

@@ -8,7 +8,7 @@ const createInitialAuditFromToolbox = (tb: ToolBox) => {
     tb.drawers.forEach((drawer: Drawer) => {
         drawerStates[drawer.drawerId] = {
             drawerStatus: "user-validated",
-            imageStoragePath: null,
+            imageUrl: null,
             results: {}
         };
     });
