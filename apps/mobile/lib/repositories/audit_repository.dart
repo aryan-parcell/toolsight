@@ -62,7 +62,7 @@ class AuditRepository {
     });
   }
 
-  Future<void> uploadDrawerImage(String auditId, String drawerId, String organizationId, File imageFile) async {
+  Future<void> uploadDrawerImage(String auditId, String drawerId, String organizationId, File imageFile, double aspectRatio) async {
     final extension = imageFile.path.split('.').last;
     final storagePath = 'organizations/$organizationId/audits/$auditId/$drawerId.$extension';
 
@@ -71,7 +71,10 @@ class AuditRepository {
 
     final imageUrl = await ref.getDownloadURL();
 
-    await _auditsCollection.doc(auditId).update({'drawerStates.$drawerId.imageUrl': imageUrl});
+    await _auditsCollection.doc(auditId).update({
+      'drawerStates.$drawerId.imageUrl': imageUrl,
+      'drawerStates.$drawerId.aspectRatio': aspectRatio,
+    });
   }
 
   Future<void> updateToolStatus(String auditId, String drawerId, String toolId, String newStatus) {

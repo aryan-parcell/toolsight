@@ -122,44 +122,61 @@ class _DrawerPageState extends State<DrawerPage> {
 
     if (imageUrl == null) return blankImage;
 
-    return Stack(
-      children: [
-        Image.network(
-          imageUrl,
-          width: double.infinity,
-          fit: BoxFit.fitWidth,
-        ),
-
-        if (results.isNotEmpty)
+    return AspectRatio(
+      aspectRatio: drawerAudit['aspectRatio'],
+      child: Stack(
+        children: [
           Positioned.fill(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return BoundingBoxOverlay(
-                  results: results,
-                  imageWidth: constraints.biggest.width,
-                  imageHeight: constraints.biggest.height,
-                );
-              },
-            ),
+            child: Container(color: Colors.grey),
+          ),
+          Image.network(
+            imageUrl,
+            width: double.infinity,
+            fit: BoxFit.fill,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              );
+            },
           ),
 
-        if (isProcessing)
-          Positioned.fill(
-            child: Container(
-              color: Colors.black26,
-              child: const Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 10,
-                  children: [
-                    CircularProgressIndicator(color: Colors.white),
-                    Text("AI Analyzing...", style: TextStyle(color: Colors.white)),
-                  ],
+          if (results.isNotEmpty)
+            Positioned.fill(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return BoundingBoxOverlay(
+                    results: results,
+                    imageWidth: constraints.biggest.width,
+                    imageHeight: constraints.biggest.height,
+                  );
+                },
+              ),
+            ),
+
+          if (isProcessing)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black26,
+                child: const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 10,
+                    children: [
+                      CircularProgressIndicator(color: Colors.white),
+                      Text("AI Analyzing...", style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -10,23 +10,24 @@ import 'package:toolsight/repositories/toolbox_repository.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/wide_button.dart';
 
-Future<List<int>> _processImageIsolate(Uint8List bytes) async {
+Future<(List<int>, double)> _processImageIsolate(Uint8List bytes) async {
   final image = img.decodeImage(bytes);
-  if (image == null) return bytes;
+  if (image == null) return (bytes, 4 / 3);
 
-  if (image.height <= image.width) return bytes; // Already landscape
+  if (image.height <= image.width) return (bytes, image.width / image.height); // Already landscape
 
   final rotated = img.copyRotate(image, angle: 90);
-  return img.encodeJpg(rotated);
+  return (img.encodeJpg(rotated), rotated.width / rotated.height);
 }
 
-Future<File> _normalizeImage(File originalFile) async {
+Future<(File, double)> _normalizeImage(File originalFile) async {
   final bytes = await originalFile.readAsBytes();
 
   // Run on background thread
-  final newBytes = await compute(_processImageIsolate, bytes);
+  final (newBytes, aspectRatio) = await compute(_processImageIsolate, bytes);
 
-  return originalFile.writeAsBytes(newBytes);
+  final savedFile = await originalFile.writeAsBytes(newBytes);
+  return (savedFile, aspectRatio);
 }
 
 class DrawerCapture extends StatefulWidget {
@@ -74,7 +75,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
     if (image == null) return;
 
     final imageFile = File(image.path);
-    final fileToUpload = await _normalizeImage(imageFile);
+    final (fileToUpload, aspectRatio) = await _normalizeImage(imageFile);
 
     // Show image immediately (before uploading)
     setState(() {
@@ -82,7 +83,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
       _isUploadingImage = true;
     });
 
-    await _auditRepo.uploadDrawerImage(_toolbox['lastAuditId'], drawerId, _toolbox['organizationId'], fileToUpload);
+    await _auditRepo.uploadDrawerImage(_toolbox['lastAuditId'], drawerId, _toolbox['organizationId'], fileToUpload, aspectRatio);
 
     if (mounted) setState(() => _isUploadingImage = false);
   }
