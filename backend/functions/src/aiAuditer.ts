@@ -85,7 +85,7 @@ export const aiAuditer = onObjectFinalized(async (event) => {
 
       if (match) {
         // Invalid status --> Default to absent
-        if (!["present", "absent", "unserviceable"].includes(match.status)) {
+        if (!["present", "absent"].includes(match.status)) {
           match.status = "absent";
         }
 

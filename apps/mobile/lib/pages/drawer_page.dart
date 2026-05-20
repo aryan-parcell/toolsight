@@ -175,24 +175,23 @@ class _DrawerPageState extends State<DrawerPage> {
     final toolStatus = result.value['status'];
 
     final tool = _toolbox['tools'].firstWhere((tool) => tool['toolId'] == toolId);
+    final isPresent = toolStatus == 'present';
+
+    final baseColor = isPresent ? Colors.green : Colors.red;
+    final buttonColor = isAuditActive ? baseColor : baseColor.withAlpha(128);
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: Text(tool['toolInfo']['name']),
-        ),
-        DropdownButton(
-          value: toolStatus,
-          isDense: true,
-          alignment: Alignment.centerRight,
-          underline: SizedBox.shrink(),
-          items: [
-            DropdownMenuItem(value: 'present', child: Text('Present')),
-            DropdownMenuItem(value: 'absent', child: Text('Absent')),
-            DropdownMenuItem(value: 'unserviceable', child: Text('Unserviceable')),
-          ],
-          onChanged: isAuditActive ? (val) => _auditRepository.updateToolStatus(auditId, widget.drawerId, toolId, val as String) : null,
+        WideButton(
+          text: tool['toolInfo']['name'],
+          onPressed: () {
+            if (!isAuditActive) return;
+
+            final nextStatus = isPresent ? 'absent' : 'present';
+            _auditRepository.updateToolStatus(auditId, widget.drawerId, toolId, nextStatus);
+          },
+          color: buttonColor,
+          onColor: Colors.white,
         ),
       ],
     );
@@ -233,9 +232,7 @@ class BoundingBoxOverlay extends StatelessWidget {
         final bool isEllipse = info['shape'] == 'ellipse';
 
         // Color code based on status
-        Color boxColor = Colors.greenAccent;
-        if (status == 'absent') boxColor = Colors.redAccent;
-        if (status == 'unserviceable') boxColor = Colors.orangeAccent;
+        final Color boxColor = status == 'present' ? Colors.greenAccent : Colors.redAccent;
 
         return Positioned(
           top: top,

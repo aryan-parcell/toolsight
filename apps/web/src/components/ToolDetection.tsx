@@ -224,10 +224,7 @@ export default function ToolDetection({
                 const info = tool.toolInfo;
                 const status = tool.status;
 
-                let color = 'border-gray-400 bg-gray-400/20';
-                if (status === 'present') color = 'border-green-400 bg-green-400/20';
-                else if (status === 'absent') color = 'border-red-400 bg-red-400/20';
-                else if (status === 'unserviceable') color = 'border-orange-400 bg-orange-400/20';
+                const color = status === 'present' ? 'border-green-400 bg-green-400/20' : 'border-red-400 bg-red-400/20';
 
                 return (
                     <div

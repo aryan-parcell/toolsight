@@ -93,7 +93,7 @@ Compliance is enforced by a server-side Cloud Function (`auditScheduler.ts`) run
 * **`drawerStates`:** A map tracking the progress of each drawer.
 * `drawerStatus`: `pending`  `ai-completed`  `user-validated`.
 * `visualResults`: Stores bounding boxes (`x,y` %) for UI overlay.
-* `results`: The "Source of Truth" inventory status (`present` | `absent` | `unserviceable`).
+* `results`: The "Source of Truth" inventory status (`present` | `absent`).
 
 ---
 
@@ -113,13 +113,13 @@ We use **Retrieval-Augmented Generation (RAG)** to ensure high accuracy. We do n
 
 3. **Analysis (Gemini):**
     * System constructs a prompt containing the list of expected tools (IDs and Names).
-    * **Prompt Instruction:** The AI is instructed to return bounding boxes (0-100% relative coordinates) and statuses (`present`, `absent`, `unserviceable`).
+    * **Prompt Instruction:** The AI is instructed to return bounding boxes (0-100% relative coordinates) and statuses (`present`, `absent`).
     * **Coordinates:** Returns 0-100% relative coordinates for universal device support.
 
 4. **Mapping:**
     * Function fuzzy-matches AI detections back to Database Tool IDs.
     * **Visuals:** Saves bounding boxes to `visualResults`.
-    * **Logic:** Saves status (`present`/`absent`/`unserviceable`) to `results`.
+    * **Logic:** Saves status (`present`/`absent`) to `results`.
 
 5. **Visualization (Mobile):**
     * Mobile app listens to Firestore stream.

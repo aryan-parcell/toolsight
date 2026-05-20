@@ -140,9 +140,8 @@ export async function analyzeToolImage(
     3. Include exact "Tool ID" from the CONTEXT in output if a match is found.
     4. Identify ONLY the tools and empty slots that are ACTUALLY VISIBLE
     5. Status Determination:
-        - "present": Tool is clearly visible, identifiable, and functional
+        - "present": Tool is clearly visible and identifiable
         - "absent": An empty slot where a tool should be
-        - "unserviceable": Tool is present but visibly damaged or unusable.
     6. If you see a tool that is NOT in the context, mark it as "unknown" 
 
     CRITICAL COORDINATE SYSTEM REQUIREMENTS:
@@ -156,7 +155,7 @@ export async function analyzeToolImage(
     [{
       "name": "Wrench 10mm",
       "toolId": "t-105",    <-- CRITICAL: Return the ID from context if matched
-      "status": "present",  <-- CRITICAL: "present", "absent", "unserviceable"
+      "status": "present",  <-- CRITICAL: "present", "absent"
       "confidence": 0.95,
       "x": 10, "y": 20, "width": 5, "height": 15,
       "angle": 45,

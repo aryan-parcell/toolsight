@@ -152,12 +152,7 @@ export function AuditDetailView({ audit, toolbox, onBack }: AuditDetailViewProps
     };
 
     const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'present': return 'text-green-500';
-            case 'absent': return 'text-red-500';
-            case 'unserviceable': return 'text-yellow-500';
-            default: return 'text-gray-500';
-        }
+        return status === 'present' ? 'text-green-500' : 'text-red-500';
     };
 
     return (
