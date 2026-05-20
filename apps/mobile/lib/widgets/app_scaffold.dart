@@ -28,6 +28,7 @@ class _AppScaffoldState extends State<AppScaffold> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: GestureDetector(
           onLongPress: () {
             themeNotifier.value = themeNotifier.value == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
