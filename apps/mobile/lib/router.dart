@@ -69,7 +69,7 @@ GoRouter createRouter() {
               final toolboxId = state.pathParameters['toolbox_id']!;
               final drawerId = state.extra as String?;
 
-              return DrawerCapture(toolboxId, drawerId);
+              return DrawerCapture(toolboxId, initialDrawerId: drawerId);
             },
           ),
           GoRoute(

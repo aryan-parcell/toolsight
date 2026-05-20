@@ -32,9 +32,9 @@ Future<File> _normalizeImage(File originalFile) async {
 
 class DrawerCapture extends StatefulWidget {
   final String toolboxId;
-  final String? drawerId;
+  final String? initialDrawerId;
 
-  const DrawerCapture(this.toolboxId, this.drawerId, {super.key});
+  const DrawerCapture(this.toolboxId, {this.initialDrawerId, super.key});
 
   @override
   State<DrawerCapture> createState() => _DrawerCaptureState();
@@ -57,8 +57,8 @@ class _DrawerCaptureState extends State<DrawerCapture> {
 
     _drawerAuditStream = _auditRepo.getAuditStream(auditId);
 
-    if (widget.drawerId != null) {
-      _currentIndex = _toolbox['drawers'].indexWhere((drawer) => drawer['drawerId'] == widget.drawerId);
+    if (widget.initialDrawerId != null) {
+      _currentIndex = _toolbox['drawers'].indexWhere((drawer) => drawer['drawerId'] == widget.initialDrawerId);
     }
 
     setState(() {});
