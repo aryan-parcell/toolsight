@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:image/image.dart' as img;
@@ -71,7 +70,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
   }
 
   Future<void> _captureAndUploadImage(String drawerId) async {
-    final image = await ImagePicker().pickImage(source: ImageSource.camera);
+    final image = await ImagePicker().pickImage(source: kDebugMode ? ImageSource.gallery : ImageSource.camera);
     if (image == null) return;
 
     final imageFile = File(image.path);
@@ -83,11 +82,9 @@ class _DrawerCaptureState extends State<DrawerCapture> {
       _isUploadingImage = true;
     });
 
-    await _auditRepo.uploadDrawerImage(_toolbox['lastAuditId'], drawerId, _toolbox['organizationId'], imageFile);
+    await _auditRepo.uploadDrawerImage(_toolbox['lastAuditId'], drawerId, _toolbox['organizationId'], fileToUpload);
 
-    setState(() {
-      _isUploadingImage = false;
-    });
+    if (mounted) setState(() => _isUploadingImage = false);
   }
 
   @override
