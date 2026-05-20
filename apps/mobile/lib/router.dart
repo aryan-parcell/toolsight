@@ -13,7 +13,6 @@ import 'package:toolsight/pages/toolbox_page.dart';
 enum AppRoute {
   home(path: '/', name: 'home'),
   login(path: '/login', name: 'login'),
-  register(path: '/register', name: 'register'),
   manualEntry(path: '/manualEntry', name: 'manualEntry'),
   scanToolbox(path: '/scanToolbox', name: 'scanToolbox'),
   toolbox(path: '/toolbox/:toolbox_id', name: 'toolbox'),
@@ -47,11 +46,6 @@ GoRouter createRouter() {
         path: AppRoute.login.path,
         name: AppRoute.login.name,
         builder: (context, state) => const Login(),
-      ),
-      GoRoute(
-        path: AppRoute.register.path,
-        name: AppRoute.register.name,
-        builder: (context, state) => const Text("Register Page"),
       ),
       GoRoute(
         path: AppRoute.manualEntry.path,
