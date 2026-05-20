@@ -53,6 +53,7 @@ class _DrawerPageState extends State<DrawerPage> {
           final auditId = snapshot.data!.id;
           final drawerAudit = audit['drawerStates'][widget.drawerId];
           final isAuditActive = audit['endTime'] == null;
+          final drawerStatus = drawerAudit['drawerStatus'];
 
           final drawer = _toolbox['drawers'].firstWhere((drawer) => drawer['drawerId'] == widget.drawerId);
 
@@ -91,7 +92,7 @@ class _DrawerPageState extends State<DrawerPage> {
                   children: [
                     Text("Results", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     if (drawerAudit['results'].isEmpty) Text("No results found.", style: Theme.of(context).textTheme.bodySmall),
-                    for (final entry in drawerAudit['results'].entries) resultDisplay(entry, auditId, isAuditActive),
+                    for (final entry in drawerAudit['results'].entries) resultDisplay(entry, auditId, isAuditActive, drawerStatus),
                   ],
                 ),
                 Row(
@@ -170,22 +171,24 @@ class _DrawerPageState extends State<DrawerPage> {
     );
   }
 
-  Widget resultDisplay(MapEntry<String, dynamic> result, String auditId, bool isAuditActive) {
+  Widget resultDisplay(MapEntry<String, dynamic> result, String auditId, bool isAuditActive, String drawerStatus) {
     final toolId = result.key;
     final toolStatus = result.value['status'];
+
+    final mutable = isAuditActive && drawerStatus != 'user-validated';
 
     final tool = _toolbox['tools'].firstWhere((tool) => tool['toolId'] == toolId);
     final isPresent = toolStatus == 'present';
 
     final baseColor = isPresent ? Colors.green : Colors.red;
-    final buttonColor = isAuditActive ? baseColor : baseColor.withAlpha(128);
+    final buttonColor = mutable ? baseColor : baseColor.withAlpha(128);
 
     return Row(
       children: [
         WideButton(
           text: tool['toolInfo']['name'],
           onPressed: () {
-            if (!isAuditActive) return;
+            if (!mutable) return;
 
             final nextStatus = isPresent ? 'absent' : 'present';
             _auditRepository.updateToolStatus(auditId, widget.drawerId, toolId, nextStatus);
