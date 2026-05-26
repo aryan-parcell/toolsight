@@ -33,8 +33,8 @@ export const createCheckoutSession = onCall({cors: true}, async (request) => {
           quantity: 1,
         },
       ],
-      success_url: "https://toolsight-teng.web.app/",
-      cancel_url: "https://toolsight-teng.web.app/",
+      success_url: "https://parcelltoolsight.com/",
+      cancel_url: "https://parcelltoolsight.com/",
       subscription_data: {
         metadata: {
           orgId: orgId,
@@ -129,7 +129,7 @@ export const createPortalSession = onCall({cors: true}, async (request) => {
   try {
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: orgData.stripeCustomerId,
-      return_url: "https://toolsight-teng.web.app/",
+      return_url: "https://parcelltoolsight.com/",
     });
 
     return {url: portalSession.url};
