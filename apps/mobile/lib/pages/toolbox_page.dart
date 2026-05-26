@@ -57,12 +57,13 @@ class _ToolboxPageState extends State<ToolboxPage> {
                     WideButton(
                       text: "Capture Drawer Images",
                       onPressed: () async {
-                        await _auditRepository.ensureActiveAudit(widget.toolboxId);
+                        final auditId = await _auditRepository.ensureActiveAudit(widget.toolboxId);
 
                         if (context.mounted) {
                           context.pushNamed(
                             AppRoute.capture.name,
                             pathParameters: {'toolbox_id': widget.toolboxId},
+                            queryParameters: {'audit_id': auditId},
                           );
                         }
                       },

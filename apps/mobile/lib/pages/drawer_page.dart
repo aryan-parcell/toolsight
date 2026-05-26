@@ -79,6 +79,7 @@ class _DrawerPageState extends State<DrawerPage> {
                           context.pushNamed(
                             AppRoute.capture.name,
                             pathParameters: {'toolbox_id': widget.toolboxId},
+                            queryParameters: {'audit_id': auditId},
                             extra: widget.drawerId,
                           );
                         },

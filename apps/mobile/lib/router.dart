@@ -67,9 +67,10 @@ GoRouter createRouter() {
             name: AppRoute.capture.name,
             builder: (context, state) {
               final toolboxId = state.pathParameters['toolbox_id']!;
+              final auditId = state.uri.queryParameters['audit_id']!;
               final drawerId = state.extra as String?;
 
-              return DrawerCapture(toolboxId, initialDrawerId: drawerId);
+              return DrawerCapture(toolboxId, auditId, initialDrawerId: drawerId);
             },
           ),
           GoRoute(

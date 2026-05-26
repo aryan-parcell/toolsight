@@ -43,9 +43,10 @@ Future<(File, double)> _normalizeImage(File originalFile) async {
 
 class DrawerCapture extends StatefulWidget {
   final String toolboxId;
+  final String auditId;
   final String? initialDrawerId;
 
-  const DrawerCapture(this.toolboxId, {this.initialDrawerId, super.key});
+  const DrawerCapture(this.toolboxId, this.auditId, {this.initialDrawerId, super.key});
 
   @override
   State<DrawerCapture> createState() => _DrawerCaptureState();
@@ -64,9 +65,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
   void _fetchDrawerAudit() async {
     _toolbox = await _toolboxRepo.getToolbox(widget.toolboxId);
 
-    final auditId = _toolbox['lastAuditId'];
-
-    _drawerAuditStream = _auditRepo.getAuditStream(auditId);
+    _drawerAuditStream = _auditRepo.getAuditStream(widget.auditId);
 
     if (widget.initialDrawerId != null) {
       _currentIndex = _toolbox['drawers'].indexWhere((drawer) => drawer['drawerId'] == widget.initialDrawerId);
@@ -94,7 +93,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
       _isUploadingImage = true;
     });
 
-    await _auditRepo.uploadDrawerImage(_toolbox['lastAuditId'], drawerId, _toolbox['organizationId'], fileToUpload, aspectRatio);
+    await _auditRepo.uploadDrawerImage(widget.auditId, drawerId, _toolbox['organizationId'], fileToUpload, aspectRatio);
 
     if (mounted) setState(() => _isUploadingImage = false);
   }
