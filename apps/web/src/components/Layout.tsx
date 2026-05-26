@@ -175,6 +175,14 @@ const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate }) =>
             {isMobileMenuOpen && (
                 <div className="lg:hidden fixed inset-0 bg-axiom-surfaceLight dark:bg-axiom-dark px-6 py-20 z-20">
                     <NavItems />
+
+                    <button
+                        onClick={logout}
+                        className='flex items-center w-full px-3 py-3 my-3 rounded-full font-medium text-axiom-dark dark:text-axiom-light hover:bg-axiom-borderLight dark:hover:bg-axiom-surfaceDark'
+                    >
+                        <LogOut className="mr-3" />
+                        Log Out
+                    </button>
                 </div>
             )}
 
