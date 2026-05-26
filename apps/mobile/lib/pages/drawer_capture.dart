@@ -1,45 +1,15 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Drawer;
-import 'package:image/image.dart' as img;
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toolsight/repositories/audit_repository.dart';
 import 'package:toolsight/repositories/toolbox_repository.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/wide_button.dart';
-
-Future<(List<int>, double)> _processImageIsolate(Uint8List bytes) async {
-  final image = img.decodeImage(bytes);
-  if (image == null) return (bytes, 4 / 3);
-
-  var processed = image;
-
-  // 1. Rotate to landscape if portrait
-  if (processed.height > processed.width) {
-    processed = img.copyRotate(processed, angle: 90);
-  }
-
-  // 2. Downscale to a maximum width of 1200px to save massive network bandwidth/size
-  if (processed.width > 1200) {
-    processed = img.copyResize(processed, width: 1200);
-  }
-
-  // 3. Encode to JPG with 85% quality (excellent quality, massive file size reduction)
-  final encoded = img.encodeJpg(processed, quality: 85);
-  return (encoded, processed.width / processed.height);
-}
-
-Future<(File, double)> _normalizeImage(File originalFile) async {
-  final bytes = await originalFile.readAsBytes();
-
-  // Run on background thread
-  final (newBytes, aspectRatio) = await compute(_processImageIsolate, bytes);
-
-  final savedFile = await originalFile.writeAsBytes(newBytes);
-  return (savedFile, aspectRatio);
-}
 
 class DrawerCapture extends StatefulWidget {
   final String toolboxId;
@@ -84,14 +54,40 @@ class _DrawerCaptureState extends State<DrawerCapture> {
     final image = await ImagePicker().pickImage(source: kDebugMode ? ImageSource.gallery : ImageSource.camera);
     if (image == null) return;
 
-    final imageFile = File(image.path);
-    final (fileToUpload, aspectRatio) = await _normalizeImage(imageFile);
+    final imageFile = await ImageCropper().cropImage(
+      sourcePath: image.path,
+      compressFormat: ImageCompressFormat.jpg,
+      compressQuality: 85,
+      maxWidth: 1200,
+      maxHeight: 1200,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Edit Image',
+          lockAspectRatio: false,
+          hideBottomControls: false,
+          initAspectRatio: CropAspectRatioPreset.ratio16x9,
+        ),
+        IOSUiSettings(
+          title: 'Edit Image',
+        ),
+      ],
+    );
 
-    // Show image immediately (before uploading)
+    if (imageFile == null) return;
+    final fileToUpload = File(imageFile.path);
+
+    // Update preview and activate loader immediately   
     setState(() {
       _localDrawerImage = fileToUpload;
       _isUploadingImage = true;
     });
+
+    // Decode image metadata using Flutter's built-in asynchronous native engine
+    // This is extremely fast (C++ engine-level) and leaves the Dart UI thread untouched.
+    final bytes = await fileToUpload.readAsBytes();
+    final codec = await ui.instantiateImageCodec(bytes);
+    final frame = await codec.getNextFrame();
+    final aspectRatio = frame.image.width / frame.image.height;
 
     await _auditRepo.uploadDrawerImage(widget.auditId, drawerId, _toolbox['organizationId'], fileToUpload, aspectRatio);
 
