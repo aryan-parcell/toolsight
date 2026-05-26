@@ -7,8 +7,31 @@ class DrawerDisplay extends StatelessWidget {
   final String drawerId;
   final String drawerName;
   final int toolCount;
+  final String? drawerStatus;
 
-  const DrawerDisplay(this.toolboxId, this.drawerId, this.drawerName, this.toolCount, {super.key});
+  const DrawerDisplay(this.toolboxId, this.drawerId, this.drawerName, this.toolCount, this.drawerStatus, {super.key});
+
+  Widget _buildStatusIndicator() {
+    Color color;
+    if (drawerStatus == 'user-validated') {
+      color = Colors.green;
+    } else if (drawerStatus == 'ai-completed') {
+      color = Colors.yellow;
+    } else if (drawerStatus == 'ai-failed') {
+      color = Colors.red;
+    } else {
+      color = Colors.grey;
+    }
+
+    return Container(
+      width: 12,
+      height: 12,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +59,13 @@ class DrawerDisplay extends StatelessWidget {
                 Text('$toolCount Tools', style: TextStyle(color: Colors.grey)),
               ],
             ),
-            Icon(Icons.chevron_right, color: Colors.grey),
+            Row(
+              spacing: 5,
+              children: [
+                if (drawerStatus != null) _buildStatusIndicator(),
+                Icon(Icons.chevron_right, color: Colors.grey),
+              ],
+            ),
           ],
         ),
       ),

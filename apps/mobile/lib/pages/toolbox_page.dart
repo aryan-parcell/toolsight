@@ -37,6 +37,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
 
           final toolbox = snapshot.data!.data()!;
           final currentCheckoutId = toolbox['currentCheckoutId'];
+          final lastAuditId = toolbox['lastAuditId'];
 
           return SingleChildScrollView(
             child: Column(
@@ -68,17 +69,27 @@ class _ToolboxPageState extends State<ToolboxPage> {
                     ),
                   ],
                 ),
-                Column(
-                  spacing: 10,
-                  children: [
-                    for (final drawer in toolbox['drawers'])
-                      DrawerDisplay(
-                        widget.toolboxId,
-                        drawer['drawerId'],
-                        drawer['drawerName'],
-                        (toolbox['tools'] as List).where((t) => t['drawerId'] == drawer['drawerId']).length,
-                      ),
-                  ],
+                StreamBuilder(
+                  stream: _auditRepository.getAuditStream(lastAuditId),
+                  builder: (context, auditSnapshot) {
+                    final auditData = auditSnapshot.data?.data();
+                    final isAuditActive = auditData != null && auditData['endTime'] == null;
+                    final drawerStates = isAuditActive ? auditData['drawerStates'] : null;
+
+                    return Column(
+                      spacing: 10,
+                      children: [
+                        for (final drawer in toolbox['drawers'])
+                          DrawerDisplay(
+                            widget.toolboxId,
+                            drawer['drawerId'],
+                            drawer['drawerName'],
+                            (toolbox['tools'] as List).where((t) => t['drawerId'] == drawer['drawerId']).length,
+                            drawerStates?[drawer['drawerId']]?['drawerStatus'],
+                          ),
+                      ],
+                    );
+                  },
                 ),
                 Row(
                   children: [
