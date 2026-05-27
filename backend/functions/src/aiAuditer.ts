@@ -56,6 +56,7 @@ export const aiAuditer = onObjectFinalized(async (event) => {
     const drawer = toolboxData.drawers.find((d) => d.drawerId === drawerId);
     const templateId = drawer?.templateId;
     let base64TemplateImage: string | undefined;
+    let templateMimeType: string | undefined;
 
     if (templateId) {
       const snap = await db.collection("templates").doc(templateId).get();
@@ -65,6 +66,9 @@ export const aiAuditer = onObjectFinalized(async (event) => {
         const templateFile = getStorage().bucket().file(template.storagePath);
         const [templateBuf] = await templateFile.download();
         base64TemplateImage = templateBuf.toString("base64");
+
+        const [metadata] = await templateFile.getMetadata();
+        templateMimeType = metadata.contentType;
       }
     }
 
@@ -73,7 +77,8 @@ export const aiAuditer = onObjectFinalized(async (event) => {
       base64Image,
       contentType,
       drawerTools,
-      base64TemplateImage
+      base64TemplateImage,
+      templateMimeType,
     );
 
     // 9. Merge & Map (The "Truth" Generation)
