@@ -1,0 +1,1526 @@
+{
+  "drawer1.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "Needle-nose pliers",
+        "x": 7.8,
+        "y": 18.5,
+        "width": 39,
+        "height": 77.7,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.97,
+      "toolInfo": {
+        "name": "Water pump pliers",
+        "x": 47.5,
+        "y": 2.4,
+        "width": 48.3,
+        "height": 96.1,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer10.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "torque wrench",
+        "x": 33.8,
+        "y": 52.5,
+        "width": 62.7,
+        "height": 29,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "extension bar 1",
+        "x": 41.2,
+        "y": 18,
+        "width": 23.3,
+        "height": 16.5,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "extension bar 2",
+        "x": 72,
+        "y": 18.5,
+        "width": 13.5,
+        "height": 15.5,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.92,
+      "toolInfo": {
+        "name": "bit set",
+        "x": 3,
+        "y": 14.5,
+        "width": 15.5,
+        "height": 71,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.92,
+      "toolInfo": {
+        "name": "socket set",
+        "x": 19.5,
+        "y": 14.5,
+        "width": 13,
+        "height": 71,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer11.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "large adjustable wrench",
+        "x": 7.8,
+        "y": 26,
+        "width": 46,
+        "height": 15.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.97,
+      "toolInfo": {
+        "name": "small adjustable wrench",
+        "x": 62.8,
+        "y": 36.5,
+        "width": 27.7,
+        "height": 10,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "pipe wrench 1",
+        "x": 8.8,
+        "y": 45.5,
+        "width": 47.7,
+        "height": 16.7,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "pipe wrench 2",
+        "x": 9,
+        "y": 55.5,
+        "width": 47.8,
+        "height": 16.3,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "small metal bracket",
+        "x": 70.5,
+        "y": 51.8,
+        "width": 17.7,
+        "height": 5.4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.92,
+      "toolInfo": {
+        "name": "angled metal tool",
+        "x": 59.2,
+        "y": 57,
+        "width": 11,
+        "height": 12.2,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "feeler gauge set",
+        "x": 74.2,
+        "y": 62.8,
+        "width": 19,
+        "height": 6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer12.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "safety_glasses",
+        "x": 9.5,
+        "y": 24.5,
+        "width": 23,
+        "height": 19,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "electronic_device",
+        "x": 32.5,
+        "y": 16.5,
+        "width": 29,
+        "height": 9.5,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "dead_blow_hammer",
+        "x": 36.5,
+        "y": 20.5,
+        "width": 54,
+        "height": 24.5,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.97,
+      "toolInfo": {
+        "name": "chisel_punch",
+        "x": 52.5,
+        "y": 39.5,
+        "width": 25.5,
+        "height": 9,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "wrench_1",
+        "x": 6.5,
+        "y": 49.5,
+        "width": 41.5,
+        "height": 4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "wrench_2",
+        "x": 6.5,
+        "y": 55.5,
+        "width": 84.5,
+        "height": 4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "wrench_3",
+        "x": 6.5,
+        "y": 61,
+        "width": 86.5,
+        "height": 4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "wrench_4",
+        "x": 6.5,
+        "y": 66.5,
+        "width": 51,
+        "height": 4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "wrench_5",
+        "x": 6.5,
+        "y": 72,
+        "width": 55.5,
+        "height": 4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.94,
+      "toolInfo": {
+        "name": "bit_set",
+        "x": 67,
+        "y": 72,
+        "width": 23.5,
+        "height": 3.5,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer13.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "safety wire twister pliers",
+        "x": 13.2,
+        "y": 27.5,
+        "width": 42.3,
+        "height": 11,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.97,
+      "toolInfo": {
+        "name": "safety wire twister pliers",
+        "x": 6.8,
+        "y": 43.5,
+        "width": 48.7,
+        "height": 11.5,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "telescoping inspection mirror",
+        "x": 26.8,
+        "y": 59.5,
+        "width": 30,
+        "height": 15,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "safety wire spool",
+        "x": 62.8,
+        "y": 43.2,
+        "width": 11.4,
+        "height": 14,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "safety wire spool",
+        "x": 62.8,
+        "y": 61,
+        "width": 11.4,
+        "height": 14,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "hex key set",
+        "x": 79,
+        "y": 29.5,
+        "width": 14.8,
+        "height": 45.3,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.92,
+      "toolInfo": {
+        "name": "telescoping magnetic pickup tool",
+        "x": 9.5,
+        "y": 58.5,
+        "width": 31,
+        "height": 4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer2.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "large adjustable wrench",
+        "x": 9.8,
+        "y": 26.8,
+        "width": 44.8,
+        "height": 15.2,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.97,
+      "toolInfo": {
+        "name": "small adjustable wrench",
+        "x": 63.7,
+        "y": 36.8,
+        "width": 31.2,
+        "height": 10.5,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "medium adjustable wrench",
+        "x": 10.2,
+        "y": 45.8,
+        "width": 49.5,
+        "height": 16,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "pipe wrench",
+        "x": 10.3,
+        "y": 56.2,
+        "width": 49.6,
+        "height": 16.5,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.92,
+      "toolInfo": {
+        "name": "angled tool",
+        "x": 59.7,
+        "y": 57.9,
+        "width": 11.5,
+        "height": 13.4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.94,
+      "toolInfo": {
+        "name": "small clamp",
+        "x": 71.4,
+        "y": 49.6,
+        "width": 19.2,
+        "height": 9.9,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.93,
+      "toolInfo": {
+        "name": "hex key set",
+        "x": 74.7,
+        "y": 64.1,
+        "width": 20.9,
+        "height": 6.3,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer3.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "3/4 inch wrench",
+        "x": 16.3,
+        "y": 22.2,
+        "width": 52.2,
+        "height": 9.1,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "11/16 inch wrench",
+        "x": 11.2,
+        "y": 32.4,
+        "width": 48.3,
+        "height": 8.1,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "5/8 inch wrench",
+        "x": 5.8,
+        "y": 42.6,
+        "width": 45.1,
+        "height": 7.6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "9/16 inch wrench",
+        "x": 13.6,
+        "y": 51.4,
+        "width": 41.2,
+        "height": 6.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "1/2 inch wrench",
+        "x": 9.8,
+        "y": 60.6,
+        "width": 37.7,
+        "height": 5.6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "7/16 inch wrench",
+        "x": 5.8,
+        "y": 68.6,
+        "width": 36.2,
+        "height": 5.2,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "small wrench 1",
+        "x": 74.7,
+        "y": 22.2,
+        "width": 19.8,
+        "height": 3.6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "small wrench 2",
+        "x": 73.7,
+        "y": 29.8,
+        "width": 19.8,
+        "height": 4.2,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "small wrench 3",
+        "x": 65.2,
+        "y": 36.6,
+        "width": 25.5,
+        "height": 5.6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "small wrench 4",
+        "x": 57.3,
+        "y": 45.2,
+        "width": 30.4,
+        "height": 3.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "small wrench 5",
+        "x": 68.8,
+        "y": 51,
+        "width": 23.7,
+        "height": 3.2,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "small wrench 6",
+        "x": 62.2,
+        "y": 56.4,
+        "width": 26,
+        "height": 3.4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "small wrench 7",
+        "x": 54.4,
+        "y": 62.4,
+        "width": 28.3,
+        "height": 3.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "small wrench 8",
+        "x": 44.8,
+        "y": 69.2,
+        "width": 30.2,
+        "height": 4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "small wrench 9",
+        "x": 79.8,
+        "y": 69.8,
+        "width": 15,
+        "height": 2.6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer4.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "screwdriver_1",
+        "x": 45.8,
+        "y": 19.8,
+        "width": 47.2,
+        "height": 9.7,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "screwdriver_2",
+        "x": 43.7,
+        "y": 33.4,
+        "width": 51.6,
+        "height": 8.4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "screwdriver_3",
+        "x": 43.7,
+        "y": 45.2,
+        "width": 51.6,
+        "height": 9.1,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "screwdriver_4",
+        "x": 44.5,
+        "y": 56.9,
+        "width": 40.3,
+        "height": 8.4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.97,
+      "toolInfo": {
+        "name": "screwdriver_5",
+        "x": 65.5,
+        "y": 69.3,
+        "width": 28,
+        "height": 8.5,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "pick_1",
+        "x": 15.8,
+        "y": 21.8,
+        "width": 25.7,
+        "height": 1.7,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "pick_2",
+        "x": 14.3,
+        "y": 27,
+        "width": 27.2,
+        "height": 1.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "screwdriver_6",
+        "x": 8,
+        "y": 30.5,
+        "width": 33.5,
+        "height": 8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "screwdriver_7",
+        "x": 6.2,
+        "y": 40.3,
+        "width": 35.3,
+        "height": 8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "pick_3",
+        "x": 14.8,
+        "y": 50.3,
+        "width": 24.2,
+        "height": 1.7,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "pick_4",
+        "x": 12.3,
+        "y": 55.5,
+        "width": 26.7,
+        "height": 1.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "pick_5",
+        "x": 10.3,
+        "y": 60.5,
+        "width": 29.7,
+        "height": 1.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "pick_6",
+        "x": 10.3,
+        "y": 65.5,
+        "width": 29.7,
+        "height": 1.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "pick_7",
+        "x": 10.3,
+        "y": 70.5,
+        "width": 31.5,
+        "height": 1.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.94,
+      "toolInfo": {
+        "name": "ruler",
+        "x": 10.3,
+        "y": 76.8,
+        "width": 21.2,
+        "height": 2,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer5.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "pry bar",
+        "x": 37.2,
+        "y": 22,
+        "width": 40.6,
+        "height": 10.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "orange handled pick",
+        "x": 65.6,
+        "y": 26.8,
+        "width": 16.6,
+        "height": 6.6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.92,
+      "toolInfo": {
+        "name": "scribe",
+        "x": 51.8,
+        "y": 33.8,
+        "width": 31.4,
+        "height": 7.2,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.97,
+      "toolInfo": {
+        "name": "flashlight",
+        "x": 29.6,
+        "y": 25.8,
+        "width": 5,
+        "height": 26.4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.96,
+      "toolInfo": {
+        "name": "brass punch",
+        "x": 22.8,
+        "y": 28,
+        "width": 2,
+        "height": 30.4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "screwdriver",
+        "x": 36.8,
+        "y": 40.6,
+        "width": 35.2,
+        "height": 8.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "screwdriver",
+        "x": 47.4,
+        "y": 48.8,
+        "width": 36.4,
+        "height": 8.6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "screwdriver",
+        "x": 28.6,
+        "y": 60.8,
+        "width": 36.8,
+        "height": 8.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.95,
+      "toolInfo": {
+        "name": "stubby screwdriver",
+        "x": 67.2,
+        "y": 59,
+        "width": 17.4,
+        "height": 7.4,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.94,
+      "toolInfo": {
+        "name": "small screwdriver",
+        "x": 13.2,
+        "y": 35.8,
+        "width": 3.6,
+        "height": 31.6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer6.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "needle nose pliers",
+        "x": 29.3,
+        "y": 20.5,
+        "width": 28.2,
+        "height": 15.3,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "locking pliers",
+        "x": 61.2,
+        "y": 24.3,
+        "width": 34.6,
+        "height": 16,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.97,
+      "toolInfo": {
+        "name": "long nose pliers",
+        "x": 6.9,
+        "y": 35.3,
+        "width": 40.8,
+        "height": 13.6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "combination pliers",
+        "x": 7.3,
+        "y": 50.7,
+        "width": 34.9,
+        "height": 14.6,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "bent nose pliers",
+        "x": 51.2,
+        "y": 42,
+        "width": 44.3,
+        "height": 16.3,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.97,
+      "toolInfo": {
+        "name": "needle nose pliers",
+        "x": 7.1,
+        "y": 66.7,
+        "width": 40.9,
+        "height": 13.9,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "slip joint pliers",
+        "x": 52.2,
+        "y": 64.3,
+        "width": 43.9,
+        "height": 12.8,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer7.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "10mm socket",
+        "x": 8.2,
+        "y": 10.5,
+        "width": 7.3,
+        "height": 13.7,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "11mm socket",
+        "x": 15.3,
+        "y": 10.2,
+        "width": 7.3,
+        "height": 13.7,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "12mm socket",
+        "x": 22.8,
+        "y": 10.5,
+        "width": 7.3,
+        "height": 13.7,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "13mm socket",
+        "x": 30.1,
+        "y": 10.2,
+        "width": 7.3,
+        "height": 14,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "14mm socket",
+        "x": 37.7,
+        "y": 10.2,
+        "width": 7.3,
+        "height": 14,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "15mm socket",
+        "x": 45.5,
+        "y": 10.5,
+        "width": 7.3,
+        "height": 14,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "16mm socket",
+        "x": 53.3,
+        "y": 10.5,
+        "width": 7.3,
+        "height": 14.5,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "17mm socket",
+        "x": 61.6,
+        "y": 10.2,
+        "width": 7.3,
+        "height": 15.3,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "18mm socket",
+        "x": 70.4,
+        "y": 10.2,
+        "width": 7.3,
+        "height": 16.1,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "19mm socket",
+        "x": 80.1,
+        "y": 10.5,
+        "width": 7.3,
+        "height": 17.1,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "32mm socket",
+        "x": 6,
+        "y": 25.5,
+        "width": 13.3,
+        "height": 23,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "30mm socket",
+        "x": 19.3,
+        "y": 27.1,
+        "width": 13.3,
+        "height": 22.5,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "27mm socket",
+        "x": 33.4,
+        "y": 29.5,
+        "width": 13.3,
+        "height": 20.9,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "24mm socket",
+        "x": 46.4,
+        "y": 32.4,
+        "width": 10.8,
+        "height": 18.8,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "22mm socket",
+        "x": 57.7,
+        "y": 34.3,
+        "width": 10.8,
+        "height": 17.4,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "21mm socket",
+        "x": 69,
+        "y": 36.2,
+        "width": 10.8,
+        "height": 17.1,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "20mm socket",
+        "x": 80.3,
+        "y": 37.3,
+        "width": 10.8,
+        "height": 16.8,
+        "shape": "ellipse",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer8.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "breaker bar",
+        "x": 9.5,
+        "y": 13.5,
+        "width": 81,
+        "height": 30,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.99,
+      "toolInfo": {
+        "name": "torque wrench",
+        "x": 9.5,
+        "y": 56.5,
+        "width": 81,
+        "height": 30,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ],
+  "drawer9.jpg": [
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "curved jaw locking pliers",
+        "x": 10.8,
+        "y": 16.5,
+        "width": 36,
+        "height": 29,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "long nose locking pliers",
+        "x": 52.3,
+        "y": 16.5,
+        "width": 41,
+        "height": 30,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    },
+    {
+      "toolId": "",
+      "status": "present",
+      "confidence": 0.98,
+      "toolInfo": {
+        "name": "long nose locking pliers",
+        "x": 36.8,
+        "y": 49.5,
+        "width": 56.5,
+        "height": 35,
+        "shape": "rectangle",
+        "angle": 0
+      }
+    }
+  ]
+}
