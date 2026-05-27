@@ -1,5 +1,6 @@
 import {Part, Schema, Type} from "@google/genai";
 import type {Detection, Tool} from "@shared/types";
+import {logger} from "firebase-functions/v2";
 
 /**
  * Identifies the prompt/model contract version. Bump when the prompt, schema,
@@ -440,6 +441,13 @@ async function executeRequestWithRetry(
     if (!Array.isArray(rawTools)) {
       throw new Error(`${logCtx} Gemini returned non-array response: ` + String(text).slice(0, 200));
     }
+
+    logger.info({
+      tag: "gemini-debug-log",
+      header: `${logCtx} Gemini API request successful.`,
+      prompt: systemPrompt,
+      response: rawTools,
+    });
 
     return rawTools.map(validateAndNormalizeDetection);
   } catch (error: any) {
