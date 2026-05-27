@@ -121,24 +121,35 @@ function validateInputs(
  * @return {Detection} Normalized Detection object conforming strictly to shared/types
  */
 function validateAndNormalizeDetection(tool: any): Detection {
+  // Helper to coerce values to numbers
   const toNum = (v: any, fallback: number): number => typeof v === "number" ? v : fallback;
   const clampPct = (v: any, fallback: number) => Math.max(0, Math.min(100, toNum(v, fallback)));
   const clampConfidence = (v: any, fallback: number) => Math.max(0, Math.min(1, toNum(v, fallback)));
 
-  const rawInfo = tool?.toolInfo || {};
+  // Get bounding box coordinates
+  const xmin = Math.min(tool.xmin, tool.xmax);
+  const xmax = Math.max(tool.xmin, tool.xmax);
+  const ymin = Math.min(tool.ymin, tool.ymax);
+  const ymax = Math.max(tool.ymin, tool.ymax);
+
+  // Convert to percentage coordinates (0-100)
+  const x = xmin / 10;
+  const y = ymin / 10;
+  const width = (xmax - xmin) / 10;
+  const height = (ymax - ymin) / 10;
 
   return {
     toolId: typeof tool.toolId === "string" ? tool.toolId : "",
     status: tool.status === "present" ? "present" : "absent",
     confidence: clampConfidence(tool.confidence, 0),
     toolInfo: {
-      name: typeof rawInfo.name === "string" && rawInfo.name.length > 0 ? rawInfo.name : "Unknown Tool",
-      x: clampPct(rawInfo.x, 0),
-      y: clampPct(rawInfo.y, 0),
-      width: clampPct(rawInfo.width, 1),
-      height: clampPct(rawInfo.height, 1),
-      shape: rawInfo.shape === "ellipse" ? "ellipse" : "rectangle",
-      angle: typeof rawInfo.angle === "number" ? rawInfo.angle : 0,
+      name: typeof tool.name === "string" && tool.name.length > 0 ? tool.name : "Unknown Tool",
+      x: clampPct(x, 0),
+      y: clampPct(y, 0),
+      width: clampPct(width, 1),
+      height: clampPct(height, 1),
+      shape: tool.shape === "ellipse" ? "ellipse" : "rectangle",
+      angle: typeof tool.angle === "number" ? tool.angle : 0,
     },
   };
 }
@@ -154,22 +165,16 @@ function buildResponseSchema(expectToolId: boolean): Schema {
   const properties: Record<string, any> = {
     status: {type: Type.STRING, enum: ["present", "absent"]},
     confidence: {type: Type.NUMBER, minimum: 0, maximum: 1},
-    toolInfo: {
-      type: Type.OBJECT,
-      properties: {
-        name: {type: Type.STRING},
-        x: {type: Type.NUMBER, minimum: 0, maximum: 100},
-        y: {type: Type.NUMBER, minimum: 0, maximum: 100},
-        width: {type: Type.NUMBER, minimum: 0, maximum: 100},
-        height: {type: Type.NUMBER, minimum: 0, maximum: 100},
-        angle: {type: Type.NUMBER, minimum: 0, maximum: 360},
-        shape: {type: Type.STRING, enum: ["rectangle", "ellipse"]},
-      },
-      required: ["name", "x", "y", "width", "height", "angle", "shape"],
-    },
+    name: {type: Type.STRING},
+    ymin: {type: Type.NUMBER, minimum: 0, maximum: 1000},
+    xmin: {type: Type.NUMBER, minimum: 0, maximum: 1000},
+    ymax: {type: Type.NUMBER, minimum: 0, maximum: 1000},
+    xmax: {type: Type.NUMBER, minimum: 0, maximum: 1000},
+    angle: {type: Type.NUMBER, minimum: 0, maximum: 360},
+    shape: {type: Type.STRING, enum: ["rectangle", "ellipse"]},
   };
 
-  const required = ["status", "confidence", "toolInfo"];
+  const required = ["status", "confidence", "name", "ymin", "xmin", "ymax", "xmax", "angle", "shape"];
 
   if (expectToolId) {
     properties.toolId = {type: Type.STRING};
@@ -238,16 +243,14 @@ function classifyError(error: any): { isRetryable: boolean; reason: string } {
  */
 function buildSystemPrompt(expectedTools: Tool[], hasTemplate: boolean): string {
   const coordinateInstructions = `
-    - ALL coordinates MUST be in PERCENTAGE format (0 to 100).
-    - x, y coordinates represent the distance from the TOP-LEFT corner
-      of the drawer to the TOP-LEFT corner of the tool's bounding box.
-    - width, height coordinates represent the size of the tool.
-    - Example: A tool at image center would have x+(w/2)≈50, y+(h/2)≈50.
-    - NEVER return values like 0.1, 0.25, 0.67 (normalized, not percentages).
-    - ALWAYS return values like 10, 25, 67 (percentages, not normalized).
-    - The sum of x + width should NOT exceed 100.
-    - The sum of y + height should NOT exceed 100.
-    - Coordinates should never be, nor sum to, a negative number.
+    - ALL bounding boxes MUST be defined using four coordinates on a 1000-scale grid (0 to 1000):
+      - ymin: Distance from the TOP edge of the image to the TOP boundary of the tool's bounding box (0 to 1000).
+      - xmin: Distance from the LEFT edge of the image to the LEFT boundary of the tool's bounding box (0 to 1000).
+      - ymax: Distance from the TOP edge of the image to the BOTTOM boundary of the tool's bounding box (0 to 1000).
+      - xmax: Distance from the LEFT edge of the image to the RIGHT boundary of the tool's bounding box (0 to 1000).
+    - This is the standard 1000x1000 visual grid coordinate system where
+      (xmin, ymin) is the top-left corner and (xmax, ymax) is the bottom-right corner.
+    - Ensure ymin < ymax and xmin < xmax.
     - angle represents the rotation of the bounding box.
     - angle is in degrees (0-360) clockwise; 0 means unrotated/horizontal.
     - shape: Must be exactly "rectangle" or "ellipse".
@@ -274,10 +277,22 @@ function buildSystemPrompt(expectedTools: Tool[], hasTemplate: boolean): string 
 
   const toolsContext = expectedTools.map((t) => {
     const toolDesc = `Tool Name: "${t.toolInfo.name}", ID: "${t.toolId}";`;
+
+    // Convert percentage-based stored coordinates to 0-1000 scale for the prompt
+    const x = t.toolInfo.x ?? 0;
+    const y = t.toolInfo.y ?? 0;
+    const w = t.toolInfo.width ?? 0;
+    const h = t.toolInfo.height ?? 0;
+
+    const xmin = Math.round(x * 10);
+    const ymin = Math.round(y * 10);
+    const xmax = Math.round((x + w) * 10);
+    const ymax = Math.round((y + h) * 10);
+
     const toolLoc = `Reference Location (Image 1): (
-          x: ${t.toolInfo.x?.toFixed(0)}%, y: ${t.toolInfo.y?.toFixed(0)}%,
-          w: ${t.toolInfo.width?.toFixed(0)}%, h: ${t.toolInfo.height?.toFixed(0)}%,
-          shape: ${t.toolInfo.shape}, angle: ${t.toolInfo.angle?.toFixed(0)} degrees,
+          ymin: ${ymin}, xmin: ${xmin},
+          ymax: ${ymax}, xmax: ${xmax},
+          shape: ${t.toolInfo.shape}, angle: ${t.toolInfo.angle?.toFixed(0)} degrees
       )`;
 
     return `- ${toolDesc} ${hasTemplate ? toolLoc : ""}`;
