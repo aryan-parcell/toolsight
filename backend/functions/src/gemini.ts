@@ -290,7 +290,7 @@ function buildSystemPrompt(expectedTools: Tool[], hasTemplate: boolean): string 
     const xmax = Math.round((x + w) * 10);
     const ymax = Math.round((y + h) * 10);
 
-    const toolLoc = `Reference Location (Image 1): (
+    const toolLoc = `Reference Location (Image 2): (
           ymin: ${ymin}, xmin: ${xmin},
           ymax: ${ymax}, xmax: ${xmax},
           shape: ${t.toolInfo.shape}, angle: ${t.toolInfo.angle?.toFixed(0)} degrees
@@ -305,8 +305,8 @@ function buildSystemPrompt(expectedTools: Tool[], hasTemplate: boolean): string 
     ${hasTemplate ?
     `
       INPUTS: You are provided with TWO images.
-      Image 1 is the REFERENCE TEMPLATE (clean state with all tools).
-      Image 2 is the TARGET AUDIT IMAGE (current state to analyze).
+        Image 1 is the TARGET AUDIT IMAGE: The current drawer state to analyze and audit.
+        Image 2 is the REFERENCE TEMPLATE IMAGE: A clean state photo with all tools present. 
     ` : "INPUT: You are provided with a TARGET AUDIT IMAGE."
 }
 
@@ -315,10 +315,12 @@ function buildSystemPrompt(expectedTools: Tool[], hasTemplate: boolean): string 
 
     ${hasTemplate ?
     `
-      INSTRUCTIONS FOR REFERENCE: Look at Image 1 (Reference).
-      Use the provided 'Reference Location' coordinates to find each tool
-      and learn its specific visual appearance (shape, color, etc).
-      Then, search for that SAME object in Image 2 (Target).
+      INSTRUCTIONS FOR REFERENCE: 
+        Look at Image 2 (Reference).
+        Use the provided 'Reference Location' to find each tool. Then search for that SAME object in Image 1 (Target).
+        Use the reference image to learn the unique visual features of each tool (shape, color, size, texture).
+        Do NOT require pixel alignment between the two images.
+        The target audit image (Image 1) may be shifted, rotated, shot from a different distance, etc. 
       ` : ""
 }
 
@@ -359,8 +361,12 @@ function buildContentParts(
 
   contentParts.push({
     text: templateBase64 ?
-      "Image 1 is the reference template. Image 2 is the target audit image. Analyze Image 2." :
+      "Image 1 is the TARGET AUDIT IMAGE. Image 2 is the REFERENCE TEMPLATE IMAGE. Analyze and audit Image 1" :
       "Analyze this tool drawer image.",
+  });
+
+  contentParts.push({
+    inlineData: {mimeType: mimeType, data: drawerBase64},
   });
 
   if (templateBase64) {
@@ -368,10 +374,6 @@ function buildContentParts(
       inlineData: {mimeType: templateMimeType, data: templateBase64},
     });
   }
-
-  contentParts.push({
-    inlineData: {mimeType: mimeType, data: drawerBase64},
-  });
 
   return contentParts;
 }
