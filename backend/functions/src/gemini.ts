@@ -159,27 +159,75 @@ function validateAndNormalizeDetection(tool: any): Detection {
  * Build the structured-output JSON schema enforced on Gemini.
  * Maps directly to our shared/types Detection interface (using nested toolInfo).
  *
- * @param {boolean} expectToolId Whether to expect a database toolId key
+ * @param {Tool[]} expectedTools List of expected tools for matching (if any)
  * @return {Schema} JSON schema structure compatible with the Gemini API
  */
-function buildResponseSchema(expectToolId: boolean): Schema {
+function buildResponseSchema(expectedTools: Tool[]): Schema {
   const properties: Record<string, any> = {
-    status: {type: Type.STRING, enum: ["present", "absent"]},
-    confidence: {type: Type.NUMBER, minimum: 0, maximum: 1},
-    name: {type: Type.STRING},
-    ymin: {type: Type.NUMBER, minimum: 0, maximum: 1000},
-    xmin: {type: Type.NUMBER, minimum: 0, maximum: 1000},
-    ymax: {type: Type.NUMBER, minimum: 0, maximum: 1000},
-    xmax: {type: Type.NUMBER, minimum: 0, maximum: 1000},
-    angle: {type: Type.NUMBER, minimum: 0, maximum: 360},
-    shape: {type: Type.STRING, enum: ["rectangle", "ellipse"]},
+    status: {
+      type: Type.STRING,
+      enum: ["present", "absent"],
+      description: "Presence state: 'present' if visible, 'absent' if empty.",
+    },
+    confidence: {
+      type: Type.NUMBER,
+      minimum: 0,
+      maximum: 1,
+      description: "Qualitative confidence in this detection.",
+    },
+    name: {
+      type: Type.STRING,
+      description: "The official name of the tool.",
+    },
+    ymin: {
+      type: Type.INTEGER,
+      minimum: 0,
+      maximum: 1000,
+      description: "Top boundary coordinate on a 1000-scale grid (Y-axis).",
+    },
+    xmin: {
+      type: Type.INTEGER,
+      minimum: 0,
+      maximum: 1000,
+      description: "Left boundary coordinate on a 1000-scale grid (X-axis).",
+    },
+    ymax: {
+      type: Type.INTEGER,
+      minimum: 0,
+      maximum: 1000,
+      description: "Bottom boundary coordinate on a 1000-scale grid (Y-axis).",
+    },
+    xmax: {
+      type: Type.INTEGER,
+      minimum: 0,
+      maximum: 1000,
+      description: "Right boundary coordinate on a 1000-scale grid (X-axis).",
+    },
+    angle: {
+      type: Type.INTEGER,
+      minimum: 0,
+      maximum: 360,
+      description: "Clockwise rotation angle in degrees (0 to 360).",
+    },
+    shape: {
+      type: Type.STRING,
+      enum: ["rectangle", "ellipse"],
+      description: "The geometric boundary shape enclosing the tool.",
+    },
   };
 
   const required = ["status", "confidence", "name", "ymin", "xmin", "ymax", "xmax", "angle", "shape"];
 
-  if (expectToolId) {
-    properties.toolId = {type: Type.STRING};
+  if (expectedTools.length > 0) {
+    properties.toolId = {
+      type: Type.STRING,
+      enum: expectedTools.map((t) => t.toolId),
+      description: "Matched tool ID from context.",
+    };
     required.unshift("toolId");
+
+    properties.name.enum = Array.from(new Set(expectedTools.map((t) => t.toolInfo.name)));
+    properties.name.description = "Tool name. Must match one of the expected tool names.";
   }
 
   return {
@@ -254,8 +302,6 @@ function buildSystemPrompt(expectedTools: Tool[], hasTemplate: boolean): string 
     - Ensure ymin < ymax and xmin < xmax.
     - angle represents the rotation of the bounding box.
     - angle is in degrees (0-360) clockwise; 0 means unrotated/horizontal.
-    - shape: Must be exactly "rectangle" or "ellipse".
-    - confidence is a probability in 0.0-1.0 (NOT a percentage).
   `;
 
   if (expectedTools.length === 0) {
@@ -530,7 +576,7 @@ export async function analyzeToolImage(
 
   // 2. Build instructions and response schema (structured JSON array matching our Detection type)
   const systemPrompt = buildSystemPrompt(expectedTools, !!templateBase64);
-  const responseSchema = buildResponseSchema(expectedTools.length > 0);
+  const responseSchema = buildResponseSchema(expectedTools);
 
   // 3. Build user payload content
   const contentParts = buildContentParts(drawerBase64, mimeType, templateBase64, templateMimeType);
