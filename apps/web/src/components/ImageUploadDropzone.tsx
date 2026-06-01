@@ -5,6 +5,76 @@ interface ImageUploadDropzoneProps {
     onImageSelected: (dataUrl: string) => void;
 }
 
+/* ---------- Helper Image Processing Functions ---------- */
+
+/**
+ * Checks if the image is portrait (height > width). If so, rotates it -90 degrees
+ * to landscape and draws it to a canvas. Otherwise, draws it as-is.
+ */
+function enforceLandscape(img: HTMLImageElement): HTMLCanvasElement {
+    const { naturalWidth: w, naturalHeight: h } = img;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+        throw new Error("Could not get 2D context from canvas");
+    }
+
+    if (h > w) {
+        canvas.width = h;
+        canvas.height = w;
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.drawImage(img, -w / 2, -h / 2);
+    } else {
+        canvas.width = w;
+        canvas.height = h;
+        ctx.drawImage(img, 0, 0);
+    }
+
+    return canvas;
+}
+
+/**
+ * Scales the canvas down proportionally if either dimension exceeds maxDim.
+ */
+function enforceMaxDimensions(canvas: HTMLCanvasElement, maxDim: number = 1600): HTMLCanvasElement {
+    const { width: w, height: h } = canvas;
+    if (w <= maxDim && h <= maxDim) return canvas;
+
+    const scale = Math.min(maxDim / w, maxDim / h);
+    const targetWidth = Math.round(w * scale);
+    const targetHeight = Math.round(h * scale);
+
+    const scaledCanvas = document.createElement("canvas");
+    scaledCanvas.width = targetWidth;
+    scaledCanvas.height = targetHeight;
+    const ctx = scaledCanvas.getContext("2d");
+    if (!ctx) {
+        throw new Error("Could not get 2D context from scaled canvas");
+    }
+
+    ctx.drawImage(canvas, 0, 0, targetWidth, targetHeight);
+    return scaledCanvas;
+}
+
+/**
+ * Iteratively decreases JPG quality to ensure size is < maxSizeBytes.
+ */
+function enforceMaxFileSize(canvas: HTMLCanvasElement, maxSizeBytes: number = 1e6): string {
+    const estimateSize = (url: string) => url.length * 0.75;
+
+    let quality = 0.9;
+    let outputDataUrl = canvas.toDataURL("image/jpeg", quality);
+
+    // Iteratively adjust JPEG quality
+    while (estimateSize(outputDataUrl) > maxSizeBytes && quality > 0.5) {
+        quality -= 0.1;
+        outputDataUrl = canvas.toDataURL("image/jpeg", quality);
+    }
+
+    return outputDataUrl;
+}
+
 export default function ImageUploadDropzone({
     onImageSelected,
 }: ImageUploadDropzoneProps) {
@@ -18,23 +88,29 @@ export default function ImageUploadDropzone({
 
     /* ---------- Image processing ---------- */
 
-    const ensureLandscape = (dataUrl: string): Promise<string> => {
+    const enforceImageRules = (dataUrl: string): Promise<string> => {
         return new Promise((resolve) => {
             const img = new Image();
             img.onload = () => {
-                const { naturalWidth: w, naturalHeight: h } = img;
-                if (h <= w) return resolve(dataUrl);
+                try {
+                    // 1. Enforce landscape orientation
+                    const landscapeCanvas = enforceLandscape(img);
 
-                const canvas = document.createElement("canvas");
-                canvas.width = h;
-                canvas.height = w;
+                    // 2. Enforce max dimensions (capping long-edge at 1600px)
+                    const boundedCanvas = enforceMaxDimensions(landscapeCanvas, 1600);
 
-                const ctx = canvas.getContext("2d")!;
-                ctx.translate(canvas.width / 2, canvas.height / 2);
-                ctx.rotate(-Math.PI / 2);
-                ctx.drawImage(img, -w / 2, -h / 2);
+                    // 3. Enforce max file size and format (JPEG, < 1MB)
+                    const finalDataUrl = enforceMaxFileSize(boundedCanvas, 1e6);
 
-                resolve(canvas.toDataURL("image/png"));
+                    resolve(finalDataUrl);
+                } catch (err) {
+                    console.error("Image optimization failed, falling back to original", err);
+                    resolve(dataUrl);
+                }
+            };
+            img.onerror = (err) => {
+                console.error("Image optimization failed, falling back to original", err);
+                resolve(dataUrl);
             };
             img.src = dataUrl;
         });
@@ -47,10 +123,9 @@ export default function ImageUploadDropzone({
 
         const reader = new FileReader();
         reader.onload = (ev) => {
-            if (ev.target?.result) {
-                ensureLandscape(ev.target.result as string).then((landscapeDataUrl) => {
-                    onImageSelected(landscapeDataUrl);
-                });
+            let result = ev.target?.result;
+            if (result && typeof result === "string") {
+                enforceImageRules(result).then(onImageSelected);
             }
         };
         reader.readAsDataURL(file);
@@ -126,9 +201,7 @@ export default function ImageUploadDropzone({
 
         stopCamera();
 
-        ensureLandscape(dataUrl).then((landscapeDataUrl) => {
-            onImageSelected(landscapeDataUrl);
-        });
+        enforceImageRules(dataUrl).then(onImageSelected);
     };
 
     /* ---------- Cleanup on unmount ---------- */
