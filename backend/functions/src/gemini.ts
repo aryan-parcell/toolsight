@@ -11,8 +11,8 @@ export const PROMPT_VERSION = "v2.0.0";
 
 /**
  * Default model. Override at runtime via the GEMINI_MODEL_ID env var.
- * Standard gemini-2.5-flash handles two-image visual reasoning with percent-coordinate
- * spatial output far more reliably than flash-lite.
+ * Gemini 3.1 models offer improved visual reasoning and spatial coordinates.
+ * We default to the cost-efficient flash-lite, but can upgrade to full flash for higher accuracy.
  */
 const DEFAULT_MODEL_ID = "gemini-3.1-flash-lite";
 
