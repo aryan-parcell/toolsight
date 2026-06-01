@@ -12,7 +12,7 @@ const IMAGES_DIR = path.join(__dirname, "images");
 const GROUND_TRUTH_FILE = path.join(__dirname, "ground_truth.json");
 const EVAL_RESULTS_FILE = path.join(__dirname, "eval_results.json");
 
-function calculateIoU(box1: any, box2: any): number {
+export function calculateIoU(box1: any, box2: any): number {
   if (box1.x == null || box1.y == null || box1.width == null || box1.height == null ||
       box2.x == null || box2.y == null || box2.width == null || box2.height == null) {
     return 0;
@@ -32,7 +32,7 @@ function calculateIoU(box1: any, box2: any): number {
   return interArea / unionArea;
 }
 
-function matchDetections(predictions: Detection[], groundTruths: Detection[], iouThreshold = 0.5) {
+export function matchDetections(predictions: Detection[], groundTruths: Detection[], iouThreshold = 0.5) {
   let truePositives = 0;
   let totalIoU = 0;
   let correctNames = 0;
@@ -143,8 +143,16 @@ async function main() {
       results[file] = {
         completed: true,
         groundTruthCount: gtDetections.length,
-        findMode: {predictionsCount: findModePredictions.length, metrics: findModeMetrics},
-        matchMode: {predictionsCount: matchModePredictions.length, metrics: matchModeMetrics},
+        findMode: {
+          predictionsCount: findModePredictions.length,
+          metrics: findModeMetrics,
+          predictions: findModePredictions
+        },
+        matchMode: {
+          predictionsCount: matchModePredictions.length,
+          metrics: matchModeMetrics,
+          predictions: matchModePredictions
+        },
       };
 
       updateOverallMetrics(overallMetrics, results[file]);
@@ -188,4 +196,6 @@ function printAggregate(metrics: any, title: string) {
   console.log(`  Average Name Acc:  ${((metrics.nameAcc / metrics.count) * 100).toFixed(2)}%`);
 }
 
-main().catch(console.error);
+if (require.main === module) {
+  main().catch(console.error);
+}

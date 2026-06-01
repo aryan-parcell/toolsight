@@ -3,281 +3,1331 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Tool Detection Evaluation Viewer</title>
+  <title>ToolSight Precision Evaluation Hub</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #f0f0f0;
+    :root {
+      --bg-dark: #0a0e17;
+      --bg-surface: #141c2c;
+      --bg-card: #1e293b;
+      --border-color: #2e3e5c;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --cyan: #06b6d4;
+      --cyan-glow: rgba(6, 182, 212, 0.2);
+      --green: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.15);
+      --orange: #f97316;
+      --orange-glow: rgba(249, 115, 22, 0.15);
+      --blue: #3b82f6;
+      --blue-glow: rgba(59, 130, 246, 0.15);
+      --red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow-x: hidden;
       padding: 20px;
     }
 
-    #container {
+    /* Container & Layout */
+    #app-container {
+      max-width: 1600px;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      gap: 20px;
     }
 
-    #controls {
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      width: 80%;
-      max-width: 800px;
+    /* Top Header Bar */
+    header {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      background: linear-gradient(to right, #ffffff, var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Dropdowns, Buttons, Inputs */
+    select, input, button {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 2px var(--cyan-glow);
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button:hover {
+      background: #2d3b55;
+      border-color: var(--text-muted);
+    }
+
+    button.primary {
+      background: var(--cyan);
+      color: #000;
+      border: none;
+    }
+
+    button.primary:hover {
+      background: #22d3ee;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+    }
+
+    button.success {
+      background: var(--green);
+      color: #000;
+      border: none;
+    }
+
+    button.success:hover {
+      background: #34d399;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    button.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    button.danger:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    /* Overall Dashboard Stats */
+    #dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .dashboard-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    #image-wrapper {
-      position: relative;
-      display: inline-block;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
 
-    img {
-      max-width: 90vw;
-      max-height: 80vh;
+    .metric-item {
+      background: var(--bg-card);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--cyan);
+    }
+
+    .metric-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Workspace Content */
+    #workspace {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+    }
+
+    @media (max-width: 1200px) {
+      #workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Canvas Viewport */
+    #canvas-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 500px;
+      position: relative;
+    }
+
+    #image-viewport {
+      position: relative;
+      display: inline-block;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    #main-image {
+      max-width: 100%;
+      max-height: 75vh;
       display: block;
+      pointer-events: none;
+    }
+
+    /* Overlays & Bounding Boxes */
+    .bbox-overlay-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .bbox-overlay-layer.interactive {
+      pointer-events: auto;
     }
 
     .bbox {
       position: absolute;
-      border: 2px solid #00ff00;
-      background: rgba(0, 255, 0, 0.1);
-      pointer-events: none;
+      border-width: 2px;
+      border-style: solid;
+      box-sizing: border-box;
+      cursor: default;
     }
 
+    .bbox.shape-ellipse {
+      border-radius: 50% !important;
+    }
+
+    /* BBox Label Styling */
     .bbox-label {
       position: absolute;
-      background: #00ff00;
-      color: #000;
-      font-size: 12px;
-      font-weight: bold;
-      padding: 2px 4px;
-      top: -20px;
-      left: -2px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
       white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
     }
 
-    .tool-list {
-      background: white;
-      padding: 10px;
-      margin-top: 20px;
+    /* Layers Colors */
+    .bbox-ground-truth {
+      border-color: var(--green);
+      background-color: var(--green-glow);
+    }
+    .bbox-ground-truth .bbox-label {
+      background-color: var(--green);
+      color: #000;
+    }
+
+    .bbox-find-mode {
+      border-color: var(--orange);
+      background-color: var(--orange-glow);
+    }
+    .bbox-find-mode .bbox-label {
+      background-color: var(--orange);
+      color: #000;
+    }
+
+    .bbox-match-mode {
+      border-color: var(--blue);
+      background-color: var(--blue-glow);
+    }
+    .bbox-match-mode .bbox-label {
+      background-color: var(--blue);
+      color: #fff;
+    }
+
+    /* Interactive Editor Specifics */
+    .bbox.editable {
+      cursor: grab;
+      pointer-events: auto;
+    }
+
+    .bbox.editable:active {
+      cursor: grabbing;
+    }
+
+    .bbox.editable.selected {
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan-glow);
+      background-color: rgba(6, 182, 212, 0.15);
+      z-index: 100;
+    }
+
+    .bbox.editable.selected .bbox-label {
+      background-color: var(--cyan);
+      color: #000;
+    }
+
+    /* Drag & Resize Handles */
+    .resize-handle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border: 2px solid var(--cyan);
+      border-radius: 50%;
+      z-index: 110;
+    }
+
+    .resize-handle.nw { top: -5px; left: -5px; cursor: nwse-resize; }
+    .resize-handle.ne { top: -5px; right: -5px; cursor: nesw-resize; }
+    .resize-handle.se { bottom: -5px; right: -5px; cursor: nwse-resize; }
+    .resize-handle.sw { bottom: -5px; left: -5px; cursor: nesw-resize; }
+
+    /* Drawing Outline Frame */
+    .drawing-rect {
+      position: absolute;
+      border: 2px dashed var(--cyan);
+      background: rgba(6, 182, 212, 0.15);
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    /* Right Sidebar Panel */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      font-size: 15px;
+      font-weight: 700;
+      border-b: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Sidebar list item */
+    .list-container {
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tool-list-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
-      width: 80%;
-      max-width: 800px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    .tool-item {
-      border-bottom: 1px solid #ddd;
-      padding: 5px 0;
+    .tool-list-item:hover, .tool-list-item.selected {
+      border-color: var(--cyan);
+      background-color: #24344d;
+    }
+
+    .tool-list-item .info {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-right: 8px;
+    }
+
+    .tool-list-item .name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .tool-list-item .coords {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Form Fields inside Panel */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+    }
+
+    /* Image-level stats values */
+    .image-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .metric-subcard {
+      background: var(--bg-card);
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .metric-subcard-title {
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+
+    /* Loading Overlay */
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 23, 0.85);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      display: none;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(6, 182, 212, 0.2);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Instruction Badge */
+    .instruction-banner {
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px dashed var(--cyan);
+      color: var(--cyan);
+      font-size: 12px;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      text-align: center;
     }
   </style>
 </head>
 
 <body>
 
-  <div id="container">
-    <div id="controls">
-      <button id="prevBtn">&laquo; Previous</button>
-      <button id="toggleState">Ground Truth</button>
-      <div style="text-align: center;">
-        <h3 id="image-name" style="margin: 0 0 5px 0;">Loading...</h3>
-        <select id="image-select"></select>
+  <div id="app-container">
+    <!-- Top Header & Navigation -->
+    <header>
+      <div>
+        <h1>ToolSight Precision Hub</h1>
+        <div class="subtitle">AI Vision Quality Assurance & Ground Truth Labeling Studio</div>
       </div>
-      <button id="nextBtn">Next &raquo;</button>
-    </div>
+      
+      <div class="controls-group">
+        <button id="prev-btn">&larr; Prev</button>
+        <select id="image-select" style="min-width: 200px; font-weight: bold;"></select>
+        <button id="next-btn">Next &rarr;</button>
 
-    <div id="image-wrapper">
-      <img id="main-image" src="" alt="Drawer" />
-      <div id="bboxes-container"></div>
-    </div>
+        <span style="height: 24px; width: 1px; background: var(--border-color);"></span>
 
-    <div class="tool-list">
-      <h4>Detected Tools (<span id="tool-count">0</span>)</h4>
-      <div id="tools-container"></div>
-    </div>
+        <!-- Layer toggles -->
+        <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
+          <input type="checkbox" id="toggle-gt" checked> Ground Truth (Green)
+        </label>
+        <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
+          <input type="checkbox" id="toggle-find" checked> Find Mode (Orange)
+        </label>
+        <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
+          <input type="checkbox" id="toggle-match" checked> Match Mode (Blue)
+        </label>
+      </div>
 
-    <div class = "tool-list">
-      <h4>Evaluation Metrics</h4>
-      <div id="Seperate-Container"></div>
+      <div class="controls-group">
+        <button id="save-gt-btn" class="success">Save GT</button>
+        <button id="eval-single-btn" class="primary">Eval This Image</button>
+        <button id="eval-all-btn" class="danger">Run Eval (All from Scratch)</button>
+      </div>
+    </header>
+
+    <!-- Global Performance Dashboard -->
+    <section id="dashboard">
+      <div class="dashboard-card">
+        <div class="card-title">
+          <span>FIND MODE AGGREGATES</span>
+          <span style="color: var(--orange);">●</span>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-item">
+            <div class="metric-val" id="agg-find-prec">-</div>
+            <div class="metric-lbl">Precision</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-val" id="agg-find-rec">-</div>
+            <div class="metric-lbl">Recall</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-val" id="agg-find-iou">-</div>
+            <div class="metric-lbl">Avg IoU</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-val" id="agg-find-name">-</div>
+            <div class="metric-lbl">Name Accuracy</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="card-title">
+          <span>MATCH MODE AGGREGATES</span>
+          <span style="color: var(--blue);">●</span>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-item">
+            <div class="metric-val" id="agg-match-prec">-</div>
+            <div class="metric-lbl">Precision</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-val" id="agg-match-rec">-</div>
+            <div class="metric-lbl">Recall</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-val" id="agg-match-iou">-</div>
+            <div class="metric-lbl">Avg IoU</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-val" id="agg-match-name">-</div>
+            <div class="metric-lbl">Name Accuracy</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px;">
+        <div class="card-title" style="margin-bottom: 0;">DATASET METRIC</div>
+        <div style="font-size: 36px; font-weight: 900; color: #fff;" id="dataset-count">0</div>
+        <div style="font-size: 12px; color: var(--text-muted);">Total Images • <span id="evaluated-count">0</span> Evaluated</div>
+      </div>
+    </section>
+
+    <!-- Main Workspace -->
+    <div id="workspace">
+      <!-- Image Canvas area -->
+      <div id="canvas-container">
+        <div class="instruction-banner">
+          💡 <strong>Ground Truth Mode:</strong> Click and drag on empty space of the image to create a new bounding box. Click boxes to select, move, or resize.
+        </div>
+        <div id="image-viewport">
+          <img id="main-image" src="" alt="Drawer Target">
+          
+          <!-- Layer 1: Ground Truth (Interactive) -->
+          <div id="layer-gt" class="bbox-overlay-layer interactive"></div>
+
+          <!-- Layer 2: Find Mode Predictions (Static) -->
+          <div id="layer-find" class="bbox-overlay-layer"></div>
+
+          <!-- Layer 3: Match Mode Predictions (Static) -->
+          <div id="layer-match" class="bbox-overlay-layer"></div>
+
+          <!-- Helper for drawing boxes -->
+          <div id="drawing-rect" class="drawing-rect" style="display: none;"></div>
+        </div>
+      </div>
+
+      <!-- Properties & Sidebar info -->
+      <div class="sidebar">
+        <!-- Selected Tool Properties -->
+        <div class="panel" id="properties-panel" style="display: none;">
+          <div class="panel-header">
+            <span>Edit Selected Tool</span>
+            <button id="delete-tool-btn" style="padding: 4px 8px; font-size: 11px;" class="danger">Delete</button>
+          </div>
+          <div>
+            <div class="form-group">
+              <label for="prop-name">Tool Name</label>
+              <input type="text" id="prop-name">
+            </div>
+            <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div>
+                <label for="prop-shape">Shape</label>
+                <select id="prop-shape">
+                  <option value="rectangle">Rectangle</option>
+                  <option value="ellipse">Ellipse</option>
+                </select>
+              </div>
+              <div>
+                <label for="prop-angle">Rotation (Deg)</label>
+                <input type="number" id="prop-angle" min="0" max="360" value="0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Tools List -->
+        <div class="panel" style="flex-1: 1;">
+          <div class="panel-header">
+            <span id="list-panel-title">Ground Truth Tools</span>
+            <span id="list-panel-count" style="font-size: 12px; background: var(--border-color); padding: 2px 6px; border-radius: 10px;">0</span>
+          </div>
+          <div class="list-container" id="tools-list"></div>
+        </div>
+
+        <!-- Selected Image Metrics details -->
+        <div class="panel">
+          <div class="panel-header">Active Image Performance</div>
+          <div class="image-metrics">
+            <div class="metric-subcard">
+              <div class="metric-subcard-title" style="color: var(--orange);">Find Mode</div>
+              <div id="img-find-prec">Prec: -</div>
+              <div id="img-find-rec">Rec: -</div>
+              <div id="img-find-iou">IoU: -</div>
+            </div>
+            <div class="metric-subcard">
+              <div class="metric-subcard-title" style="color: var(--blue);">Match Mode</div>
+              <div id="img-match-prec">Prec: -</div>
+              <div id="img-match-rec">Rec: -</div>
+              <div id="img-match-iou">IoU: -</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- Loading overlay -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div id="loading-text" style="font-size: 18px; font-weight: 700; letter-spacing: 0.05em;">Evaluating...</div>
+  </div>
+
   <script>
-    let evalResultsData = {};
-    let resultsData = {};
-    let imageNamesGround = [];
-    let currentIndex = 0;
+    // State variables
+    let images = [];
+    let groundTruth = {};
+    let evalResults = {};
+    let activeImage = "";
+    
+    // Editor State
+    let selectedBoxIndex = null;
+    let isDrawing = false;
+    let startCoords = { x: 0, y: 0 };
+    
+    // Drag & Resize State
+    let isDragging = false;
+    let dragIndex = null;
+    let dragOffset = { x: 0, y: 0 };
+    
+    let isResizing = false;
+    let resizeIndex = null;
+    let resizeDir = ""; // nw, ne, se, sw
+    let originalBoxCoords = {};
 
-    //if boxMode = false, then show ground truth. Otherwise, show initial_results.
-    let boxMode = false;
+    // Elements
+    const imageSelect = document.getElementById("image-select");
+    const mainImage = document.getElementById("main-image");
+    const imageViewport = document.getElementById("image-viewport");
+    
+    const layerGt = document.getElementById("layer-gt");
+    const layerFind = document.getElementById("layer-find");
+    const layerMatch = document.getElementById("layer-match");
+    const drawingRect = document.getElementById("drawing-rect");
+    
+    const toggleGt = document.getElementById("toggle-gt");
+    const toggleFind = document.getElementById("toggle-find");
+    const toggleMatch = document.getElementById("toggle-match");
+    
+    const propertiesPanel = document.getElementById("properties-panel");
+    const propNameInput = document.getElementById("prop-name");
+    const propShapeInput = document.getElementById("prop-shape");
+    const propAngleInput = document.getElementById("prop-angle");
+    const deleteToolBtn = document.getElementById("delete-tool-btn");
+    
+    const toolsList = document.getElementById("tools-list");
+    const listPanelTitle = document.getElementById("list-panel-title");
+    const listPanelCount = document.getElementById("list-panel-count");
+    
+    const loadingOverlay = document.getElementById("loading-overlay");
+    const loadingText = document.getElementById("loading-text");
 
-    async function loadData() {
+    // Fetch dynamic dataset from local API
+    async function loadDataset() {
       try {
-        const eval_response = await fetch('./eval_results.json');
-        if (!eval_response.ok) throw new Error("Could not load eval_results.json");
-        evalResultsData = await eval_response.json();
-        imageNamesEval = Object.keys(evalResultsData).sort();
+        const res = await fetch("/api/data");
+        const data = await res.json();
         
-        const intialResults = await fetch('./initial_results.json');
-        if (!intialResults.ok) throw new Error("Could not load initial_results.json");
-        initialResults = await intialResults.json();
-        imageNamesInitial = Object.keys(initialResults).sort();
+        images = data.images || [];
+        groundTruth = data.groundTruth || {};
+        evalResults = data.evalResults || {};
 
-        const groundTruth = await fetch('./ground_truth.json');
-        if (!groundTruth.ok) throw new Error("Could not load ground_truth.json");
-        resultsData = await groundTruth.json();
-        imageNamesGround = Object.keys(resultsData).sort();
-
-        console.log("Loaded ground truth for images:", imageNamesGround);
-        console.log("Loaded initial results for images:", imageNamesInitial);
-        console.log("Loaded evaluation results for images:", imageNamesEval);
-
-        if (imageNamesGround.length === 0) {
-          document.getElementById('image-name').innerText = "No results found. Run generation script first.";
+        if (images.length === 0) {
+          alert("No images discovered in images/ folder.");
           return;
         }
 
-        const select = document.getElementById('image-select');
-        imageNamesGround.forEach((name, idx) => {
-          const option = document.createElement('option');
-          option.value = idx;
-          option.innerText = name;
-          select.appendChild(option);
+        // Setup dropdown
+        imageSelect.innerHTML = "";
+        images.forEach(imgName => {
+          const opt = document.createElement("option");
+          opt.value = imgName;
+          opt.innerText = imgName;
+          imageSelect.appendChild(opt);
         });
 
-        select.addEventListener('change', (e) => {
-          currentIndex = parseInt(e.target.value);
-          renderImage(currentIndex);
-        });
+        // Initialize active image if not set
+        if (!activeImage || !images.includes(activeImage)) {
+          activeImage = images[0];
+        }
+        imageSelect.value = activeImage;
 
-        document.getElementById('prevBtn').addEventListener('click', () => {
-          if (currentIndex > 0) {
-            currentIndex--;
-            select.value = currentIndex;
-            renderImage(currentIndex);
-          }
-        });
-
-        document.getElementById('toggleState').addEventListener('click', () => {
-          boxMode = !boxMode;
-          renderImage(currentIndex);
-        });
-
-        document.getElementById('nextBtn').addEventListener('click', () => {
-          if (currentIndex < imageNamesGround.length - 1) {
-            currentIndex++;
-            select.value = currentIndex;
-            renderImage(currentIndex);
-          }
-        });
-
-        renderImage(currentIndex);
-      } catch (e) {
-        console.error(e);
-        document.getElementById('image-name').innerText = "Error loading data: " + e.message;
+        document.getElementById("dataset-count").innerText = images.length;
+        
+        // Calculate dynamic dashboard aggregates
+        calculateAggregates();
+        
+        // Select active image to render viewport
+        selectImage(activeImage);
+      } catch (err) {
+        console.error("Failed to load dataset:", err);
       }
     }
 
-    function renderImage(index) {
-      const imageName = imageNamesGround[index];
-      document.getElementById('image-name').innerText = imageName;
-      document.getElementById('Seperate-Container').innerHTML = ''; 
+    // Toggle overlay layer visibilities
+    function updateLayerVisibilities() {
+      layerGt.style.display = toggleGt.checked ? "block" : "none";
+      layerFind.style.display = toggleFind.checked ? "block" : "none";
+      layerMatch.style.display = toggleMatch.checked ? "block" : "none";
 
-      const imgElement = document.getElementById('main-image');
-      const bboxesContainer = document.getElementById('bboxes-container');
-      const toolsContainer = document.getElementById('tools-container');
-
-      // Clear old boxes
-      bboxesContainer.innerHTML = '';
-      toolsContainer.innerHTML = '';
-      tools = resultsData[imageName] || [];
-      if (boxMode) {
-        document.getElementById('toggleState').innerText = "Initial Results B.B.";
-        tools = initialResults[imageName] || [];
+      // If GT layer is hidden, we shouldn't draw or select
+      if (!toggleGt.checked) {
+        deselectBox();
+        layerGt.classList.remove("interactive");
       } else {
-        document.getElementById('toggleState').innerText = "Ground Truth B.B.";
+        layerGt.classList.add("interactive");
       }
+    }
 
-      const evalTools = evalResultsData[imageName];
-      document.getElementById('tool-count').innerText = tools.length;
+    toggleGt.addEventListener("change", updateLayerVisibilities);
+    toggleFind.addEventListener("change", updateLayerVisibilities);
+    toggleMatch.addEventListener("change", updateLayerVisibilities);
 
-      // Load image
-      imgElement.onload = () => {
-        const naturalWidth = imgElement.naturalWidth;
-        const naturalHeight = imgElement.naturalHeight;
-        const displayWidth = imgElement.clientWidth;
-        const displayHeight = imgElement.clientHeight;
+    // Compute Overall Model Stats across dataset
+    function calculateAggregates() {
+      const modes = { find: { precision: 0, recall: 0, iou: 0, name: 0, count: 0 }, match: { precision: 0, recall: 0, iou: 0, name: 0, count: 0 } };
+      let evaluatedCount = 0;
 
-        // Draw boxes
+      Object.keys(evalResults).forEach(key => {
+        const item = evalResults[key];
+        if (!item || !item.completed) return;
+        evaluatedCount++;
 
-        tools.forEach((tool, i) => {
-          // Handle potentially different data structures based on the model's exact return type
-          const coords = tool.coordinates || tool.toolInfo;
-          const name = tool.name || (tool.toolInfo ? tool.toolInfo.name : 'Unknown');
+        // Find mode aggregates
+        if (item.findMode && item.findMode.metrics) {
+          const m = item.findMode.metrics;
+          modes.find.precision += m.precision;
+          modes.find.recall += m.recall;
+          modes.find.iou += m.averageIoU;
+          modes.find.name += m.nameAccuracy;
+          modes.find.count++;
+        }
 
-          if (!coords) return;
+        // Match mode aggregates
+        if (item.matchMode && item.matchMode.metrics) {
+          const m = item.matchMode.metrics;
+          modes.match.precision += m.precision;
+          modes.match.recall += m.recall;
+          modes.match.iou += m.averageIoU;
+          modes.match.name += m.nameAccuracy;
+          modes.match.count++;
+        }
+      });
 
-          // AI returns percentages 0-100
-          const box = document.createElement('div');
-          box.className = 'bbox';
+      document.getElementById("evaluated-count").innerText = evaluatedCount;
 
-          // Convert percentages to CSS positions
-          box.style.left = coords.x + '%';
-          box.style.top = coords.y + '%';
-          box.style.width = coords.width + '%';
-          box.style.height = coords.height + '%';
-
-          const label = document.createElement('div');
-          label.className = 'bbox-label';
-          label.innerText = `${name} (${Math.round((tool.confidence || 1) * 100)}%)`;
-          box.appendChild(label);
-
-          bboxesContainer.appendChild(box);
-          
-          // List item
-          const listItem = document.createElement('div');
-          listItem.className = 'tool-item';
-          listItem.innerText = `${i + 1}. ${name} (Conf: ${Math.round((tool.confidence || 1) * 100)}%, Bbox: x=${coords.x}, y=${coords.y}, w=${coords.width}, h=${coords.height})`;
-          toolsContainer.appendChild(listItem);
-        });
-
-
-        //This could be iterated through using an array. Copies styling from the tool-item classes.
-        const precision = document.createElement('div');
-        precision.className = 'tool-item';
-        precision.innerText = evalTools ? `Precision: ${evalTools.findMode.metrics.precision}` : 'Precision: ';
-        document.getElementById('Seperate-Container').appendChild(precision);
-
-        const recall = document.createElement('div');
-        recall.className = 'tool-item';
-        recall.innerText = evalTools ? `Recall: ${evalTools.findMode.metrics.recall}` : 'Recall: ';
-        document.getElementById('Seperate-Container').appendChild(recall);
-
-        const averageIoU = document.createElement('div');
-        averageIoU.className = 'tool-item';
-        averageIoU.innerText = evalTools ? `Average IoU: ${evalTools.findMode.metrics.averageIoU}` : 'Average IoU: ';
-        document.getElementById('Seperate-Container').appendChild(averageIoU);
-
-        const nameAccuracy = document.createElement('div');
-        nameAccuracy.className = 'tool-item';
-        nameAccuracy.innerText = evalTools ? `Name Accuracy: ${evalTools.findMode.metrics.nameAccuracy}` : 'Name Accuracy: ';
-        document.getElementById('Seperate-Container').appendChild(nameAccuracy);
-
-        const truePositives = document.createElement('div');
-        truePositives.className = 'tool-item';
-        truePositives.innerText = evalTools ? `True Positives: ${evalTools.findMode.metrics.truePositives}` : 'True Positives: ';
-        document.getElementById('Seperate-Container').appendChild(truePositives);
+      const fillAggs = (modeName, elementIdPrefix) => {
+        const data = modes[modeName];
+        if (data.count === 0) {
+          document.getElementById(`agg-${elementIdPrefix}-prec`).innerText = "-";
+          document.getElementById(`agg-${elementIdPrefix}-rec`).innerText = "-";
+          document.getElementById(`agg-${elementIdPrefix}-iou`).innerText = "-";
+          document.getElementById(`agg-${elementIdPrefix}-name`).innerText = "-";
+          return;
+        }
+        document.getElementById(`agg-${elementIdPrefix}-prec`).innerText = `${((data.precision / data.count) * 100).toFixed(1)}%`;
+        document.getElementById(`agg-${elementIdPrefix}-rec`).innerText = `${((data.recall / data.count) * 100).toFixed(1)}%`;
+        document.getElementById(`agg-${elementIdPrefix}-iou`).innerText = `${(data.iou / data.count).toFixed(2)}`;
+        document.getElementById(`agg-${elementIdPrefix}-name`).innerText = `${((data.name / data.count) * 100).toFixed(1)}%`;
       };
 
-      imgElement.src = './images/' + imageName;
+      fillAggs("find", "find");
+      fillAggs("match", "match");
     }
 
-    loadData();
+    // Select and load active image in workspace
+    function selectImage(imgName) {
+      activeImage = imgName;
+      imageSelect.value = imgName;
+      mainImage.src = `/images/${imgName}`;
+      
+      deselectBox();
+      renderBoxes();
+      renderSelectedImageMetrics();
+    }
+
+    // Displays per-image metrics in sidebar
+    function renderSelectedImageMetrics() {
+      const res = evalResults[activeImage];
+      
+      const setMetricText = (elementId, label, val, isPercentage) => {
+        const el = document.getElementById(elementId);
+        if (val === undefined || val === null) {
+          el.innerText = `${label}: -`;
+        } else {
+          el.innerText = `${label}: ${isPercentage ? (val * 100).toFixed(0) + "%" : val.toFixed(2)}`;
+        }
+      };
+
+      if (res && res.completed) {
+        const findM = res.findMode.metrics;
+        setMetricText("img-find-prec", "Prec", findM.precision, true);
+        setMetricText("img-find-rec", "Rec", findM.recall, true);
+        setMetricText("img-find-iou", "IoU", findM.averageIoU, false);
+
+        const matchM = res.matchMode.metrics;
+        setMetricText("img-match-prec", "Prec", matchM.precision, true);
+        setMetricText("img-match-rec", "Rec", matchM.recall, true);
+        setMetricText("img-match-iou", "IoU", matchM.averageIoU, false);
+      } else {
+        ["img-find-prec", "img-find-rec", "img-find-iou", "img-match-prec", "img-match-rec", "img-match-iou"].forEach(id => {
+          document.getElementById(id).innerText = id.includes("prec") ? "Prec: -" : id.includes("rec") ? "Rec: -" : "IoU: -";
+        });
+      }
+    }
+
+    // Helper to get relative % coordinates inside viewport
+    function getPercentCoords(e) {
+      const rect = imageViewport.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      return { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) };
+    }
+
+    // Render Bounding Box Overlays
+    function renderBoxes() {
+      // Clear out past layers
+      layerGt.innerHTML = "";
+      layerFind.innerHTML = "";
+      layerMatch.innerHTML = "";
+
+      const gtList = groundTruth[activeImage] || [];
+      const evalRes = evalResults[activeImage];
+
+      // 1. Render Ground Truth
+      gtList.forEach((gt, idx) => {
+        const info = gt.toolInfo;
+        const box = createBBoxElement(info, idx, "bbox-ground-truth editable");
+        
+        if (selectedBoxIndex === idx) {
+          box.classList.add("selected");
+          // Append resizers
+          ["nw", "ne", "se", "sw"].forEach(dir => {
+            const h = document.createElement("div");
+            h.className = `resize-handle ${dir}`;
+            h.addEventListener("mousedown", (e) => startResize(e, idx, dir));
+            box.appendChild(h);
+          });
+        }
+
+        // Attach click select & drag handlers
+        box.addEventListener("mousedown", (e) => {
+          if (e.target.classList.contains("resize-handle")) return;
+          selectBox(idx);
+          startDrag(e, idx);
+        });
+
+        layerGt.appendChild(box);
+      });
+
+      // 2. Render Find Mode Predictions
+      if (evalRes && evalRes.findMode && evalRes.findMode.predictions) {
+        evalRes.findMode.predictions.forEach((pred, idx) => {
+          layerFind.appendChild(createBBoxElement(pred.toolInfo, idx, "bbox-find-mode"));
+        });
+      }
+
+      // 3. Render Match Mode Predictions
+      if (evalRes && evalRes.matchMode && evalRes.matchMode.predictions) {
+        evalRes.matchMode.predictions.forEach((pred, idx) => {
+          layerMatch.appendChild(createBBoxElement(pred.toolInfo, idx, "bbox-match-mode"));
+        });
+      }
+
+      renderSidebarList();
+    }
+
+    // Factory method for individual BBox DIV
+    function createBBoxElement(info, idx, customClass) {
+      const el = document.createElement("div");
+      el.className = `bbox ${customClass}`;
+      if (info.shape === "ellipse") el.classList.add("shape-ellipse");
+
+      el.style.left = `${info.x}%`;
+      el.style.top = `${info.y}%`;
+      el.style.width = `${info.width}%`;
+      el.style.height = `${info.height}%`;
+      el.style.transform = `rotate(${info.angle || 0}deg)`;
+
+      const label = document.createElement("div");
+      label.className = "bbox-label";
+      label.innerText = `${info.name}`;
+      el.appendChild(label);
+
+      return el;
+    }
+
+    // Sidebar list generator
+    function renderSidebarList() {
+      toolsList.innerHTML = "";
+      const gtList = groundTruth[activeImage] || [];
+      listPanelCount.innerText = gtList.length;
+
+      gtList.forEach((gt, idx) => {
+        const info = gt.toolInfo;
+        const item = document.createElement("div");
+        item.className = "tool-list-item";
+        if (selectedBoxIndex === idx) item.classList.add("selected");
+
+        item.innerHTML = `
+          <div class="info">
+            <div class="name">${info.name}</div>
+            <div class="coords">x: ${info.x.toFixed(0)}% y: ${info.y.toFixed(0)}% | ${info.width.toFixed(0)}%x${info.height.toFixed(0)}%</div>
+          </div>
+        `;
+
+        item.addEventListener("click", () => selectBox(idx));
+        toolsList.appendChild(item);
+      });
+    }
+
+    // Box Selection management
+    function selectBox(idx) {
+      selectedBoxIndex = idx;
+      renderBoxes();
+
+      const gt = groundTruth[activeImage][idx];
+      if (gt) {
+        propertiesPanel.style.display = "block";
+        propNameInput.value = gt.toolInfo.name;
+        propShapeInput.value = gt.toolInfo.shape || "rectangle";
+        propAngleInput.value = gt.toolInfo.angle || 0;
+      }
+    }
+
+    function deselectBox() {
+      selectedBoxIndex = null;
+      propertiesPanel.style.display = "none";
+      renderBoxes();
+    }
+
+    // Binding Property panel triggers
+    propNameInput.addEventListener("input", () => {
+      if (selectedBoxIndex === null) return;
+      groundTruth[activeImage][selectedBoxIndex].toolInfo.name = propNameInput.value;
+      renderBoxes();
+    });
+
+    propShapeInput.addEventListener("change", () => {
+      if (selectedBoxIndex === null) return;
+      groundTruth[activeImage][selectedBoxIndex].toolInfo.shape = propShapeInput.value;
+      renderBoxes();
+    });
+
+    propAngleInput.addEventListener("input", () => {
+      if (selectedBoxIndex === null) return;
+      const val = parseInt(propAngleInput.value) || 0;
+      groundTruth[activeImage][selectedBoxIndex].toolInfo.angle = Math.max(0, Math.min(360, val));
+      renderBoxes();
+    });
+
+    // Delete Tool Trigger
+    deleteToolBtn.addEventListener("click", () => {
+      if (selectedBoxIndex === null) return;
+      groundTruth[activeImage].splice(selectedBoxIndex, 1);
+      deselectBox();
+    });
+
+    // MOUSE DRAGGING (MOVE BOX)
+    function startDrag(e, idx) {
+      e.stopPropagation();
+      isDragging = true;
+      dragIndex = idx;
+      
+      const mouse = getPercentCoords(e);
+      const box = groundTruth[activeImage][idx].toolInfo;
+      dragOffset = {
+        x: mouse.x - box.x,
+        y: mouse.y - box.y
+      };
+    }
+
+    // MOUSE RESIZING (SCALE BOX)
+    function startResize(e, idx, dir) {
+      e.stopPropagation();
+      e.preventDefault();
+      isResizing = true;
+      resizeIndex = idx;
+      resizeDir = dir;
+
+      const box = groundTruth[activeImage][idx].toolInfo;
+      originalBoxCoords = {
+        x: box.x,
+        y: box.y,
+        width: box.width,
+        height: box.height
+      };
+    }
+
+    // MOUSE DRAWING (CREATE NEW BOX)
+    imageViewport.addEventListener("mousedown", (e) => {
+      // Allow dragging/clicking existing items without initiating drawing
+      if (e.target !== layerGt && e.target !== mainImage) return;
+      if (!toggleGt.checked) return;
+
+      e.preventDefault();
+      deselectBox();
+      isDrawing = true;
+      startCoords = getPercentCoords(e);
+      
+      drawingRect.style.display = "block";
+      drawingRect.style.left = `${startCoords.x}%`;
+      drawingRect.style.top = `${startCoords.y}%`;
+      drawingRect.style.width = "0%";
+      drawingRect.style.height = "0%";
+    });
+
+    // Combined MouseMove router
+    window.addEventListener("mousemove", (e) => {
+      if (isDrawing) {
+        const mouse = getPercentCoords(e);
+        const xmin = Math.min(startCoords.x, mouse.x);
+        const ymin = Math.min(startCoords.y, mouse.y);
+        const width = Math.abs(startCoords.x - mouse.x);
+        const height = Math.abs(startCoords.y - mouse.y);
+
+        drawingRect.style.left = `${xmin}%`;
+        drawingRect.style.top = `${ymin}%`;
+        drawingRect.style.width = `${width}%`;
+        drawingRect.style.height = `${height}%`;
+      } 
+      else if (isDragging && dragIndex !== null) {
+        const mouse = getPercentCoords(e);
+        const box = groundTruth[activeImage][dragIndex].toolInfo;
+        
+        let newX = mouse.x - dragOffset.x;
+        let newY = mouse.y - dragOffset.y;
+
+        // Constraint clamps inside bounds (0-100)
+        box.x = Math.max(0, Math.min(100 - box.width, newX));
+        box.y = Math.max(0, Math.min(100 - box.height, newY));
+        
+        renderBoxes();
+      } 
+      else if (isResizing && resizeIndex !== null) {
+        const mouse = getPercentCoords(e);
+        const box = groundTruth[activeImage][resizeIndex].toolInfo;
+        const orig = originalBoxCoords;
+
+        const right = orig.x + orig.width;
+        const bottom = orig.y + orig.height;
+
+        let newX = box.x;
+        let newY = box.y;
+        let newW = box.width;
+        let newH = box.height;
+
+        if (resizeDir === "se") {
+          newW = Math.max(2, mouse.x - orig.x);
+          newH = Math.max(2, mouse.y - orig.y);
+        } else if (resizeDir === "sw") {
+          const possibleW = right - mouse.x;
+          if (possibleW > 2) {
+            newX = mouse.x;
+            newW = possibleW;
+          }
+          newH = Math.max(2, mouse.y - orig.y);
+        } else if (resizeDir === "ne") {
+          newW = Math.max(2, mouse.x - orig.x);
+          const possibleH = bottom - mouse.y;
+          if (possibleH > 2) {
+            newY = mouse.y;
+            newH = possibleH;
+          }
+        } else if (resizeDir === "nw") {
+          const possibleW = right - mouse.x;
+          if (possibleW > 2) {
+            newX = mouse.x;
+            newW = possibleW;
+          }
+          const possibleH = bottom - mouse.y;
+          if (possibleH > 2) {
+            newY = mouse.y;
+            newH = possibleH;
+          }
+        }
+
+        // Clamp inside image bounds (0-100)
+        box.x = Math.max(0, Math.min(100, newX));
+        box.y = Math.max(0, Math.min(100, newY));
+        box.width = Math.max(1, Math.min(100 - box.x, newW));
+        box.height = Math.max(1, Math.min(100 - box.y, newH));
+
+        renderBoxes();
+      }
+    });
+
+    // MouseUp router
+    window.addEventListener("mouseup", (e) => {
+      if (isDrawing) {
+        isDrawing = false;
+        drawingRect.style.display = "none";
+        
+        const mouse = getPercentCoords(e);
+        const xmin = Math.min(startCoords.x, mouse.x);
+        const ymin = Math.min(startCoords.y, mouse.y);
+        const width = Math.abs(startCoords.x - mouse.x);
+        const height = Math.abs(startCoords.y - mouse.y);
+
+        // Don't add tiny click box accidents
+        if (width > 2 && height > 2) {
+          if (!groundTruth[activeImage]) {
+            groundTruth[activeImage] = [];
+          }
+          const currentCount = groundTruth[activeImage].length;
+          
+          groundTruth[activeImage].push({
+            toolId: `tool_${Date.now()}`,
+            status: "present",
+            confidence: "high",
+            toolInfo: {
+              name: `New Tool ${currentCount + 1}`,
+              x: xmin,
+              y: ymin,
+              width: width,
+              height: height,
+              shape: "rectangle",
+              angle: 0
+            }
+          });
+          
+          selectBox(groundTruth[activeImage].length - 1);
+        }
+      }
+
+      isDragging = false;
+      dragIndex = null;
+      
+      isResizing = false;
+      resizeIndex = null;
+    });
+
+    // Header Button Bindings
+    imageSelect.addEventListener("change", (e) => {
+      selectImage(e.target.value);
+    });
+
+    document.getElementById("prev-btn").addEventListener("click", () => {
+      const idx = images.indexOf(activeImage);
+      if (idx > 0) selectImage(images[idx - 1]);
+    });
+
+    document.getElementById("next-btn").addEventListener("click", () => {
+      const idx = images.indexOf(activeImage);
+      if (idx < images.length - 1) selectImage(images[idx + 1]);
+    });
+
+    // Save Ground Truth API triggers
+    document.getElementById("save-gt-btn").addEventListener("click", async () => {
+      try {
+        loadingText.innerText = "Saving Ground Truth...";
+        loadingOverlay.style.display = "flex";
+
+        const res = await fetch("/api/save-ground-truth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            imageName: activeImage,
+            detections: groundTruth[activeImage] || []
+          })
+        });
+
+        if (res.ok) {
+          alert("Ground truth saved successfully!");
+        } else {
+          const err = await res.json();
+          alert(`Save failed: ${err.error}`);
+        }
+      } catch (err) {
+        alert(`Network Error: ${err.message}`);
+      } finally {
+        loadingOverlay.style.display = "none";
+      }
+    });
+
+    // Run Single Image Evaluation
+    document.getElementById("eval-single-btn").addEventListener("click", async () => {
+      if (!groundTruth[activeImage] || groundTruth[activeImage].length === 0) {
+        alert("Please set up at least one ground truth bounding box before evaluating!");
+        return;
+      }
+
+      try {
+        loadingText.innerText = `Evaluating ${activeImage} against Gemini...`;
+        loadingOverlay.style.display = "flex";
+
+        const res = await fetch("/api/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageName: activeImage })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          // Update local state
+          evalResults[activeImage] = data.result;
+          calculateAggregates();
+          renderBoxes();
+          renderSelectedImageMetrics();
+          alert("Evaluation completed and metrics saved!");
+        } else {
+          alert(`Evaluation failed: ${data.error}`);
+        }
+      } catch (err) {
+        alert(`Network Error: ${err.message}`);
+      } finally {
+        loadingOverlay.style.display = "none";
+      }
+    });
+
+    // Run Dataset Evaluation from Scratch
+    document.getElementById("eval-all-btn").addEventListener("click", async () => {
+      const confirmed = confirm("Are you sure? This will run Find & Match modes for ALL images in ground_truth.json from scratch. This can take several minutes due to model rate-limit limits.");
+      if (!confirmed) return;
+
+      try {
+        loadingText.innerText = "Running full evaluation suite on Gemini. Please do not close this tab...";
+        loadingOverlay.style.display = "flex";
+
+        const res = await fetch("/api/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ all: true })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          evalResults = data.results;
+          calculateAggregates();
+          renderBoxes();
+          renderSelectedImageMetrics();
+          alert("Completed full dataset evaluations successfully!");
+        } else {
+          alert(`Full evaluation failed: ${data.error}`);
+        }
+      } catch (err) {
+        alert(`Network Error: ${err.message}`);
+      } finally {
+        loadingOverlay.style.display = "none";
+      }
+    });
+
+    // Start
+    loadDataset();
   </script>
 
 </body>

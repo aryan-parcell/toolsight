@@ -3,28 +3,144 @@
     "completed": true,
     "groundTruthCount": 4,
     "findMode": {
-      "predictionsCount": 2,
+      "predictionsCount": 4,
       "metrics": {
-        "precision": 0.5,
+        "precision": 0.25,
         "recall": 0.25,
-        "averageIoU": 0.8610313859827793,
+        "averageIoU": 0.8528510903655337,
         "nameAccuracy": 0,
         "truePositives": 1,
-        "falsePositives": 1,
+        "falsePositives": 3,
         "falseNegatives": 3
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Needle-nose pliers",
+            "x": 7.8,
+            "y": 18.5,
+            "width": 39.4,
+            "height": 77.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Water pump pliers",
+            "x": 47.5,
+            "y": 2.5,
+            "width": 48.7,
+            "height": 93.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Combination pliers",
+            "x": 50,
+            "y": 65,
+            "width": 32.5,
+            "height": 27.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Diagonal cutting pliers",
+            "x": 18.5,
+            "y": 71.5,
+            "width": 18,
+            "height": 16.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 4,
       "metrics": {
         "precision": 0.25,
         "recall": 0.25,
-        "averageIoU": 0.8545034642032333,
+        "averageIoU": 0.8648227502921698,
         "nameAccuracy": 1,
         "truePositives": 1,
         "falsePositives": 3,
         "falseNegatives": 3
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Long Nose Pliers",
+            "x": 8,
+            "y": 18.5,
+            "width": 38.5,
+            "height": 77.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Pliers",
+            "x": 18.5,
+            "y": 70,
+            "width": 18,
+            "height": 17.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Groove Joint Pliers",
+            "x": 47.5,
+            "y": 2.5,
+            "width": 48,
+            "height": 94,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Combination Pliers",
+            "x": 64.5,
+            "y": 66,
+            "width": 18,
+            "height": 26.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer10.jpg": {
@@ -35,24 +151,168 @@
       "metrics": {
         "precision": 1,
         "recall": 1,
-        "averageIoU": 0.7810877634170321,
-        "nameAccuracy": 0.8,
+        "averageIoU": 0.7537634880484858,
+        "nameAccuracy": 0.6,
         "truePositives": 5,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Torque Wrench",
+            "x": 33.8,
+            "y": 52.5,
+            "width": 62.7,
+            "height": 24,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Extension Bar 1",
+            "x": 41.2,
+            "y": 18.5,
+            "width": 23.1,
+            "height": 16,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Extension Bar 2",
+            "x": 70.7,
+            "y": 18.8,
+            "width": 14.8,
+            "height": 15.2,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Torx Bit Set",
+            "x": 2.5,
+            "y": 14.5,
+            "width": 16,
+            "height": 71,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Crowfoot Wrench Set",
+            "x": 19.5,
+            "y": 14.5,
+            "width": 13,
+            "height": 71,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 5,
       "metrics": {
         "precision": 1,
         "recall": 1,
-        "averageIoU": 0.8000629293377124,
+        "averageIoU": 0.8028372273123174,
         "nameAccuracy": 1,
         "truePositives": 5,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Set",
+            "x": 2.5,
+            "y": 12.5,
+            "width": 16,
+            "height": 75,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Set",
+            "x": 19.5,
+            "y": 12.5,
+            "width": 14,
+            "height": 75,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Extension Bar",
+            "x": 41,
+            "y": 17.5,
+            "width": 23.5,
+            "height": 17,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Extension Bar",
+            "x": 70.5,
+            "y": 17.5,
+            "width": 14,
+            "height": 17,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "5",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Torque Wrench",
+            "x": 34,
+            "y": 52.5,
+            "width": 63,
+            "height": 30,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer11.jpg": {
@@ -63,108 +323,1062 @@
       "metrics": {
         "precision": 1,
         "recall": 1,
-        "averageIoU": 0.8541769615707652,
+        "averageIoU": 0.8588369781930084,
         "nameAccuracy": 0.2857142857142857,
         "truePositives": 7,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "large adjustable wrench",
+            "x": 7.8,
+            "y": 26,
+            "width": 46,
+            "height": 15.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small adjustable wrench",
+            "x": 62.8,
+            "y": 36.5,
+            "width": 29.4,
+            "height": 9.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "pipe wrench 1",
+            "x": 8.5,
+            "y": 45.5,
+            "width": 48.3,
+            "height": 16.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "pipe wrench 2",
+            "x": 9,
+            "y": 55.5,
+            "width": 47.8,
+            "height": 16.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small metal bracket",
+            "x": 70.5,
+            "y": 50,
+            "width": 18,
+            "height": 7.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "angled tool",
+            "x": 59.2,
+            "y": 57,
+            "width": 11,
+            "height": 12.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "feeler gauge set",
+            "x": 74,
+            "y": 62.8,
+            "width": 19.2,
+            "height": 6.2,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 7,
       "metrics": {
         "precision": 1,
         "recall": 1,
-        "averageIoU": 0.8431159820450896,
+        "averageIoU": 0.8278607023017811,
         "nameAccuracy": 1,
         "truePositives": 7,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Adjustable Wrench",
+            "x": 7.8,
+            "y": 26,
+            "width": 45.9,
+            "height": 15.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Adjustable Wrench",
+            "x": 62.8,
+            "y": 36.5,
+            "width": 29,
+            "height": 9.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Adjustable Wrench",
+            "x": 8.5,
+            "y": 45.5,
+            "width": 48,
+            "height": 16.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Adjustable Wrench",
+            "x": 9.5,
+            "y": 55.5,
+            "width": 47.3,
+            "height": 16.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "5",
+          "status": "absent",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Folding Utility Knife",
+            "x": 70.5,
+            "y": 48.5,
+            "width": 18,
+            "height": 8.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "6",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Folding Utility Knife",
+            "x": 74.2,
+            "y": 62.8,
+            "width": 18.8,
+            "height": 6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "7",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Hex Key Set",
+            "x": 59.2,
+            "y": 57,
+            "width": 11,
+            "height": 11.5,
+            "shape": "rectangle",
+            "angle": 45
+          }
+        }
+      ]
     }
   },
   "drawer12.jpg": {
     "completed": true,
     "groundTruthCount": 12,
     "findMode": {
-      "predictionsCount": 10,
+      "predictionsCount": 14,
       "metrics": {
-        "precision": 0.6,
-        "recall": 0.5,
-        "averageIoU": 0.7508737662065874,
+        "precision": 0.7142857142857143,
+        "recall": 0.8333333333333334,
+        "averageIoU": 0.6742960221747276,
         "nameAccuracy": 0,
-        "truePositives": 6,
+        "truePositives": 10,
         "falsePositives": 4,
-        "falseNegatives": 6
-      }
+        "falseNegatives": 2
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Safety Glasses",
+            "x": 9.5,
+            "y": 23.5,
+            "width": 23,
+            "height": 20,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Inspection Light",
+            "x": 32.5,
+            "y": 16.5,
+            "width": 29,
+            "height": 9.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Dead Blow Hammer",
+            "x": 36.5,
+            "y": 20.5,
+            "width": 54,
+            "height": 24.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver",
+            "x": 52.5,
+            "y": 39.5,
+            "width": 25.5,
+            "height": 9,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wrench 1",
+            "x": 6.5,
+            "y": 49.5,
+            "width": 41.5,
+            "height": 4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wrench 2",
+            "x": 6.5,
+            "y": 55.5,
+            "width": 41.5,
+            "height": 3.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wrench 3",
+            "x": 6.5,
+            "y": 61,
+            "width": 41.5,
+            "height": 3.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wrench 4",
+            "x": 6.5,
+            "y": 66.5,
+            "width": 41.5,
+            "height": 3.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wrench 5",
+            "x": 6.5,
+            "y": 72,
+            "width": 41.5,
+            "height": 3.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wrench 6",
+            "x": 56,
+            "y": 51,
+            "width": 36,
+            "height": 3.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wrench 7",
+            "x": 56,
+            "y": 56,
+            "width": 36,
+            "height": 3.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wrench 8",
+            "x": 59,
+            "y": 61,
+            "width": 34,
+            "height": 3.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wrench 9",
+            "x": 34.5,
+            "y": 66,
+            "width": 27.5,
+            "height": 9,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Bit Set",
+            "x": 67,
+            "y": 72,
+            "width": 24,
+            "height": 3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 12,
       "metrics": {
-        "precision": 0.25,
-        "recall": 0.25,
-        "averageIoU": 0.7648205186543331,
-        "nameAccuracy": 0.6666666666666666,
-        "truePositives": 3,
-        "falsePositives": 9,
-        "falseNegatives": 9
-      }
+        "precision": 0.4166666666666667,
+        "recall": 0.4166666666666667,
+        "averageIoU": 0.7650493484098442,
+        "nameAccuracy": 0.2,
+        "truePositives": 5,
+        "falsePositives": 7,
+        "falseNegatives": 7
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 1",
+            "x": 8.5,
+            "y": 25,
+            "width": 23.5,
+            "height": 18,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 2",
+            "x": 35,
+            "y": 16.5,
+            "width": 26,
+            "height": 9,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 3",
+            "x": 61,
+            "y": 15.5,
+            "width": 17.5,
+            "height": 10.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 4",
+            "x": 85,
+            "y": 20,
+            "width": 5.5,
+            "height": 25,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "5",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 5",
+            "x": 36.5,
+            "y": 27.5,
+            "width": 41,
+            "height": 9,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "6",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 6",
+            "x": 6.5,
+            "y": 43.5,
+            "width": 41.5,
+            "height": 5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "7",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 7",
+            "x": 6.5,
+            "y": 50.5,
+            "width": 41.5,
+            "height": 5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "8",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 8",
+            "x": 6.5,
+            "y": 57.5,
+            "width": 41.5,
+            "height": 5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "9",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 9",
+            "x": 6.5,
+            "y": 64.5,
+            "width": 41.5,
+            "height": 5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "10",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 10",
+            "x": 6.5,
+            "y": 71.5,
+            "width": 55.5,
+            "height": 5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "11",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 11",
+            "x": 55.5,
+            "y": 50.5,
+            "width": 37.5,
+            "height": 5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "12",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 12",
+            "x": 55.5,
+            "y": 57.5,
+            "width": 37.5,
+            "height": 5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer13.jpg": {
     "completed": true,
     "groundTruthCount": 7,
     "findMode": {
-      "predictionsCount": 7,
+      "predictionsCount": 6,
       "metrics": {
-        "precision": 0.8571428571428571,
-        "recall": 0.8571428571428571,
-        "averageIoU": 0.8022399391740502,
+        "precision": 0.8333333333333334,
+        "recall": 0.7142857142857143,
+        "averageIoU": 0.8103874974919367,
         "nameAccuracy": 0,
-        "truePositives": 6,
+        "truePositives": 5,
         "falsePositives": 1,
-        "falseNegatives": 1
-      }
+        "falseNegatives": 2
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Safety Wire Twister Pliers (Top)",
+            "x": 13.2,
+            "y": 27.5,
+            "width": 42.3,
+            "height": 11,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Safety Wire Twister Pliers (Bottom)",
+            "x": 6.8,
+            "y": 44.5,
+            "width": 48.7,
+            "height": 11,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Telescoping Inspection Mirror",
+            "x": 26.8,
+            "y": 58.5,
+            "width": 30,
+            "height": 16,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Safety Wire Spool (Top)",
+            "x": 62.5,
+            "y": 43.2,
+            "width": 11.3,
+            "height": 14.3,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Safety Wire Spool (Bottom)",
+            "x": 62.8,
+            "y": 61,
+            "width": 11.4,
+            "height": 14.5,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Hex Key Set",
+            "x": 79,
+            "y": 29.5,
+            "width": 14.8,
+            "height": 45.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 7,
       "metrics": {
-        "precision": 0.8571428571428571,
-        "recall": 0.8571428571428571,
-        "averageIoU": 0.8164883173573388,
-        "nameAccuracy": 0.8333333333333334,
-        "truePositives": 6,
-        "falsePositives": 1,
-        "falseNegatives": 1
-      }
+        "precision": 0.7142857142857143,
+        "recall": 0.7142857142857143,
+        "averageIoU": 0.8083557385405852,
+        "nameAccuracy": 1,
+        "truePositives": 5,
+        "falsePositives": 2,
+        "falseNegatives": 2
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wire Stripper",
+            "x": 13.2,
+            "y": 27.5,
+            "width": 42.3,
+            "height": 10.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Crimping Pliers",
+            "x": 6.8,
+            "y": 44.5,
+            "width": 48.7,
+            "height": 10.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Allen Wrench Set",
+            "x": 78.8,
+            "y": 27.5,
+            "width": 14.7,
+            "height": 47.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Solder Spool",
+            "x": 62.8,
+            "y": 43.2,
+            "width": 11.5,
+            "height": 14.1,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "5",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Solder Spool",
+            "x": 62.8,
+            "y": 61,
+            "width": 11.5,
+            "height": 14.1,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "6",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver Handle",
+            "x": 27,
+            "y": 59.2,
+            "width": 29.8,
+            "height": 10.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "7",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver Bit",
+            "x": 42.8,
+            "y": 59.2,
+            "width": 9.2,
+            "height": 15.1,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer2.jpg": {
     "completed": true,
-    "groundTruthCount": 9,
+    "groundTruthCount": 7,
     "findMode": {
       "predictionsCount": 7,
       "metrics": {
         "precision": 1,
-        "recall": 0.7777777777777778,
-        "averageIoU": 0.8071176488017281,
-        "nameAccuracy": 0.42857142857142855,
+        "recall": 1,
+        "averageIoU": 0.7927574075277953,
+        "nameAccuracy": 0.2857142857142857,
         "truePositives": 7,
         "falsePositives": 0,
-        "falseNegatives": 2
-      }
+        "falseNegatives": 0
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "large adjustable wrench",
+            "x": 9.8,
+            "y": 26.7,
+            "width": 44.8,
+            "height": 15.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small adjustable wrench",
+            "x": 63.7,
+            "y": 36.8,
+            "width": 31.2,
+            "height": 10.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "large pipe wrench",
+            "x": 10.2,
+            "y": 45.7,
+            "width": 49.5,
+            "height": 16.1,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "medium pipe wrench",
+            "x": 10.3,
+            "y": 56.2,
+            "width": 49.5,
+            "height": 16.6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "angled socket adapter",
+            "x": 59.7,
+            "y": 57.9,
+            "width": 11.5,
+            "height": 13.4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small metal bracket",
+            "x": 71.3,
+            "y": 49.6,
+            "width": 19.3,
+            "height": 11.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "hex key set",
+            "x": 74.7,
+            "y": 64.1,
+            "width": 20.9,
+            "height": 6.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
-      "predictionsCount": 9,
+      "predictionsCount": 7,
       "metrics": {
-        "precision": 0.7777777777777778,
-        "recall": 0.7777777777777778,
-        "averageIoU": 0.7927595144791987,
-        "nameAccuracy": 0.7142857142857143,
-        "truePositives": 7,
-        "falsePositives": 2,
-        "falseNegatives": 2
-      }
+        "precision": 0.8571428571428571,
+        "recall": 0.8571428571428571,
+        "averageIoU": 0.7762965873744129,
+        "nameAccuracy": 1,
+        "truePositives": 6,
+        "falsePositives": 1,
+        "falseNegatives": 1
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Adjustable Wrench",
+            "x": 9.8,
+            "y": 26.8,
+            "width": 44.8,
+            "height": 15.1,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Adjustable Wrench",
+            "x": 10.2,
+            "y": 45.7,
+            "width": 49.5,
+            "height": 16.1,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Adjustable Wrench",
+            "x": 10.3,
+            "y": 65.3,
+            "width": 49.6,
+            "height": 7.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Adjustable Wrench",
+            "x": 63.7,
+            "y": 36.8,
+            "width": 31.2,
+            "height": 10.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "5",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Adjustable Wrench",
+            "x": 71.3,
+            "y": 49.6,
+            "width": 19.3,
+            "height": 11.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "8",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Adjustable Wrench",
+            "x": 59.7,
+            "y": 57.9,
+            "width": 11.4,
+            "height": 13.4,
+            "shape": "rectangle",
+            "angle": 330
+          }
+        },
+        {
+          "toolId": "9",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Tool",
+            "x": 74.7,
+            "y": 64.1,
+            "width": 20.9,
+            "height": 6.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer3.jpg": {
@@ -175,24 +1389,448 @@
       "metrics": {
         "precision": 0.9333333333333333,
         "recall": 0.9333333333333333,
-        "averageIoU": 0.7422006624191086,
+        "averageIoU": 0.7751275845712998,
         "nameAccuracy": 0,
         "truePositives": 14,
         "falsePositives": 1,
         "falseNegatives": 1
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "3/4 inch ratcheting wrench",
+            "x": 16,
+            "y": 22,
+            "width": 52.5,
+            "height": 9.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "11/16 inch ratcheting wrench",
+            "x": 11,
+            "y": 32.5,
+            "width": 48.5,
+            "height": 8.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "5/8 inch ratcheting wrench",
+            "x": 5.5,
+            "y": 42.5,
+            "width": 45.5,
+            "height": 8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "9/16 inch ratcheting wrench",
+            "x": 13.5,
+            "y": 51.5,
+            "width": 41.5,
+            "height": 7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "1/2 inch ratcheting wrench",
+            "x": 9.5,
+            "y": 60.5,
+            "width": 38,
+            "height": 6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "7/16 inch ratcheting wrench",
+            "x": 5.5,
+            "y": 68.5,
+            "width": 36.5,
+            "height": 6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small wrench 1",
+            "x": 74.5,
+            "y": 22,
+            "width": 20,
+            "height": 4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small wrench 2",
+            "x": 73.5,
+            "y": 30,
+            "width": 20,
+            "height": 4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small wrench 3",
+            "x": 65,
+            "y": 36.5,
+            "width": 25.5,
+            "height": 5.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small wrench 4",
+            "x": 57,
+            "y": 45,
+            "width": 30.5,
+            "height": 4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small wrench 5",
+            "x": 68.5,
+            "y": 51,
+            "width": 25,
+            "height": 3.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small wrench 6",
+            "x": 62,
+            "y": 56.5,
+            "width": 26.5,
+            "height": 3.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small wrench 7",
+            "x": 54.5,
+            "y": 62.5,
+            "width": 28.5,
+            "height": 4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small wrench 8",
+            "x": 45,
+            "y": 69,
+            "width": 31,
+            "height": 4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small wrench 9",
+            "x": 79.5,
+            "y": 69.5,
+            "width": 15.5,
+            "height": 3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 15,
       "metrics": {
         "precision": 0.9333333333333333,
         "recall": 0.9333333333333333,
-        "averageIoU": 0.7568878888363565,
+        "averageIoU": 0.7466953408323593,
         "nameAccuracy": 0.42857142857142855,
         "truePositives": 14,
         "falsePositives": 1,
         "falseNegatives": 1
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Combination Wrench 3/4",
+            "x": 16,
+            "y": 22,
+            "width": 53.5,
+            "height": 9.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Combination Wrench 11/16",
+            "x": 11,
+            "y": 32.5,
+            "width": 49.5,
+            "height": 8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Combination Wrench 5/8",
+            "x": 5.5,
+            "y": 42.5,
+            "width": 45.5,
+            "height": 7.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Combination Wrench 9/16",
+            "x": 13.5,
+            "y": 51.5,
+            "width": 41.5,
+            "height": 6.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "5",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Combination Wrench 1/2",
+            "x": 9.5,
+            "y": 60.5,
+            "width": 39,
+            "height": 5.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "15",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Combination Wrench 7/16",
+            "x": 5.5,
+            "y": 68.5,
+            "width": 36,
+            "height": 5.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "6",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Ratchet Wrench 10mm",
+            "x": 74.5,
+            "y": 22,
+            "width": 20,
+            "height": 4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "7",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Ratchet Wrench 12mm",
+            "x": 73.5,
+            "y": 29.5,
+            "width": 20,
+            "height": 4.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "8",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Ratchet Wrench 13mm",
+            "x": 65,
+            "y": 36.5,
+            "width": 25.5,
+            "height": 5.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "9",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Ratchet Wrench 14mm",
+            "x": 57,
+            "y": 45,
+            "width": 30.5,
+            "height": 4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "10",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Ratchet Wrench 15mm",
+            "x": 68.5,
+            "y": 51,
+            "width": 24,
+            "height": 3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "11",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Ratchet Wrench 17mm",
+            "x": 62,
+            "y": 56.5,
+            "width": 26.5,
+            "height": 3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "12",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Ratchet Wrench 19mm",
+            "x": 54.5,
+            "y": 62.5,
+            "width": 28.5,
+            "height": 4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "13",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Ratchet Wrench 8mm",
+            "x": 45,
+            "y": 69,
+            "width": 30,
+            "height": 4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "14",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Ratchet Wrench 9mm",
+            "x": 80,
+            "y": 69.5,
+            "width": 15,
+            "height": 3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer4.jpg": {
@@ -203,24 +1841,462 @@
       "metrics": {
         "precision": 0.5333333333333333,
         "recall": 0.5,
-        "averageIoU": 0.7009020543966074,
+        "averageIoU": 0.70218876185033,
         "nameAccuracy": 0,
         "truePositives": 8,
         "falsePositives": 7,
         "falseNegatives": 8
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Small Screwdriver 1",
+            "x": 15.8,
+            "y": 21.8,
+            "width": 25.9,
+            "height": 1.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Small Screwdriver 2",
+            "x": 14.2,
+            "y": 26.8,
+            "width": 27.5,
+            "height": 1.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver 1",
+            "x": 8,
+            "y": 30.5,
+            "width": 33.7,
+            "height": 8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver 2",
+            "x": 6.2,
+            "y": 40.2,
+            "width": 35.5,
+            "height": 8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Pick Tool 1",
+            "x": 14.8,
+            "y": 50,
+            "width": 24.2,
+            "height": 1.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Pick Tool 2",
+            "x": 14.8,
+            "y": 55.5,
+            "width": 24.2,
+            "height": 1.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Pick Tool 3",
+            "x": 12.2,
+            "y": 60.2,
+            "width": 28,
+            "height": 1.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Pick Tool 4",
+            "x": 12.2,
+            "y": 65,
+            "width": 28,
+            "height": 1.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Pick Tool 5",
+            "x": 10,
+            "y": 70.5,
+            "width": 31.7,
+            "height": 1.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Metal Ruler",
+            "x": 10,
+            "y": 76.5,
+            "width": 21.7,
+            "height": 1.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver 3",
+            "x": 45.8,
+            "y": 19.8,
+            "width": 47.2,
+            "height": 9.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver 4",
+            "x": 43.8,
+            "y": 33.2,
+            "width": 51.2,
+            "height": 8.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Snap-on Screwdriver",
+            "x": 43.8,
+            "y": 45,
+            "width": 51.2,
+            "height": 8.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Yellow Handle Tool",
+            "x": 44.5,
+            "y": 57,
+            "width": 40.5,
+            "height": 8.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Black Handle Tool",
+            "x": 65.5,
+            "y": 69.5,
+            "width": 28,
+            "height": 8.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 16,
       "metrics": {
-        "precision": 0.875,
-        "recall": 0.875,
-        "averageIoU": 0.6906154667300503,
-        "nameAccuracy": 0.35714285714285715,
-        "truePositives": 14,
-        "falsePositives": 2,
-        "falseNegatives": 2
-      }
+        "precision": 0.8125,
+        "recall": 0.8125,
+        "averageIoU": 0.6759928224102366,
+        "nameAccuracy": 0.46153846153846156,
+        "truePositives": 13,
+        "falsePositives": 3,
+        "falseNegatives": 3
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver Set",
+            "x": 45.8,
+            "y": 19.8,
+            "width": 47,
+            "height": 9.6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver Set",
+            "x": 43.8,
+            "y": 33.4,
+            "width": 51,
+            "height": 8.4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver Set",
+            "x": 43.8,
+            "y": 45.1,
+            "width": 51,
+            "height": 9,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver Set",
+            "x": 44.5,
+            "y": 57.1,
+            "width": 50.3,
+            "height": 8.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "5",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 5",
+            "x": 8.1,
+            "y": 30.5,
+            "width": 33.4,
+            "height": 8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "6",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 6",
+            "x": 6.1,
+            "y": 40.2,
+            "width": 35.4,
+            "height": 8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "7",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 7",
+            "x": 14.8,
+            "y": 50.2,
+            "width": 24.3,
+            "height": 3.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "8",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 8",
+            "x": 14.8,
+            "y": 55.5,
+            "width": 24.3,
+            "height": 3.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "9",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 9",
+            "x": 12.5,
+            "y": 60.2,
+            "width": 26.6,
+            "height": 3.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "10",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 10",
+            "x": 10.1,
+            "y": 64.8,
+            "width": 31.7,
+            "height": 3.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "11",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 11",
+            "x": 10.1,
+            "y": 70.1,
+            "width": 31.7,
+            "height": 3.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "12",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 12",
+            "x": 10.1,
+            "y": 76.8,
+            "width": 21.7,
+            "height": 2.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "13",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 13",
+            "x": 65.1,
+            "y": 69.4,
+            "width": 28.7,
+            "height": 8.4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "14",
+          "status": "absent",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 14",
+            "x": 16.1,
+            "y": 21.8,
+            "width": 25.4,
+            "height": 2.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "15",
+          "status": "absent",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 15",
+            "x": 16.1,
+            "y": 26.8,
+            "width": 25.4,
+            "height": 2.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "16",
+          "status": "absent",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "New Tool 16",
+            "x": 16.1,
+            "y": 16.8,
+            "width": 25.4,
+            "height": 2.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer5.jpg": {
@@ -231,24 +2307,294 @@
       "metrics": {
         "precision": 0.8,
         "recall": 0.8888888888888888,
-        "averageIoU": 0.819278630051936,
+        "averageIoU": 0.8070181562180517,
         "nameAccuracy": 0.75,
         "truePositives": 8,
         "falsePositives": 2,
         "falseNegatives": 1
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "pry bar",
+            "x": 37.2,
+            "y": 22.2,
+            "width": 45,
+            "height": 10.6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "orange handled pick",
+            "x": 65.7,
+            "y": 26.8,
+            "width": 16.5,
+            "height": 6.6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "flashlight",
+            "x": 29.6,
+            "y": 25.8,
+            "width": 5,
+            "height": 26.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "scribe",
+            "x": 51.7,
+            "y": 33.6,
+            "width": 31.5,
+            "height": 7.2,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "screwdriver",
+            "x": 36.9,
+            "y": 40.6,
+            "width": 35.2,
+            "height": 8.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "screwdriver",
+            "x": 47.4,
+            "y": 48.8,
+            "width": 36.4,
+            "height": 8.6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "screwdriver",
+            "x": 28.7,
+            "y": 60.8,
+            "width": 36.8,
+            "height": 8.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "stubby screwdriver",
+            "x": 67.2,
+            "y": 59,
+            "width": 17.3,
+            "height": 7.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "small screwdriver",
+            "x": 13.1,
+            "y": 36,
+            "width": 3.7,
+            "height": 31.2,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "brass punch",
+            "x": 22.8,
+            "y": 28,
+            "width": 2,
+            "height": 30.4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 9,
       "metrics": {
         "precision": 0.7777777777777778,
         "recall": 0.7777777777777778,
-        "averageIoU": 0.7979779722191812,
+        "averageIoU": 0.8046308955503276,
         "nameAccuracy": 1,
         "truePositives": 7,
         "falsePositives": 2,
         "falseNegatives": 2
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver",
+            "x": 13,
+            "y": 36,
+            "width": 3.8,
+            "height": 31.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Awl",
+            "x": 22.8,
+            "y": 28,
+            "width": 2.2,
+            "height": 30.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Flashlight",
+            "x": 29.7,
+            "y": 25.8,
+            "width": 4.8,
+            "height": 26.4,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Pick Tool",
+            "x": 51.5,
+            "y": 33.5,
+            "width": 31.7,
+            "height": 7.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "5",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver",
+            "x": 37,
+            "y": 40.5,
+            "width": 35,
+            "height": 9,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "6",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Pick Tool",
+            "x": 37.2,
+            "y": 22,
+            "width": 40.6,
+            "height": 10.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "7",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver",
+            "x": 47.5,
+            "y": 48.8,
+            "width": 36.3,
+            "height": 8.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "8",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver",
+            "x": 28.8,
+            "y": 60.8,
+            "width": 36.7,
+            "height": 8.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "9",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Screwdriver",
+            "x": 67.2,
+            "y": 59,
+            "width": 17.3,
+            "height": 7.2,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer6.jpg": {
@@ -259,24 +2605,224 @@
       "metrics": {
         "precision": 1,
         "recall": 1,
-        "averageIoU": 0.8830802218202299,
+        "averageIoU": 0.8800992362373101,
         "nameAccuracy": 0.2857142857142857,
         "truePositives": 7,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Needle-nose pliers",
+            "x": 29.3,
+            "y": 20.3,
+            "width": 28.2,
+            "height": 15.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Locking pliers",
+            "x": 61.2,
+            "y": 24.5,
+            "width": 34.6,
+            "height": 15.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Needle-nose pliers with orange handles",
+            "x": 6.8,
+            "y": 35.3,
+            "width": 40.9,
+            "height": 13.6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Slip-joint pliers",
+            "x": 7.3,
+            "y": 50.8,
+            "width": 33.2,
+            "height": 14.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Curved-jaw pliers",
+            "x": 51.2,
+            "y": 41.8,
+            "width": 44.3,
+            "height": 16.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Needle-nose pliers with red handles",
+            "x": 7,
+            "y": 66.7,
+            "width": 40.8,
+            "height": 13.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Lineman's pliers",
+            "x": 52.2,
+            "y": 64.3,
+            "width": 43.8,
+            "height": 12.7,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 7,
       "metrics": {
         "precision": 1,
         "recall": 1,
-        "averageIoU": 0.8818112722150078,
-        "nameAccuracy": 0.42857142857142855,
+        "averageIoU": 0.8799893259719134,
+        "nameAccuracy": 1,
         "truePositives": 7,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Needle-nose Pliers",
+            "x": 29.3,
+            "y": 20.5,
+            "width": 28.2,
+            "height": 15.1,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Long-nose Pliers",
+            "x": 7,
+            "y": 35.3,
+            "width": 40.7,
+            "height": 13.6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Lineman's Pliers",
+            "x": 7.3,
+            "y": 50.8,
+            "width": 33.2,
+            "height": 14.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "absent",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Wire Strippers",
+            "x": 7,
+            "y": 66.7,
+            "width": 40.8,
+            "height": 13.8,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "5",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Locking Pliers",
+            "x": 61.2,
+            "y": 24.7,
+            "width": 34.5,
+            "height": 15.6,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "6",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Groove Joint Pliers",
+            "x": 51.3,
+            "y": 41.8,
+            "width": 44,
+            "height": 16.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "7",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Slip Joint Pliers",
+            "x": 52.3,
+            "y": 64.3,
+            "width": 43.7,
+            "height": 13,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer8.jpg": {
@@ -292,19 +2838,79 @@
         "truePositives": 2,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "breaker bar",
+            "x": 9.5,
+            "y": 13.5,
+            "width": 81,
+            "height": 30,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "torque wrench",
+            "x": 9.5,
+            "y": 56.5,
+            "width": 81,
+            "height": 30,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 2,
       "metrics": {
         "precision": 1,
         "recall": 1,
-        "averageIoU": 0.8500000000000001,
+        "averageIoU": 0.8396341463414634,
         "nameAccuracy": 1,
         "truePositives": 2,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Torque Wrench",
+            "x": 9.5,
+            "y": 52.5,
+            "width": 81,
+            "height": 36,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Ratchet Wrench",
+            "x": 9.5,
+            "y": 11.5,
+            "width": 81,
+            "height": 32,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer9.jpg": {
@@ -315,24 +2921,112 @@
       "metrics": {
         "precision": 1,
         "recall": 1,
-        "averageIoU": 0.8989374377252456,
+        "averageIoU": 0.9015477071516674,
         "nameAccuracy": 1,
         "truePositives": 3,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "curved jaw locking pliers",
+            "x": 10.7,
+            "y": 16.5,
+            "width": 36.1,
+            "height": 29.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "long nose locking pliers",
+            "x": 52.4,
+            "y": 17.5,
+            "width": 40.9,
+            "height": 29.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "long nose locking pliers",
+            "x": 36.9,
+            "y": 49.5,
+            "width": 56.4,
+            "height": 35.3,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 3,
       "metrics": {
         "precision": 1,
         "recall": 1,
-        "averageIoU": 0.8870215736083763,
+        "averageIoU": 0.9056913541202624,
         "nameAccuracy": 1,
         "truePositives": 3,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Locking Pliers",
+            "x": 10.5,
+            "y": 16.5,
+            "width": 36.5,
+            "height": 29,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Locking Pliers",
+            "x": 52.5,
+            "y": 17.5,
+            "width": 41,
+            "height": 30,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Locking Pliers",
+            "x": 37,
+            "y": 49.5,
+            "width": 56,
+            "height": 35.5,
+            "shape": "rectangle",
+            "angle": 0
+          }
+        }
+      ]
     }
   },
   "drawer7.jpg": {
@@ -341,26 +3035,506 @@
     "findMode": {
       "predictionsCount": 17,
       "metrics": {
-        "precision": 0.8823529411764706,
-        "recall": 0.8823529411764706,
-        "averageIoU": 0.7251185842854541,
+        "precision": 0.5294117647058824,
+        "recall": 0.5294117647058824,
+        "averageIoU": 0.6159449770959555,
         "nameAccuracy": 0,
-        "truePositives": 15,
-        "falsePositives": 2,
-        "falseNegatives": 2
-      }
+        "truePositives": 9,
+        "falsePositives": 8,
+        "falseNegatives": 8
+      },
+      "predictions": [
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "10mm socket",
+            "x": 8.2,
+            "y": 10.3,
+            "width": 8,
+            "height": 14,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "11mm socket",
+            "x": 15.2,
+            "y": 10.3,
+            "width": 8,
+            "height": 14,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "12mm socket",
+            "x": 22.2,
+            "y": 10.3,
+            "width": 8,
+            "height": 14,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "13mm socket",
+            "x": 29.2,
+            "y": 10.3,
+            "width": 8,
+            "height": 14,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "14mm socket",
+            "x": 36.2,
+            "y": 10.3,
+            "width": 8,
+            "height": 14,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "15mm socket",
+            "x": 43.2,
+            "y": 10.3,
+            "width": 8,
+            "height": 14,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "16mm socket",
+            "x": 50.2,
+            "y": 10.3,
+            "width": 8,
+            "height": 14,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "17mm socket",
+            "x": 57.2,
+            "y": 10.3,
+            "width": 8,
+            "height": 14,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "18mm socket",
+            "x": 64.2,
+            "y": 10.3,
+            "width": 8,
+            "height": 14,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "19mm socket",
+            "x": 71.2,
+            "y": 10.3,
+            "width": 8,
+            "height": 14,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "32mm socket",
+            "x": 6.2,
+            "y": 25.3,
+            "width": 14,
+            "height": 18,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "30mm socket",
+            "x": 19.2,
+            "y": 25.3,
+            "width": 14,
+            "height": 18,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "27mm socket",
+            "x": 32.2,
+            "y": 25.3,
+            "width": 14,
+            "height": 18,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "24mm socket",
+            "x": 45.2,
+            "y": 25.3,
+            "width": 14,
+            "height": 18,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "22mm socket",
+            "x": 58.2,
+            "y": 25.3,
+            "width": 14,
+            "height": 18,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "21mm socket",
+            "x": 71.2,
+            "y": 25.3,
+            "width": 14,
+            "height": 18,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "20mm socket",
+            "x": 84.2,
+            "y": 25.3,
+            "width": 14,
+            "height": 18,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        }
+      ]
     },
     "matchMode": {
       "predictionsCount": 17,
       "metrics": {
         "precision": 1,
         "recall": 1,
-        "averageIoU": 0.7564621904859236,
+        "averageIoU": 0.737544078869134,
         "nameAccuracy": 1,
         "truePositives": 17,
         "falsePositives": 0,
         "falseNegatives": 0
-      }
+      },
+      "predictions": [
+        {
+          "toolId": "1",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 10mm",
+            "x": 8.3,
+            "y": 10.3,
+            "width": 7.3,
+            "height": 13.5,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "2",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 11mm",
+            "x": 15.3,
+            "y": 10.3,
+            "width": 7.3,
+            "height": 13.5,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "3",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 12mm",
+            "x": 22.8,
+            "y": 11,
+            "width": 7.3,
+            "height": 12.8,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "4",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 13mm",
+            "x": 30.1,
+            "y": 10.3,
+            "width": 7.3,
+            "height": 13.5,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "5",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 14mm",
+            "x": 37.6,
+            "y": 10.3,
+            "width": 7.3,
+            "height": 13.5,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "6",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 15mm",
+            "x": 45.1,
+            "y": 10.3,
+            "width": 7.3,
+            "height": 14.5,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "7",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 16mm",
+            "x": 52.6,
+            "y": 10.3,
+            "width": 8.5,
+            "height": 15.5,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "8",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 17mm",
+            "x": 61.3,
+            "y": 10.3,
+            "width": 9.3,
+            "height": 16,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "9",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 18mm",
+            "x": 70.8,
+            "y": 10.3,
+            "width": 9.3,
+            "height": 17,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "10",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 19mm",
+            "x": 80.3,
+            "y": 10.3,
+            "width": 10.3,
+            "height": 18,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "11",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 32mm",
+            "x": 6.1,
+            "y": 25.8,
+            "width": 13.5,
+            "height": 23.5,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "12",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 30mm",
+            "x": 19.6,
+            "y": 26.8,
+            "width": 13.5,
+            "height": 23.5,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "13",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 27mm",
+            "x": 33.6,
+            "y": 29.8,
+            "width": 12.5,
+            "height": 21,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "14",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 24mm",
+            "x": 46.6,
+            "y": 32.8,
+            "width": 10.5,
+            "height": 19,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "15",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 22mm",
+            "x": 57.6,
+            "y": 34.8,
+            "width": 11,
+            "height": 18,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "16",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 21mm",
+            "x": 69.1,
+            "y": 36.8,
+            "width": 11,
+            "height": 17.5,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        },
+        {
+          "toolId": "17",
+          "status": "present",
+          "confidence": "high",
+          "toolInfo": {
+            "name": "Socket Wrench 20mm",
+            "x": 80.6,
+            "y": 37.8,
+            "width": 10.5,
+            "height": 17,
+            "shape": "ellipse",
+            "angle": 0
+          }
+        }
+      ]
     }
   }
 }

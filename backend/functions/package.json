@@ -14,7 +14,7 @@
     "logs": "firebase functions:log",
     "eval:generate": "tsx src/evaluation/generate.ts",
     "eval:run": "tsx src/evaluation/evaluate.ts",
-    "eval:viewer": "npx serve src/evaluation"
+    "eval:viewer": "tsx src/evaluation/server.ts"
   },
   "engines": {
     "node": "22"
