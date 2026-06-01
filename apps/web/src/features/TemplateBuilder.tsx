@@ -495,7 +495,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                 />
                             </div>
 
-                            <div className="space-y-2">
+                            {/* <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-500">Assign to Drawer (Optional)</label>
                                 <select
                                     value={selectedDrawer}
@@ -504,7 +504,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                 >
                                     <option value="">No Assignment (Save to Library)</option>
                                 </select>
-                            </div>
+                            </div> */}
 
                             <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
