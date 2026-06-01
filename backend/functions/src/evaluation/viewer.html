@@ -499,6 +499,14 @@
       margin-bottom: 16px;
       text-align: center;
     }
+
+    /* Absent prediction boxes styles */
+    .bbox-absent {
+      border-style: dashed !important;
+      border-color: rgba(239, 68, 68, 0.8) !important;
+      background-color: rgba(239, 68, 68, 0.08) !important;
+      opacity: 0.65;
+    }
   </style>
 </head>
 
@@ -529,6 +537,15 @@
         <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
           <input type="checkbox" id="toggle-match" checked> Match Mode (Blue)
         </label>
+
+        <span style="height: 24px; width: 1px; background: var(--border-color);"></span>
+
+        <!-- IoU Slider -->
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600;">
+          <label for="iou-slider">IoU Limit:</label>
+          <input type="range" id="iou-slider" min="0.10" max="0.90" step="0.05" value="0.40" style="width: 100px; height: 6px; padding: 0;">
+          <span id="iou-slider-val" style="color: var(--cyan); font-family: monospace; font-size: 14px; min-width: 32px;">0.40</span>
+        </div>
       </div>
 
       <div class="controls-group">
@@ -797,8 +814,94 @@
     toggleFind.addEventListener("change", updateLayerVisibilities);
     toggleMatch.addEventListener("change", updateLayerVisibilities);
 
+    // Client-side dynamic IoU math & matching algorithms
+    function clientCalculateIoU(box1, box2) {
+      if (!box1 || !box2) return 0;
+      if (box1.x == null || box1.y == null || box1.width == null || box1.height == null ||
+          box2.x == null || box2.y == null || box2.width == null || box2.height == null) {
+        return 0;
+      }
+
+      const xA = Math.max(box1.x, box2.x);
+      const yA = Math.max(box1.y, box2.y);
+      const xB = Math.min(box1.x + box1.width, box2.x + box2.width);
+      const yB = Math.min(box1.y + box1.height, box2.y + box2.height);
+
+      const interArea = Math.max(0, xB - xA) * Math.max(0, yB - yA);
+      const box1Area = box1.width * box1.height;
+      const box2Area = box2.width * box2.height;
+
+      const unionArea = box1Area + box2Area - interArea;
+      if (unionArea === 0) return 0;
+      return interArea / unionArea;
+    }
+
+    function clientMatchDetections(predictions, groundTruths, iouThreshold) {
+      // Filter predictions & ground truths that are physically present (status === "present")
+      const activePredictions = (predictions || []).filter(p => p.status === "present" || p.status === undefined);
+      const activeGroundTruths = (groundTruths || []).filter(g => g.status === "present" || g.status === undefined);
+
+      let truePositives = 0;
+      let totalIoU = 0;
+      let correctNames = 0;
+
+      const matchedGtIndices = new Set();
+
+      for (const pred of activePredictions) {
+        let bestIoU = 0;
+        let bestGtIndex = -1;
+
+        for (let i = 0; i < activeGroundTruths.length; i++) {
+          if (matchedGtIndices.has(i)) continue;
+
+          const gt = activeGroundTruths[i];
+          const iou = clientCalculateIoU(pred.toolInfo, gt.toolInfo);
+
+          if (iou > bestIoU) {
+            bestIoU = iou;
+            bestGtIndex = i;
+          }
+        }
+
+        if (bestIoU >= iouThreshold && bestGtIndex !== -1) {
+          truePositives++;
+          totalIoU += bestIoU;
+          matchedGtIndices.add(bestGtIndex);
+
+          const predName = (pred.toolInfo.name || "").toLowerCase();
+          const gtName = (activeGroundTruths[bestGtIndex].toolInfo.name || "").toLowerCase();
+          if (predName === gtName || gtName.includes(predName) || predName.includes(gtName)) {
+            correctNames++;
+          }
+        }
+      }
+
+      const falsePositives = activePredictions.length - truePositives;
+      const falseNegatives = activeGroundTruths.length - truePositives;
+
+      const precision = activePredictions.length > 0 ? truePositives / activePredictions.length : 0;
+      const recall = activeGroundTruths.length > 0 ? truePositives / activeGroundTruths.length : 0;
+      const averageIoU = truePositives > 0 ? totalIoU / truePositives : 0;
+      const nameAccuracy = truePositives > 0 ? correctNames / truePositives : 0;
+
+      return { precision, recall, averageIoU, nameAccuracy, truePositives, falsePositives, falseNegatives };
+    }
+
+    function getIoUThreshold() {
+      const slider = document.getElementById("iou-slider");
+      return slider ? parseFloat(slider.value) : 0.40;
+    }
+
+    // Attach event listener to slider for instant re-eval
+    document.getElementById("iou-slider").addEventListener("input", (e) => {
+      document.getElementById("iou-slider-val").innerText = parseFloat(e.target.value).toFixed(2);
+      calculateAggregates();
+      renderSelectedImageMetrics();
+    });
+
     // Compute Overall Model Stats across dataset
     function calculateAggregates() {
+      const threshold = getIoUThreshold();
       const modes = { find: { precision: 0, recall: 0, iou: 0, name: 0, count: 0 }, match: { precision: 0, recall: 0, iou: 0, name: 0, count: 0 } };
       let evaluatedCount = 0;
 
@@ -807,9 +910,11 @@
         if (!item || !item.completed) return;
         evaluatedCount++;
 
-        // Find mode aggregates
-        if (item.findMode && item.findMode.metrics) {
-          const m = item.findMode.metrics;
+        const gt = groundTruth[key] || [];
+
+        // Find mode aggregates calculated dynamically on client using active slider threshold
+        if (item.findMode && item.findMode.predictions) {
+          const m = clientMatchDetections(item.findMode.predictions, gt, threshold);
           modes.find.precision += m.precision;
           modes.find.recall += m.recall;
           modes.find.iou += m.averageIoU;
@@ -817,9 +922,9 @@
           modes.find.count++;
         }
 
-        // Match mode aggregates
-        if (item.matchMode && item.matchMode.metrics) {
-          const m = item.matchMode.metrics;
+        // Match mode aggregates calculated dynamically on client using active slider threshold
+        if (item.matchMode && item.matchMode.predictions) {
+          const m = clientMatchDetections(item.matchMode.predictions, gt, threshold);
           modes.match.precision += m.precision;
           modes.match.recall += m.recall;
           modes.match.iou += m.averageIoU;
@@ -863,10 +968,12 @@
     // Displays per-image metrics in sidebar
     function renderSelectedImageMetrics() {
       const res = evalResults[activeImage];
+      const gt = groundTruth[activeImage] || [];
+      const threshold = getIoUThreshold();
       
       const setMetricText = (elementId, label, val, isPercentage) => {
         const el = document.getElementById(elementId);
-        if (val === undefined || val === null) {
+        if (val === undefined || val === null || isNaN(val)) {
           el.innerText = `${label}: -`;
         } else {
           el.innerText = `${label}: ${isPercentage ? (val * 100).toFixed(0) + "%" : val.toFixed(2)}`;
@@ -874,12 +981,12 @@
       };
 
       if (res && res.completed) {
-        const findM = res.findMode.metrics;
+        const findM = clientMatchDetections(res.findMode.predictions, gt, threshold);
         setMetricText("img-find-prec", "Prec", findM.precision, true);
         setMetricText("img-find-rec", "Rec", findM.recall, true);
         setMetricText("img-find-iou", "IoU", findM.averageIoU, false);
 
-        const matchM = res.matchMode.metrics;
+        const matchM = clientMatchDetections(res.matchMode.predictions, gt, threshold);
         setMetricText("img-match-prec", "Prec", matchM.precision, true);
         setMetricText("img-match-rec", "Rec", matchM.recall, true);
         setMetricText("img-match-iou", "IoU", matchM.averageIoU, false);
@@ -911,7 +1018,7 @@
       // 1. Render Ground Truth
       gtList.forEach((gt, idx) => {
         const info = gt.toolInfo;
-        const box = createBBoxElement(info, idx, "bbox-ground-truth editable");
+        const box = createBBoxElement(info, idx, "bbox-ground-truth editable", gt.status);
         
         if (selectedBoxIndex === idx) {
           box.classList.add("selected");
@@ -937,14 +1044,14 @@
       // 2. Render Find Mode Predictions
       if (evalRes && evalRes.findMode && evalRes.findMode.predictions) {
         evalRes.findMode.predictions.forEach((pred, idx) => {
-          layerFind.appendChild(createBBoxElement(pred.toolInfo, idx, "bbox-find-mode"));
+          layerFind.appendChild(createBBoxElement(pred.toolInfo, idx, "bbox-find-mode", pred.status));
         });
       }
 
       // 3. Render Match Mode Predictions
       if (evalRes && evalRes.matchMode && evalRes.matchMode.predictions) {
         evalRes.matchMode.predictions.forEach((pred, idx) => {
-          layerMatch.appendChild(createBBoxElement(pred.toolInfo, idx, "bbox-match-mode"));
+          layerMatch.appendChild(createBBoxElement(pred.toolInfo, idx, "bbox-match-mode", pred.status));
         });
       }
 
@@ -952,10 +1059,13 @@
     }
 
     // Factory method for individual BBox DIV
-    function createBBoxElement(info, idx, customClass) {
+    function createBBoxElement(info, idx, customClass, status) {
       const el = document.createElement("div");
       el.className = `bbox ${customClass}`;
       if (info.shape === "ellipse") el.classList.add("shape-ellipse");
+      if (status === "absent") {
+        el.classList.add("bbox-absent");
+      }
 
       el.style.left = `${info.x}%`;
       el.style.top = `${info.y}%`;
@@ -965,9 +1075,16 @@
 
       const label = document.createElement("div");
       label.className = "bbox-label";
-      label.innerText = `${info.name}`;
+      
+      if (status === "absent") {
+        label.innerText = `⚠️ [ABSENT] ${info.name}`;
+        label.style.backgroundColor = "rgba(239, 68, 68, 0.9)";
+        label.style.color = "#fff";
+      } else {
+        label.innerText = `${info.name}`;
+      }
+      
       el.appendChild(label);
-
       return el;
     }
 

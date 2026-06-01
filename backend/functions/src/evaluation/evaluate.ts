@@ -33,20 +33,24 @@ export function calculateIoU(box1: any, box2: any): number {
 }
 
 export function matchDetections(predictions: Detection[], groundTruths: Detection[], iouThreshold = 0.5) {
+  // Filter present predictions & present ground truths for physical bounding box IoU evaluations
+  const activePredictions = (predictions || []).filter(p => p.status === "present" || p.status === undefined);
+  const activeGroundTruths = (groundTruths || []).filter(g => g.status === "present" || g.status === undefined);
+
   let truePositives = 0;
   let totalIoU = 0;
   let correctNames = 0;
 
   const matchedGtIndices = new Set<number>();
 
-  for (const pred of predictions) {
+  for (const pred of activePredictions) {
     let bestIoU = 0;
     let bestGtIndex = -1;
 
-    for (let i = 0; i < groundTruths.length; i++) {
+    for (let i = 0; i < activeGroundTruths.length; i++) {
       if (matchedGtIndices.has(i)) continue;
 
-      const gt = groundTruths[i];
+      const gt = activeGroundTruths[i];
       const iou = calculateIoU(pred.toolInfo, gt.toolInfo);
 
       if (iou > bestIoU) {
@@ -62,18 +66,18 @@ export function matchDetections(predictions: Detection[], groundTruths: Detectio
 
       // Check if names match (case insensitive, basic inclusion check or exact match)
       const predName = (pred.toolInfo.name || "").toLowerCase();
-      const gtName = (groundTruths[bestGtIndex].toolInfo.name || "").toLowerCase();
+      const gtName = (activeGroundTruths[bestGtIndex].toolInfo.name || "").toLowerCase();
       if (predName === gtName || gtName.includes(predName) || predName.includes(gtName)) {
         correctNames++;
       }
     }
   }
 
-  const falsePositives = predictions.length - truePositives;
-  const falseNegatives = groundTruths.length - truePositives;
+  const falsePositives = activePredictions.length - truePositives;
+  const falseNegatives = activeGroundTruths.length - truePositives;
 
-  const precision = predictions.length > 0 ? truePositives / predictions.length : 0;
-  const recall = groundTruths.length > 0 ? truePositives / groundTruths.length : 0;
+  const precision = activePredictions.length > 0 ? truePositives / activePredictions.length : 0;
+  const recall = activeGroundTruths.length > 0 ? truePositives / activeGroundTruths.length : 0;
   const averageIoU = truePositives > 0 ? totalIoU / truePositives : 0;
   const nameAccuracy = truePositives > 0 ? correctNames / truePositives : 0;
 
