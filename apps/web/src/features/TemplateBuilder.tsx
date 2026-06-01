@@ -51,7 +51,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
             setTools(templateToEdit.tools.map((t, idx) => ({
                 toolId: `tool-${idx}`,
                 status: 'present',
-                confidence: 1,
+                confidence: "high",
                 toolInfo: t
             })));
             setStep(BuilderStep.VERIFICATION);
@@ -103,7 +103,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
         const newTool: Detection = {
             toolId: '',
             status: 'present',
-            confidence: 1,
+            confidence: "high",
             toolInfo: {
                 name: `New Tool ${tools.length + 1}`,
                 x: x - 5,

@@ -125,7 +125,6 @@ function validateAndNormalizeDetection(tool: any): Detection {
   // Helper to coerce values to numbers
   const toNum = (v: any, fallback: number): number => typeof v === "number" ? v : fallback;
   const clampPct = (v: any, fallback: number) => Math.max(0, Math.min(100, toNum(v, fallback)));
-  const clampConfidence = (v: any, fallback: number) => Math.max(0, Math.min(1, toNum(v, fallback)));
 
   // Get bounding box coordinates
   const xmin = Math.min(tool.xmin, tool.xmax);
@@ -142,7 +141,7 @@ function validateAndNormalizeDetection(tool: any): Detection {
   return {
     toolId: typeof tool.toolId === "string" ? tool.toolId : "",
     status: tool.status === "present" ? "present" : "absent",
-    confidence: clampConfidence(tool.confidence, 0),
+    confidence: ["low", "medium", "high"].includes(tool.confidence) ? tool.confidence : "low",
     toolInfo: {
       name: typeof tool.name === "string" && tool.name.length > 0 ? tool.name : "Unknown Tool",
       x: clampPct(x, 0),
@@ -170,9 +169,8 @@ function buildResponseSchema(expectedTools: Tool[]): Schema {
       description: "Presence state: 'present' if visible, 'absent' if empty.",
     },
     confidence: {
-      type: Type.NUMBER,
-      minimum: 0,
-      maximum: 1,
+      type: Type.STRING,
+      enum: ["low", "medium", "high"],
       description: "Qualitative confidence in this detection.",
     },
     name: {

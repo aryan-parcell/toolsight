@@ -16,7 +16,7 @@ const createInitialAuditFromToolbox = (tb: ToolBox) => {
         drawerStates[tool.drawerId].results![tool.toolId] = {
             toolId: tool.toolId,
             status: "present",
-            confidence: 1,
+            confidence: "high",
             toolInfo: tool.toolInfo,
         };
     });

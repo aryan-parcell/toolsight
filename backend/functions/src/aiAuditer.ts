@@ -106,7 +106,7 @@ export const aiAuditer = onObjectFinalized(async (event) => {
         auditResults[tool.toolId] = {
           toolId: tool.toolId,
           status: "absent",
-          confidence: 0,
+          confidence: "low",
           toolInfo: tool.toolInfo,
         };
       }

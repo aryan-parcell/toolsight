@@ -61,7 +61,7 @@ export default function TemplateDisplay({ templateId }: TemplateDisplayProps) {
                     return {
                         toolId: '',
                         status: 'present',
-                        confidence: 1,
+                        confidence: "high",
                         toolInfo: tool,
                     } as Detection;
                 })}

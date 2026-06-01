@@ -52,7 +52,7 @@ export function createDrawerStates(
       results[t.toolId] = {
         toolId: t.toolId,
         status: "absent",
-        confidence: 0,
+        confidence: "low",
         toolInfo: t.toolInfo,
       };
     });

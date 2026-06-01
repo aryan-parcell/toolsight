@@ -18,7 +18,7 @@ Map<String, dynamic> createAuditDrawerStatesFromToolbox(Map<String, dynamic> too
     drawerStates[drawerId]['results'][toolId] = {
       'toolId': toolId,
       'status': 'absent',
-      'confidence': 0,
+      'confidence': "low",
       'toolInfo': tool['toolInfo']
     };
   }

@@ -198,7 +198,7 @@
 
           const label = document.createElement('div');
           label.className = 'bbox-label';
-          label.innerText = `${name} (${Math.round((tool.confidence || 1) * 100)}%)`;
+          label.innerText = `${name} (Confidence: ${tool.confidence})`;
           box.appendChild(label);
 
           bboxesContainer.appendChild(box);
