@@ -1,0 +1,3 @@
+# 0005: Database-Enforced Subscription Paywall
+
+To keep our codebase simple, elegant, and secure, we decided to enforce subscription paywall rules directly at the database and storage layers using **Firestore Security Rules** and **Firebase Storage Rules** (specifically via the `hasActiveOrgAccess` function). If an Organization's `subscriptionStatus` lapses or changes to anything other than `'active'`, all document reads/writes and image storage access for that organization's members are instantly rejected at the resource layer. This avoids cluttering our Cloud Functions or client-side application logic with redundant subscription checks and ensures complete data lockdown.

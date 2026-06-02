@@ -1,0 +1,3 @@
+# 0004: Single-Tenant User Model and Invitation Consumption
+
+We decided to enforce a strict single-tenant model for all user accounts: a `User` belongs to exactly one `Organization` at any given time. Consequently, upon successful registration, the backend permanently deletes **all** pending invitations associated with the user's email address across all organizations. This ensures complete database hygiene and simple, isolated tenant security boundaries. If a user needs to maintain tools or audit boxes for multiple organizations, they must register separate accounts using distinct email addresses.
