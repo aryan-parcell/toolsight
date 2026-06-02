@@ -38,10 +38,11 @@ export function useTemplates(orgId: string | undefined) {
 
     const createTemplate = async (orgId: string, name: string, imageDataUrl: string, tools: ToolInfo[]) => {
         try {
-            await TemplateRepository.createTemplate(orgId, name, imageDataUrl, tools);
+            return await TemplateRepository.createTemplate(orgId, name, imageDataUrl, tools);
         } catch (err) {
             console.error("Error creating template:", err);
             setError(err instanceof Error ? err.message : String(err));
+            throw err;
         }
     };
 

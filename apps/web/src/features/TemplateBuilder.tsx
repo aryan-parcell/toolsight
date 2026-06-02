@@ -8,6 +8,7 @@ import AnchorPointOverlay from '@/components/AnchorPointManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTemplates } from '@/hooks/useTemplates';
 import { useFunctions } from '@/hooks/useFunctions';
+import { useToolboxes } from '../hooks/useToolboxes';
 
 // Workflow Steps
 enum BuilderStep {
@@ -40,7 +41,17 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
     const [selectedAnchorId, setSelectedAnchorId] = useState<string | null>(null);
 
     // Assignment State
-    const [selectedDrawer, setSelectedDrawer] = useState('');
+    //const [selectedDrawer, setSelectedDrawer] = useState('');
+
+    const { toolboxes, loading: toolboxesLoading, updateToolbox } = useToolboxes(organization?.id);
+    const { assignTemplateToDrawer } = useFunctions();
+
+    // Assignment State
+    const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+    const [selectedToolboxId, setSelectedToolboxId] = useState<string>("");
+    const [selectedDrawerId, setSelectedDrawerId] = useState<string>("");
+    const [assigning, setAssigning] = useState(false);
+
     const [templateName, setTemplateName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
 
@@ -150,7 +161,29 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                     tools: tools.map(t => t.toolInfo)
                 });
             } else {
-                await createTemplate(organization!.id, templateName, image, tools.map(t => t.toolInfo));
+                const tempID = await createTemplate(organization!.id, templateName, image, tools.map(t => t.toolInfo));
+
+                if (tempID && selectedToolboxId && selectedDrawerId) {
+                    setAssigning(true);
+
+                    try {
+                        const result = await assignTemplateToDrawer(selectedToolboxId, selectedDrawerId, tempID);
+
+                        if (!result || !result.success) throw new Error("Template assignment failed.");
+
+                        // Close and Reset
+                        setSelectedTemplate(null);
+                        setSelectedToolboxId("");
+                        setSelectedDrawerId("");
+                        alert(`Successfully assigned "${templateName}"!`);
+                    } catch (error) {
+                        console.error("Assignment failed", error);
+                        alert("Failed to assign template. Check console.");
+                    } finally {
+                        setAssigning(false);
+                    }
+                }
+
 
                 // Reset
                 setImage(null);
@@ -495,7 +528,8 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                 />
                             </div>
 
-                            {/* <div className="space-y-2">
+                            {/*
+                            <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-500">Assign to Drawer (Optional)</label>
                                 <select
                                     value={selectedDrawer}
@@ -505,6 +539,55 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                     <option value="">No Assignment (Save to Library)</option>
                                 </select>
                             </div> */}
+
+
+
+                            <div className="space-y-2">
+                                <div className="space-y-1">
+                                    <label className="text-sm font-medium text-gray-500">Assign to Toolbox (Optional)</label>
+                                    <select
+                                        className="w-full dark:bg-gray-900 dark:text-white border border-gray-500 rounded-lg p-3 text-sm focus:border-axiom-cyan"
+                                        value={selectedToolboxId}
+                                        onChange={(e) => {
+                                            setSelectedToolboxId(e.target.value);
+                                            setSelectedDrawerId("");
+                                        }}
+                                    >
+                                        <option value="">-- Choose Toolbox --</option>
+                                        {toolboxes.map(tb => (
+                                            <option key={tb.id} value={tb.id}>{tb.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="space-y-1"
+                                    hidden={!selectedToolboxId || toolboxes.find(t => t.id === selectedToolboxId)?.drawers.length === 0} // Hide if no toolbox or no drawers
+                                >
+                                    <label className="text-sm font-medium text-gray-500">Select Target Drawer</label>
+                                    <select
+                                        className="w-full dark:bg-gray-900 dark:text-white border border-gray-500 rounded-lg p-3 text-sm  focus:border-axiom-cyan disabled:opacity-50"
+                                        value={selectedDrawerId}
+                                        onChange={(e) => setSelectedDrawerId(e.target.value)}
+                                    //disabled={!selectedToolboxId}
+                                    >
+                                        <option value="">-- Choose Drawer --</option>
+                                        {selectedToolboxId && toolboxes.find(t => t.id === selectedToolboxId)?.drawers.map(d => (
+                                            <option key={d.drawerId} value={d.drawerId}>
+                                                {d.drawerName} {d.templateId ? '(Has Template)' : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Warning */}
+                            {selectedDrawerId && (
+                                <div className="flex items-start gap-2 p-3 bg-yellow-900/75 border rounded-lg text-yellow-200 text-xs">
+                                    <p>
+                                        Assigning this template will <strong>permanently replace</strong> all existing tools in the selected drawer with the tools defined in this template.
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="space-y-2">
                                 <div className="flex justify-between text-sm">

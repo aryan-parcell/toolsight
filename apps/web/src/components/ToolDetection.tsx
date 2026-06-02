@@ -224,7 +224,7 @@ export default function ToolDetection({
                 const info = tool.toolInfo;
                 const status = tool.status;
 
-                const color = status === 'present' ? 'border-green-400 bg-green-400/20' : 'border-red-400 bg-red-400/20';
+                const color = status === 'present' || isEditMode ? 'border-green-400 bg-green-400/20' : 'border-red-400 bg-red-400/20';
 
                 return (
                     <div
