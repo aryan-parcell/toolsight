@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:toolsight/utils.dart';
 
 class AuditRepository {
@@ -9,6 +10,7 @@ class AuditRepository {
   final _auditsCollection = FirebaseFirestore.instance.collection('audits');
   final _checkoutsCollection = FirebaseFirestore.instance.collection('checkouts');
   final _toolboxesCollection = FirebaseFirestore.instance.collection('toolboxes');
+  final _functions = FirebaseFunctions.instance;
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getAuditStream(String auditId) {
     return _auditsCollection.doc(auditId).snapshots();
@@ -91,25 +93,13 @@ class AuditRepository {
     );
 
     if (isAuditComplete) {
-      final now = DateTime.now();
-
-      await auditDoc.update({'endTime': now});
-
-      // Handle Periodic Audit Scheduling
-      final profile = toolboxData['auditProfile'];
-      DateTime? nextDue;
-      if (profile['shiftAuditType'] == 'periodic') {
-        final freq = profile['periodicFrequencyHours'];
-        nextDue = now.add(Duration(hours: freq));
+      try {
+        await _functions.httpsCallable('completeAudit').call({'auditId': auditId});
+      } on FirebaseFunctionsException catch (e) {
+        throw StateError(e.message ?? 'An error occurred during audit finalization.');
+      } catch (e) {
+        throw StateError(e.toString());
       }
-
-      final checkoutDoc = _checkoutsCollection.doc(auditData['checkoutId']);
-      checkoutDoc.update({
-        'currentAuditId': null,
-        'auditStatus': 'complete',
-        'lastAuditTime': now,
-        'nextAuditDue': nextDue,
-      });
     }
   }
 }
