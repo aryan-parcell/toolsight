@@ -58,5 +58,14 @@ export const FunctionsRepository = {
         const inviteMaintainers = httpsCallable(functions, 'inviteMaintainers');
         const result = await inviteMaintainers({ emails });
         return result.data as { results: {email: string, success: boolean, error?: string}[] };
+    },
+
+    /**
+     * Calls the 'checkToolboxExists' cloud function to verify EID uniqueness globally.
+     */
+    checkToolboxExists: async (toolboxId: string): Promise<{ exists: boolean }> => {
+        const checkToolboxExists = httpsCallable(functions, 'checkToolboxExists');
+        const result = await checkToolboxExists({ toolboxId });
+        return result.data as { exists: boolean };
     }
 };
