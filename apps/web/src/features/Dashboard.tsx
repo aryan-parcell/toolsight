@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription } from '@/components/ui/dialog
 import type { ToolBox } from '@shared/types';
 import { useToolboxes } from '@/hooks/useToolboxes';
 import { DialogTrigger } from '@radix-ui/react-dialog';
-import { Plus, User } from 'lucide-react';
+import { LayoutGrid, Plus, User, ToolCase } from 'lucide-react';
 import { forwardRef } from 'react';
 import { AppView } from '../App';
 import { useAuth } from '@/contexts/AuthContext';
@@ -104,8 +104,11 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             {loading ? (
                 <div>Loading toolboxes...</div>
             ) : toolboxes.length === 0 ? (
-                <div>No toolboxes found. Click "Add New Toolbox" to create one.</div>
-            ) : (
+                <div className="flex flex-col items-center justify-center h-64 space-y-5 rounded-xl border-2 border-dashed border-gray-500  bg-axiom-surfaceLight dark:bg-axiom-surfaceDark">
+                    <ToolCase className="w-12 h-12 text-gray-500" />
+                    <h3 className="text-xl font-bold text-gray-500">No Toolboxes Found</h3>
+                    <p className="text-sm text-gray-500">Create toolboxes to see them here.</p>
+                </div>) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {toolboxes.map((tb) => (
                         <ToolboxCard key={tb.id} toolbox={tb} updateToolbox={updateToolbox} deleteToolbox={deleteToolbox} />
