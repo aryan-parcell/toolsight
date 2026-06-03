@@ -19,7 +19,7 @@ class UserRepository {
       'email': email,
       'name': name,
       'password': password,
-      if (organizationId != null) 'organizationId': organizationId,
+      'organizationId': ?organizationId,
     });
     return Map<String, dynamic>.from(result.data as Map);
   }
@@ -43,7 +43,7 @@ class UserRepository {
     }
 
     await _db.collection('users').doc(user.uid).update({
-      if (token != null) 'fcmToken': token,
+      'fcmToken': ?token,
       'lastLogin': DateTime.now(),
     });
   }

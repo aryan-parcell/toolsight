@@ -465,6 +465,15 @@ async function executeRequestWithRetry(
       },
     });
 
+    // For logging token costs to console. Should be ommitted for release.
+    // 25 cents for input text/image per million, and 1.5 dollars for output text per million.
+    console.log(response.usageMetadata);
+    const inputTokenCost = (response.usageMetadata?.promptTokenCount ?? 0) * .25 / 1000000;
+    const outputTokenCost = (response.usageMetadata?.candidatesTokenCount ?? 0) * 1.5 / 1000000;
+    const totalCost = inputTokenCost + outputTokenCost;
+    console.log(`Input Token Cost ${inputTokenCost.toFixed(6)} USD,
+     Output Token Cost ${outputTokenCost.toFixed(6)} USD, Total Cost ${totalCost.toFixed(6)} USD`);
+
     let text: string;
     try {
       text = response.text || "[]";
