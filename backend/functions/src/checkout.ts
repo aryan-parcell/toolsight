@@ -233,14 +233,7 @@ export const completeAudit = onCall(async (request) => {
       throw new HttpsError("failed-precondition", "Audit has no associated checkout session.");
     }
 
-    // 2.3 Validate all drawers are user-validated before allowing audit completion
-    const drawerStates = auditData.drawerStates;
-    const allDrawersValidated = Object.values(drawerStates).every((state) => state.drawerStatus === "user-validated");
-    if (!allDrawersValidated) {
-      throw new HttpsError("failed-precondition", "All drawers must be validated before completing the audit.");
-    }
-
-    // 2.4 Validate audit is not already completed
+    // 2.3 Validate audit is not already completed
     if (auditData.endTime) {
       throw new HttpsError("failed-precondition", "Audit is already completed.");
     }
