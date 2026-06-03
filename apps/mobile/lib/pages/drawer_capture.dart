@@ -76,22 +76,31 @@ class _DrawerCaptureState extends State<DrawerCapture> {
     if (imageFile == null) return;
     final fileToUpload = File(imageFile.path);
 
-    // Update preview and activate loader immediately   
+    // Update preview and activate loader immediately
     setState(() {
       _localDrawerImage = fileToUpload;
       _isUploadingImage = true;
     });
 
-    // Decode image metadata using Flutter's built-in asynchronous native engine
-    // This is extremely fast (C++ engine-level) and leaves the Dart UI thread untouched.
-    final bytes = await fileToUpload.readAsBytes();
-    final codec = await ui.instantiateImageCodec(bytes);
-    final frame = await codec.getNextFrame();
-    final aspectRatio = frame.image.width / frame.image.height;
+    try {
+      // Decode image metadata using Flutter's built-in asynchronous native engine
+      // This is extremely fast (C++ engine-level) and leaves the Dart UI thread untouched.
+      final bytes = await fileToUpload.readAsBytes();
+      final codec = await ui.instantiateImageCodec(bytes);
+      final frame = await codec.getNextFrame();
+      final aspectRatio = frame.image.width / frame.image.height;
 
-    await _auditRepo.uploadDrawerImage(widget.auditId, drawerId, _toolbox['organizationId'], fileToUpload, aspectRatio);
+      await _auditRepo.uploadDrawerImage(widget.auditId, drawerId, _toolbox['organizationId'], fileToUpload, aspectRatio);
+    } catch (e) {
+      if (!mounted) return;
 
-    if (mounted) setState(() => _isUploadingImage = false);
+      // If upload fails, reset local image and show error
+      setState(() => _localDrawerImage = null);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to upload image. Please try again.")));
+    } finally {
+      // Ensure loader is hidden after upload attempt
+      if (mounted) setState(() => _isUploadingImage = false);
+    }
   }
 
   @override

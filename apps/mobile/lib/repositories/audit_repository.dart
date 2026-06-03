@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:toolsight/utils.dart';
 
 class AuditRepository {
@@ -65,10 +65,7 @@ class AuditRepository {
   }
 
   Future<void> uploadDrawerImage(String auditId, String drawerId, String organizationId, File imageFile, double aspectRatio) async {
-    final extension = imageFile.path.split('.').last;
-    final storagePath = 'organizations/$organizationId/audits/$auditId/$drawerId.$extension';
-
-    final ref = _storage.ref().child(storagePath);
+    final ref = _storage.ref('organizations/$organizationId/audits/$auditId/$drawerId.jpg');
     await ref.putFile(imageFile);
 
     final imageUrl = await ref.getDownloadURL();
