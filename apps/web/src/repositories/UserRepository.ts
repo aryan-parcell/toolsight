@@ -1,5 +1,5 @@
 import type { User as AppUser } from '@shared/types';
-import { doc, onSnapshot, setDoc, query, collection, where } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export const UserRepository = {
@@ -48,12 +48,4 @@ export const UserRepository = {
             onError,
         );
     },
-
-    /**
-     * Creates or updates a user document.
-     */
-    setUser: async (uid: string, data: AppUser) => {
-        const userRef = doc(db, 'users', uid);
-        return await setDoc(userRef, data);
-    }
 };

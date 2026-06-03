@@ -37,7 +37,7 @@ service cloud.firestore {
     // One-use functions for simplicity in rules
 
     function userUpdateValid() {
-      return onlyFieldsUpdated(['displayName', 'email', 'fcmToken', 'lastLogin']);
+      return onlyFieldsUpdated(['fcmToken', 'lastLogin']);
     }
 
     function toolboxUpdateValid() {
