@@ -1,0 +1,3 @@
+# 0003: Locked Coordinates on Audit Validation
+
+During the User Validation step of an Audit, Maintainers are restricted to toggling the presence status (`present` | `absent`) of each expected tool. They are explicitly prohibited from editing or dragging bounding box coordinates on the Mobile App. We decided to keep coordinates locked to the Admin-configured Template layout to ensure auditing is extremely fast and robust under field conditions, preventing clumsy touch modifications on mobile screens and maintaining a highly controlled visual source of truth. Bounding box editing is exclusive to Admins within the Web App's Template Builder.

@@ -1,0 +1,3 @@
+# 0001: Toolbox and Template Decoupling
+
+When a template is assigned to a toolbox drawer, the system copies (denormalizes) the tools from the template directly into the physical toolbox's `tools` list. We decided to decouple subsequent template edits from assigned toolboxes: updates to a template in the Template Builder do not automatically propagate to already-configured toolboxes. This prevents silent, uncoordinated updates to physical toolboxes in the field, ensuring that any modifications to active toolbox profiles are explicit and deliberate by the Admin (requiring explicit re-assignment).

@@ -1,0 +1,3 @@
+# 0006: Non-Nullable Initial Toolbox Audit
+
+To prevent nullable reference errors and defensive conditional styling across our mobile and web user interfaces, we decided that every Toolbox must always have a `lastAuditId` from the moment of creation. When an Admin creates a new physical Toolbox, the system immediately generates a synthetic, initial "all-present" Audit representing the clean, theoretical starting layout of the toolbox. This ensures a consistent historical benchmark for tracking tool status and simplifies UI logic, guaranteeing that there is always a valid preceding audit record to reference.

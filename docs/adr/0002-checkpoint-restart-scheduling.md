@@ -1,0 +1,3 @@
+# 0002: Checkpoint Restart Audit Scheduling and Return Blocking
+
+To prevent "audit stacking" where a delayed maintainer is forced to complete multiple overdue audits back-to-back, we decided to enforce a **Checkpoint Restart** scheduling strategy. The timer for the next scheduled periodic audit starts only when the current active audit is successfully completed (e.g., `Now + periodicFrequencyHours`), rather than from the original due time. Additionally, we enforce a strict 15-minute window for mandatory "On Return" audits; if a maintainer attempts to close a checkout, it is rejected unless an audit was completed within the 15 minutes immediately preceding the return, ensuring an accurate, real-time snapshot of the toolbox's state as custody is relinquished.
