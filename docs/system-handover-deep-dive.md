@@ -61,7 +61,24 @@ ToolSight utilizes a validated, schema-enforced, multimodal vision pipeline usin
 
 ---
 
-## 4. Security & Billing Infrastructure
+## 4. Client vs. Server Data Execution Boundary
+
+To ensure the security, consistency, and performance of ToolSight, the data boundary split is defined by a strict architectural policy:
+
+### A. Client-Side (Direct Firestore SDK)
+*   **Reads and Real-Time Streams**: Both mobile and web clients read and subscribe to real-time database streams directly using the Firebase SDK. This leverages Firestore's native caching, offline capability, and instant real-time sync.
+*   **Simple Single-Document Writes**: Direct single-document mutations (such as updating metadata or a maintainer toggling a tool's `present`/`absent` state) are executed client-side. They are tightly restricted from privilege escalation or unauthorized access by Firestore Security Rules.
+
+### B. Server-Side (Cloud Functions)
+Mutations and logic must run server-side inside secure Firebase Cloud Functions if they require:
+*   **Multi-Document Transactions**: Multi-document atomic writes across multiple collections (e.g. `checkOutToolbox`, `returnToolbox`, `assignTemplateToDrawer`) to prevent partial database failures.
+*   **Third-Party API Integrations**: Webhooks or calls requiring private access keys (e.g., Stripe Payments, Gemini AI Vision pipeline).
+*   **Sensitive Administrative Operations**: Creating organization admin accounts, inviting maintainers, and handling new registrations.
+*   **Automated Schedulers**: Automated background checks (e.g., the 5-minute Watchdog scheduler).
+
+---
+
+## 5. Security & Billing Infrastructure
 
 ### The Database-Enforced Paywall
 Subscription paywall enforcement is entirely handled at the Firestore and Firebase Storage layer using native **Firebase Security Rules**.
@@ -78,7 +95,7 @@ Subscription paywall enforcement is entirely handled at the Firestore and Fireba
 
 ---
 
-## 5. Secret Management & Configuration
+## 6. Secret Management & Configuration
 
 *   **API Keys Location**: All keys are stored in local `.env` files.
     *   **Backend Functions**: Located at `backend/functions/.env`.
@@ -90,7 +107,7 @@ Subscription paywall enforcement is entirely handled at the Firestore and Fireba
 
 ---
 
-## 6. DevOps, Environments, & Deployment
+## 7. DevOps, Environments, & Deployment
 
 *   **Firebase Projects**: There is currently a single Firebase project: **`toolsight-teng`** (where `teng` is a leftover artifact from an older naming convention).
 *   **CI/CD Pipeline**: There is currently no CI/CD pipeline (e.g. GitHub Actions).
@@ -102,7 +119,7 @@ Subscription paywall enforcement is entirely handled at the Firestore and Fireba
 
 ---
 
-## 7. Operational & Technical Handover Secrets
+## 8. Operational & Technical Handover Secrets
 
 This section tracks highly specific technical realities, legacy codebase structures, and planned future tracks:
 
@@ -145,7 +162,7 @@ The test suite located under `tests/` (e.g., `tests/suites/05-exploits.ts`) was 
 
 ---
 
-## 8. Directory Structure & Navigation Guide
+## 9. Directory Structure & Navigation Guide
 
 This section is an LLM/developer roadmap to quickly find, modify, and build files in ToolSight:
 
@@ -154,7 +171,7 @@ This section is an LLM/developer roadmap to quickly find, modify, and build file
 ├── CONTEXT.md                       # Canonical Glossary (Always use these exact terms)
 ├── README.md                        # Quick setup & technologies list
 ├── docs/
-│   ├── adr/                         # Architectural Decision Records (0001 - 0006)
+│   ├── adr/                         # Architectural Decision Records (0001 - 0007)
 │   ├── system-handover-deep-dive.md # This comprehensive document
 │   └── audit-architecture.md        # Technical explanation of the Sandwich Lifecycle
 ├── shared/
@@ -184,17 +201,9 @@ To keep code highly modular and allow visual layouts to be tested independently 
 
 ---
 
-## 9. Known Technical Debt, Risks, & Future Enhancements
+## 10. Known Technical Debt, Risks, & Future Enhancements
 
 These are the core architectural limits, known edge cases, and design compromises that have been intentionally accepted during initial development to keep the system simple and lightweight. They serve as immediate, high-priority work items for the incoming team:
-
-### A. Non-Atomic Finalize in `confirmDrawerResults`
-*   **The Issue**: When a drawer audit is completed, `confirmDrawerResults` (in the mobile client repository) performs three separate, sequential database updates:
-    1.  Updates the specific `drawerStates.${drawerId}.drawerStatus` to `'user-validated'`.
-    2.  Checks client-side if all drawers are finished, and if so, updates the audit's `endTime`.
-    3.  Updates the linked `checkout` document to clear `currentAuditId` and calculate `nextAuditDue`.
-*   **The Risk**: Because these updates are split across multiple HTTP/Firestore requests rather than wrapped in a single, server-side atomic transaction, a network drop mid-way or overlapping writes could theoretically trigger a race condition or leave an audit completed on the client but active on the server.
-*   **Operational Note**: In 6 months of active development and testing, this has not caused real-world issues, but it remains a candidate to be refactored into an atomic Cloud Function or Transaction.
 
 ### B. Raw Gemini Rate Limits & Shift-Change Congestion
 *   **The Issue**: There is no server-side queueing, rate-limiting, or traffic throttling for AI audits. If 20 maintainers simultaneously perform checkout audits during a shift change, all requests hit the Gemini API at once.
