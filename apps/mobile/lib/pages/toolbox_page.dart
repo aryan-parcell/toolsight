@@ -106,11 +106,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
                             context.goNamed(AppRoute.home.name);
                           }
                         } on StateError catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(e.message)),
-                            );
-                          }
+                          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
                         }
                       },
                     ),

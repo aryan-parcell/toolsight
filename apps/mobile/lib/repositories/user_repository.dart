@@ -15,13 +15,19 @@ class UserRepository {
     required String password,
     String? organizationId,
   }) async {
-    final result = await _functions.httpsCallable('registerMaintainer').call({
-      'email': email,
-      'name': name,
-      'password': password,
-      if (organizationId != null) 'organizationId': organizationId,
-    });
-    return Map<String, dynamic>.from(result.data as Map);
+    try {
+      final result = await _functions.httpsCallable('registerMaintainer').call({
+        'email': email,
+        'name': name,
+        'password': password,
+        if (organizationId != null) 'organizationId': organizationId,
+      });
+      return Map<String, dynamic>.from(result.data as Map);
+    } on FirebaseFunctionsException catch (e) {
+      throw StateError(e.message ?? 'An error occurred during registration.');
+    } catch (e) {
+      throw StateError(e.toString());
+    }
   }
 
   /// Syncs the current user's profile and FCM token to Firestore.

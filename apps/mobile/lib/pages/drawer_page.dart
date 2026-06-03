@@ -101,8 +101,12 @@ class _DrawerPageState extends State<DrawerPage> {
                     WideButton(
                       text: drawerAudit['drawerStatus'] == 'user-validated' ? "Confirmed Results" : "Confirm Results",
                       onPressed: () async {
-                        await _auditRepository.confirmDrawerResults(auditId, widget.drawerId, audit, _toolbox);
-                        if (context.mounted) context.pop();
+                        try {
+                          await _auditRepository.confirmDrawerResults(auditId, widget.drawerId, audit, _toolbox);
+                          if (context.mounted) context.pop();
+                        } on StateError catch (e) {
+                          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+                        }
                       },
                     ),
                   ],

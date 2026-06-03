@@ -37,11 +37,7 @@ class _LoginState extends State<Login> {
 
       if (mounted) context.goNamed(AppRoute.home.name);
     } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? "Login failed.")),
-      );
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? "Login failed.")));
     }
   }
 
@@ -126,12 +122,8 @@ class _LoginState extends State<Login> {
           await _register(selectedOrgId: selectedId);
         }
       }
-    } on Exception catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+    } on StateError catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 

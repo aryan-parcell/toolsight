@@ -58,8 +58,8 @@ class _AppScaffoldState extends State<AppScaffold> {
                 } else if (value == 'discard_audit') {
                   try {
                     await AuditRepository().discardActiveAudit(widget.toolboxId!);
-                  } catch (e) {
-                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to discard audit: $e')));
+                  } on StateError catch (e) {
+                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
                   }
                 }
               },
