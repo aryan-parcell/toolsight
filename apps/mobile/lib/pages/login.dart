@@ -86,9 +86,15 @@ class _LoginState extends State<Login> {
     var name = _nameController.text.trim();
     var password = _passwordController.text.trim();
 
-    //Won't let user attempt registration if fields empty or passwords don't match.
-    if (email.isEmpty || password.isEmpty || name.isEmpty || !_passwordsMatch)
+    if (!_passwordsMatch) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match.")),
+      );
       return;
+    }
+
+    //Won't let user attempt registration if fields empty or passwords don't match.
+    if (email.isEmpty || password.isEmpty || name.isEmpty) return;
 
     try {
       final result = await _userRepo.registerMaintainer(
