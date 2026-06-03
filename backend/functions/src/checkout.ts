@@ -278,3 +278,88 @@ export const completeAudit = onCall(async (request) => {
 
   return {success: true};
 });
+
+/**
+ * Ensures there is an active audit for the given toolbox checked out by the user.
+ * If one already exists, its ID is returned. Otherwise, a new 'at-will' audit is created.
+ *
+ * @param {string} toolboxId - The ID of the toolbox.
+ * @throws {HttpsError} - If user is unauthenticated, unauthorized, or validation fails.
+ */
+export const ensureActiveAudit = onCall(async (request) => {
+  if (!request.auth) throw new HttpsError("unauthenticated", "User must be logged in.");
+
+  const userId = request.auth.uid;
+  const {toolboxId} = request.data;
+  if (!toolboxId) throw new HttpsError("invalid-argument", "ToolBox ID is required.");
+
+  const userRef = db.collection("users").doc(userId);
+  const toolboxRef = db.collection("toolboxes").doc(toolboxId);
+  const auditRef = db.collection("audits").doc();
+
+  let auditId = "";
+
+  await db.runTransaction(async (t) => {
+    const userSnap = await t.get(userRef);
+    const toolboxSnap = await t.get(toolboxRef);
+
+    if (!userSnap.exists || !toolboxSnap.exists) {
+      throw new HttpsError("not-found", "User or Toolbox not found.");
+    }
+
+    const user = userSnap.data() as User;
+    const toolbox = toolboxSnap.data() as ToolBox;
+
+    if (toolbox.organizationId !== user.organizationId) {
+      throw new HttpsError("permission-denied", "Toolbox does not belong to your organization.");
+    }
+
+    if (toolbox.status !== "checked-out" || toolbox.currentUserId !== userId) {
+      throw new HttpsError("failed-precondition", "You do not currently have this toolbox checked out.");
+    }
+
+    const currentCheckoutId = toolbox.currentCheckoutId;
+    if (!currentCheckoutId) {
+      throw new HttpsError("failed-precondition", "Toolbox does not have an active checkout.");
+    }
+
+    const checkoutRef = db.collection("checkouts").doc(currentCheckoutId);
+    const checkoutSnap = await t.get(checkoutRef);
+    if (!checkoutSnap.exists) {
+      throw new HttpsError("not-found", "Checkout session not found.");
+    }
+
+    const checkout = checkoutSnap.data() as Checkout;
+
+    // If an audit is already active, return its ID
+    if (checkout.currentAuditId) {
+      auditId = checkout.currentAuditId;
+      return;
+    }
+
+    const now = new Date();
+    auditId = auditRef.id;
+
+    // Create a new "At-Will" audit
+    t.set(auditRef, {
+      checkoutId: currentCheckoutId,
+      toolboxId: toolboxId,
+      startTime: now,
+      endTime: null,
+      drawerStates: createDrawerStates(toolbox),
+      organizationId: toolbox.organizationId,
+    });
+
+    t.update(checkoutRef, {
+      nextAuditDue: now,
+      currentAuditId: auditId,
+      auditStatus: "active",
+    });
+
+    t.update(toolboxRef, {
+      lastAuditId: auditId,
+    });
+  });
+
+  return {auditId};
+});

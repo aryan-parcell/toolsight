@@ -40,16 +40,8 @@ service cloud.firestore {
       return onlyFieldsUpdated(['fcmToken', 'lastLogin']);
     }
 
-    function toolboxUpdateValid() {
-      return onlyFieldsUpdated(['lastAuditId']);
-    }
-
-    function checkoutUpdateValid() {
-      return onlyFieldsUpdated(['lastAuditTime', 'nextAuditDue', 'currentAuditId', 'auditStatus']);
-    }
-
     function auditUpdateValid() {
-      return onlyFieldsUpdated(['startTime', 'endTime', 'drawerStates']);
+      return onlyFieldsUpdated(['drawerStates']);
     }
 
     // --- COLLECTION RULES ---
@@ -100,7 +92,7 @@ service cloud.firestore {
 
       // Only 'admin' users can create, update, or delete toolboxes.
       allow create: if hasRole('admin') && hasActiveOrgAccess(request.resource.data);
-      allow update: if (hasRole('admin') || toolboxUpdateValid()) && hasActiveOrgAccess(resource.data);
+      allow update: if hasRole('admin') && hasActiveOrgAccess(request.resource.data) && hasActiveOrgAccess(resource.data);
       allow delete: if hasRole('admin') && hasActiveOrgAccess(resource.data);
     }
 
@@ -110,18 +102,14 @@ service cloud.firestore {
 
       // Managed by Cloud Functions
       allow create: if false;
-      
-      // Enforce ownership for updates, and lock core identifiers
-      // Admins are currently restricted to the same fields as maintainers.
-      allow update: if hasActiveOrgAccess(resource.data)
-                    && (resource.data.userId == request.auth.uid || hasRole('admin'))
-                    && checkoutUpdateValid()
-        }
+      allow update: if false;
+      allow delete: if false;
+    }
 
     // Audits: Must match Org ID.
     match /audits/{auditId} {
       allow read: if hasActiveOrgAccess(resource.data);
-      allow create: if hasActiveOrgAccess(request.resource.data);
+      allow create: if hasActiveOrgAccess(request.resource.data) && hasRole('admin'); // Admin can create initial audits; others managed by Cloud Functions
       allow update: if hasActiveOrgAccess(resource.data) && auditUpdateValid();
     }
   }
