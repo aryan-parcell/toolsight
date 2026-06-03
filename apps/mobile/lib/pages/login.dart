@@ -17,14 +17,50 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _passwordRepeatController = TextEditingController();
+
   final _nameController = TextEditingController();
   final _auth = FirebaseAuth.instance;
   final _userRepo = UserRepository();
 
   bool _isRegistering = false;
+  bool _passwordsMatch = true;
+
+  //Creates listeners for the password and password repeat fields.
+  @override
+  void initState() {
+    super.initState();
+    _passwordController.addListener(_passwordChange);
+    _passwordRepeatController.addListener(_passwordChange);
+  }
+
+  //Disposes of controllers and listeners. This was a gemini suggestion.
+  // general google searches confirms its importance for preventing memory leaks.
+  @override
+  dispose() {
+    _passwordController.removeListener(_passwordChange);
+    _passwordRepeatController.removeListener(_passwordChange);
+    _emailController.dispose();
+    _passwordController.dispose();
+    _passwordRepeatController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  //function to check passwordMatch if passwords change.
+  void _passwordChange() {
+    if (_passwordController.text != _passwordRepeatController.text &&
+        _passwordRepeatController.text.isNotEmpty) {
+      _passwordsMatch = false;
+    } else {
+      _passwordsMatch = true;
+    }
+    setState(() {});
+  }
 
   Future<void> _login() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) return;
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty)
+      return;
 
     try {
       await _auth.signInWithEmailAndPassword(
@@ -50,7 +86,9 @@ class _LoginState extends State<Login> {
     var name = _nameController.text.trim();
     var password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty || name.isEmpty) return;
+    //Won't let user attempt registration if fields empty or passwords don't match.
+    if (email.isEmpty || password.isEmpty || name.isEmpty || !_passwordsMatch)
+      return;
 
     try {
       final result = await _userRepo.registerMaintainer(
@@ -87,7 +125,9 @@ class _LoginState extends State<Login> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("You have multiple invitations. Please select which organization to join:"),
+                    const Text(
+                      "You have multiple invitations. Please select which organization to join:",
+                    ),
                     const SizedBox(height: 20),
                     DropdownButtonFormField<String>(
                       isExpanded: true,
@@ -103,7 +143,8 @@ class _LoginState extends State<Login> {
                             ),
                           )
                           .toList(),
-                      onChanged: (value) => setDialogState(() => localSelectedId = value),
+                      onChanged: (value) =>
+                          setDialogState(() => localSelectedId = value),
                     ),
                   ],
                 ),
@@ -113,7 +154,9 @@ class _LoginState extends State<Login> {
                     child: const Text("Cancel"),
                   ),
                   FilledButton(
-                    onPressed: localSelectedId == null ? null : () => Navigator.pop(context, localSelectedId),
+                    onPressed: localSelectedId == null
+                        ? null
+                        : () => Navigator.pop(context, localSelectedId),
                     child: const Text("Confirm"),
                   ),
                 ],
@@ -152,7 +195,10 @@ class _LoginState extends State<Login> {
                   const Center(
                     child: Text(
                       "ToolSight",
-                      style: TextStyle(fontSize: 45, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 45,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   Column(
@@ -178,6 +224,20 @@ class _LoginState extends State<Login> {
                         controller: _passwordController,
                         obscureText: true,
                       ),
+                      //New text field. Only displays when registering, then checks for password matching.
+                      if (_isRegistering) ...[
+                        TextInputSection(
+                          label: "Confirm Password",
+                          hintText: "Confirm your password",
+                          controller: _passwordRepeatController,
+                          obscureText: true,
+                        ),
+                        if (!_passwordsMatch)
+                          const Text(
+                            "*Passwords do not match",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                      ],
                     ],
                   ),
                   Column(
@@ -191,9 +251,18 @@ class _LoginState extends State<Login> {
                         ],
                       ),
                       TextButton(
-                        onPressed: () => setState(() => _isRegistering = !_isRegistering),
+                        onPressed: () => setState(() {
+                          //Sets passwordsMatch back to original true state to prevent error message 
+                          //from showing when switching between login/register modes. Clears password repeat field 
+                          //to prevent confusion.
+                          _isRegistering = !_isRegistering;
+                          _passwordsMatch = true;
+                          _passwordRepeatController.clear();
+                        }),
                         child: Text(
-                          _isRegistering ? "Have an account? Log In!" : "No account? Register Now!",
+                          _isRegistering
+                              ? "Have an account? Log In!"
+                              : "No account? Register Now!",
                         ),
                       ),
                     ],
