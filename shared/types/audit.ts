@@ -22,4 +22,5 @@ export interface Audit {
     // Denormalized User/Toolbox Info
     organizationId: string;
     toolboxId: string;
+    trigger: 'checkout' | 'periodic' | 'at-will';
 }

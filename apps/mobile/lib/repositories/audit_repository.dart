@@ -24,6 +24,16 @@ class AuditRepository {
     }
   }
 
+  Future<void> discardActiveAudit(String toolboxId) async {
+    try {
+      await _functions.httpsCallable('discardActiveAudit').call({'toolboxId': toolboxId});
+    } on FirebaseFunctionsException catch (e) {
+      throw StateError(e.message ?? 'An error occurred while discarding active audit.');
+    } catch (e) {
+      throw StateError(e.toString());
+    }
+  }
+
   Future<void> uploadDrawerImage(String auditId, String drawerId, String organizationId, File imageFile, double aspectRatio) async {
     final ref = _storage.ref('organizations/$organizationId/audits/$auditId/$drawerId.jpg');
     await ref.putFile(imageFile);

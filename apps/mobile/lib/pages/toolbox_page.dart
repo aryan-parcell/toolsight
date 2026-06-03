@@ -28,6 +28,7 @@ class _ToolboxPageState extends State<ToolboxPage> {
   Widget build(BuildContext context) {
     return AppScaffold(
       allowBack: true,
+      toolboxId: widget.toolboxId,
       child: StreamBuilder(
         stream: _toolboxRepository.getToolboxStream(widget.toolboxId),
         builder: (context, snapshot) {

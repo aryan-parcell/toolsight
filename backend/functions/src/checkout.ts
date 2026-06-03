@@ -72,6 +72,7 @@ export const checkOutToolbox = onCall(async (request) => {
         drawerStates: createDrawerStates(toolbox),
         startTime: new Date(now),
         endTime: null,
+        trigger: "checkout",
       });
     }
 
@@ -348,6 +349,7 @@ export const ensureActiveAudit = onCall(async (request) => {
       endTime: null,
       drawerStates: createDrawerStates(toolbox),
       organizationId: toolbox.organizationId,
+      trigger: "at-will",
     });
 
     t.update(checkoutRef, {
@@ -362,4 +364,115 @@ export const ensureActiveAudit = onCall(async (request) => {
   });
 
   return {auditId};
+});
+
+/**
+ * Discards the currently active 'at-will' audit if no images have been uploaded yet.
+ *
+ * @param {string} toolboxId - The ID of the toolbox.
+ * @throws {HttpsError} - If user is unauthenticated, unauthorized, or validation fails.
+ */
+export const discardActiveAudit = onCall(async (request) => {
+  if (!request.auth) throw new HttpsError("unauthenticated", "User must be logged in.");
+
+  const userId = request.auth.uid;
+  const {toolboxId} = request.data;
+  if (!toolboxId) throw new HttpsError("invalid-argument", "ToolBox ID is required.");
+
+  const userRef = db.collection("users").doc(userId);
+  const toolboxRef = db.collection("toolboxes").doc(toolboxId);
+
+  // 1. Query for the most recent completed audit of this toolbox before transaction
+  const prevAuditQuery = db.collection("audits")
+    .where("toolboxId", "==", toolboxId)
+    .where("endTime", "!=", null)
+    .orderBy("endTime", "desc")
+    .limit(1);
+
+  const prevAuditSnap = await prevAuditQuery.get();
+  const prevAuditId = prevAuditSnap.docs[0].id;
+
+  await db.runTransaction(async (t) => {
+    // 2. Load user, toolbox, checkout, and audit data
+    const userSnap = await t.get(userRef);
+    const toolboxSnap = await t.get(toolboxRef);
+
+    if (!userSnap.exists || !toolboxSnap.exists) {
+      throw new HttpsError("not-found", "User or Toolbox not found.");
+    }
+
+    const user = userSnap.data() as User;
+    const toolbox = toolboxSnap.data() as ToolBox;
+
+    if (toolbox.organizationId !== user.organizationId) {
+      throw new HttpsError("permission-denied", "Toolbox does not belong to your organization.");
+    }
+
+    if (toolbox.status !== "checked-out" || toolbox.currentUserId !== userId) {
+      throw new HttpsError("failed-precondition", "You do not currently have this toolbox checked out.");
+    }
+
+    const currentCheckoutId = toolbox.currentCheckoutId;
+    if (!currentCheckoutId) {
+      throw new HttpsError("failed-precondition", "Toolbox does not have an active checkout.");
+    }
+
+    const checkoutRef = db.collection("checkouts").doc(currentCheckoutId);
+    const checkoutSnap = await t.get(checkoutRef);
+    if (!checkoutSnap.exists) {
+      throw new HttpsError("not-found", "Checkout session not found.");
+    }
+
+    const checkout = checkoutSnap.data() as Checkout;
+
+    const currentAuditId = checkout.currentAuditId;
+    if (!currentAuditId) {
+      throw new HttpsError("failed-precondition", "No active audit found to discard.");
+    }
+
+    const auditRef = db.collection("audits").doc(currentAuditId);
+    const auditSnap = await t.get(auditRef);
+    if (!auditSnap.exists) {
+      throw new HttpsError("not-found", "Active audit not found.");
+    }
+
+    const audit = auditSnap.data() as Audit;
+
+    // 3. Enforce safety checks: must be 'at-will' and no images uploaded
+    if (audit.trigger !== "at-will") {
+      throw new HttpsError("failed-precondition", "Only 'at-will' audits can be discarded.");
+    }
+
+    const drawerStates = audit.drawerStates;
+    const hasImages = Object.values(drawerStates).some((state) => state.imageUrl !== null);
+    if (hasImages) {
+      throw new HttpsError("failed-precondition", "Cannot discard an audit after images have been uploaded.");
+    }
+
+    // 4. Revert checkout and toolbox document to reflect audit discard
+    const profile = checkout.auditProfile;
+    let revertedNextDue: Date | null = null;
+    if (profile.shiftAuditType === "periodic") {
+      const baseTime = checkout.lastAuditTime ?
+        (checkout.lastAuditTime instanceof Date ? checkout.lastAuditTime : (checkout.lastAuditTime as any).toDate()) :
+        (checkout.checkoutTime instanceof Date ? checkout.checkoutTime : (checkout.checkoutTime as any).toDate());
+      revertedNextDue = new Date(baseTime.getTime() + profile.periodicFrequencyHours * 3600 * 1000);
+    }
+
+    t.update(checkoutRef, {
+      currentAuditId: null,
+      auditStatus: "complete",
+      nextAuditDue: revertedNextDue,
+    });
+
+    // 4. Revert toolbox lastAuditId
+    t.update(toolboxRef, {
+      lastAuditId: prevAuditId,
+    });
+
+    // 5. Delete the audit document
+    t.delete(auditRef);
+  });
+
+  return {success: true};
 });

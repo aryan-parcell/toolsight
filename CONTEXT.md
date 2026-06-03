@@ -47,7 +47,7 @@ A recorded session representing a Maintainer taking physical custody of a Toolbo
 _Avoid_: Lease, reservation, check out, custody session
 
 **Audit**:
-A formal inventory verification of all tools in a Toolbox, composed of individual drawer checks. It can be triggered by checkout, schedule, at-will action, or return.
+A formal inventory verification of all tools in a Toolbox, composed of individual drawer checks. It can be triggered by checkout (`checkout`), schedule (`periodic`), or an at-will action (`at-will`).
 _Avoid_: Inspection, check, count, scan
 
 **Grace Period**:
