@@ -5,6 +5,7 @@ import { useFunctions } from "@/hooks/useFunctions";
 import { Building } from "lucide-react";
 import { useEffect } from "react";
 import MaintainerManagement from "../components/MaintainerManagement";
+import EmailManagement from "@/components/EmailManagement";
 
 export default function Settings() {
     const { organization } = useAuth();
@@ -30,6 +31,8 @@ export default function Settings() {
                     <p className="text-axiom-textLight dark:text-axiom-textDark">Edit app and billing preferences.</p>
                 </div>
             </div>
+
+            <EmailManagement />
 
             <Card>
                 <CardHeader>

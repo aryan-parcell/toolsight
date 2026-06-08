@@ -42,6 +42,11 @@ export const aiAuditer = onObjectFinalized(async (event) => {
     const allTools = toolboxData.tools || [];
     const drawerTools = allTools.filter((t) => t.drawerId === drawerId);
 
+    // Grabs color information.
+    const primaryColor = toolboxData.foamColors.primary? toolboxData.foamColors.primary : "";
+    const secondaryColor = toolboxData.foamColors.secondary? toolboxData.foamColors.secondary : "";
+    const colors = [primaryColor, secondaryColor];
+
     // 6. Drawer tool validation
     if (drawerTools.length === 0) {
       return console.log("No tools defined for drawer. Aborting AI.");
@@ -77,6 +82,7 @@ export const aiAuditer = onObjectFinalized(async (event) => {
       base64Image,
       contentType,
       drawerTools,
+      colors,
       base64TemplateImage,
       templateMimeType,
     );

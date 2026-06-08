@@ -17,7 +17,6 @@ class DrawerCapture extends StatefulWidget {
   final String? initialDrawerId;
 
   const DrawerCapture(this.toolboxId, this.auditId, {this.initialDrawerId, super.key});
-
   @override
   State<DrawerCapture> createState() => _DrawerCaptureState();
 }
@@ -32,6 +31,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
   File? _localDrawerImage;
   bool _isUploadingImage = false;
 
+  // Gets toolbox data from Repo, gets audit stream.
   void _fetchDrawerAudit() async {
     _toolbox = await _toolboxRepo.getToolbox(widget.toolboxId);
 
@@ -41,6 +41,7 @@ class _DrawerCaptureState extends State<DrawerCapture> {
       _currentIndex = _toolbox['drawers'].indexWhere((drawer) => drawer['drawerId'] == widget.initialDrawerId);
     }
 
+    //Re-renders.
     setState(() {});
   }
 
@@ -51,9 +52,11 @@ class _DrawerCaptureState extends State<DrawerCapture> {
   }
 
   Future<void> _captureAndUploadImage(String drawerId) async {
+    //Picks image dependent on debug or non-debug mode.
     final image = await ImagePicker().pickImage(source: kDebugMode ? ImageSource.gallery : ImageSource.camera);
     if (image == null) return;
 
+    //Cropping function.
     final imageFile = await ImageCropper().cropImage(
       sourcePath: image.path,
       compressFormat: ImageCompressFormat.jpg,
@@ -90,8 +93,10 @@ class _DrawerCaptureState extends State<DrawerCapture> {
       final frame = await codec.getNextFrame();
       final aspectRatio = frame.image.width / frame.image.height;
 
+      // Uploads drawer image to audit repository.
       await _auditRepo.uploadDrawerImage(widget.auditId, drawerId, _toolbox['organizationId'], fileToUpload, aspectRatio);
     } catch (e) {
+      //Prevents crashing when user navigates before image has been uploaded.
       if (!mounted) return;
 
       // If upload fails, reset local image and show error

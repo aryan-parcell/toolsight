@@ -129,7 +129,7 @@ async function main() {
     try {
       // 1. Find Mode (no expected tools)
       console.log("  Running Find Mode...");
-      const findModePredictions = await analyzeToolImage(base64Image, mimeType, []);
+      const findModePredictions = await analyzeToolImage(base64Image, mimeType, [], []);
       const findModeMetrics = matchDetections(findModePredictions, gtDetections);
       await new Promise((resolve) => setTimeout(resolve, 4000));
 
@@ -140,7 +140,7 @@ async function main() {
         drawerId: "drawer_eval",
         toolInfo: gt.toolInfo,
       }));
-      const matchModePredictions = await analyzeToolImage(base64Image, mimeType, expectedTools);
+      const matchModePredictions = await analyzeToolImage(base64Image, mimeType, expectedTools, []);
       const matchModeMetrics = matchDetections(matchModePredictions, gtDetections);
       await new Promise((resolve) => setTimeout(resolve, 4000));
 

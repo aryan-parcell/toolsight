@@ -54,7 +54,7 @@ export const discoverTools = onCall({
   const {image, mimeType} = request.data;
 
   try {
-    const tools = await analyzeToolImage(image, mimeType, []);
+    const tools = await analyzeToolImage(image, mimeType, [], []);
     return {tools};
   } catch (error: any) {
     console.error("Analysis Failed:", error);

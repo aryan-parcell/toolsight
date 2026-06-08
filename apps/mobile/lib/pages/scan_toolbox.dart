@@ -23,7 +23,9 @@ class _ScanToolboxState extends State<ScanToolbox> {
 
   Future<void> _openToolBox() async {
     try {
+      //checkout ToolBox
       await _checkoutRepository.checkOutToolbox(eid);
+      //route and replace on tree accordingly.
       if (mounted) context.pushReplacementNamed(AppRoute.toolbox.name, pathParameters: {'toolbox_id': eid});
     } on StateError catch (e) {
       if (mounted) {

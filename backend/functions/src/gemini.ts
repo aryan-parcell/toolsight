@@ -286,9 +286,12 @@ function classifyError(error: any): { isRetryable: boolean; reason: string } {
  *
  * @param {Tool[]} expectedTools Set of tools expected in drawer
  * @param {boolean} hasTemplate Is a reference template image supplied?
+ * @param {string} primaryColor Primary color of the foam.
+ * @param {string} secondaryColor Secondary color of the foam.
  * @return {string} Formatted system instruction string
  */
-function buildSystemPrompt(expectedTools: Tool[], hasTemplate: boolean): string {
+function buildSystemPrompt(expectedTools: Tool[], hasTemplate: boolean,
+  primaryColor: string, secondaryColor: string ): string {
   const coordinateInstructions = `
     - ALL bounding boxes MUST be defined using four coordinates on a 1000-scale grid (0 to 1000):
       - ymin: Distance from the TOP edge of the image to the TOP boundary of the tool's bounding box (0 to 1000).
@@ -366,7 +369,12 @@ function buildSystemPrompt(expectedTools: Tool[], hasTemplate: boolean): string 
         Do NOT require pixel alignment between the two images.
         The target audit image (Image 1) may be shifted, rotated, shot from a different distance, etc. 
       ` : ""
-}
+}   
+    ${primaryColor != "" ?
+    `The toolbox has two layers of foam. The foam surrounding tools is colored ${primaryColor}.` : ""}
+    ${secondaryColor != "" ?
+    `The foam underneath the tools is colored ${secondaryColor}.
+    Excess of this color may signify absence of a tool.` : ""}
 
     INSTRUCTIONS:
     1. Analyze the TARGET AUDIT IMAGE of a tool drawer and identify tools.
@@ -465,6 +473,15 @@ async function executeRequestWithRetry(
       },
     });
 
+    // For logging token costs to console. Should be ommitted for release.
+    // 25 cents for input text/image per million, and 1.5 dollars for output text per million.
+    console.log(response.usageMetadata);
+    const inputTokenCost = (response.usageMetadata?.promptTokenCount ?? 0) * .25 / 1000000;
+    const outputTokenCost = (response.usageMetadata?.candidatesTokenCount ?? 0) * 1.5 / 1000000;
+    const totalCost = inputTokenCost + outputTokenCost;
+    console.log(`Input Token Cost ${inputTokenCost.toFixed(6)} USD,
+     Output Token Cost ${outputTokenCost.toFixed(6)} USD, Total Cost ${totalCost.toFixed(6)} USD`);
+
     let text: string;
     try {
       text = response.text || "[]";
@@ -534,6 +551,7 @@ async function executeRequestWithRetry(
  * @param {string} image Base64-encoded image data
  * @param {string} mimeType MIME type of the target image
  * @param {Tool[]} [expectedTools] List of database tool records for matching
+ * @param {string[]} toolboxColors Primary/Secondary colored foam.
  * @param {string} [templateImage] Optional base64 template reference image
  * @param {string} [templateMimeType] Optional MIME type for the template image
  * @param {AnalyzeOptions} [options] Logging and template configuration options
@@ -544,6 +562,7 @@ export async function analyzeToolImage(
   image: string,
   mimeType: string,
   expectedTools: Tool[] = [],
+  toolboxColors: string[],
   templateImage?: string,
   templateMimeType?: string,
   options: AnalyzeOptions = {}
@@ -573,7 +592,8 @@ export async function analyzeToolImage(
   );
 
   // 2. Build instructions and response schema (structured JSON array matching our Detection type)
-  const systemPrompt = buildSystemPrompt(expectedTools, !!templateBase64);
+  const systemPrompt = buildSystemPrompt(expectedTools, !!templateBase64,
+    toolboxColors[0] || "", toolboxColors[1] || "");
   const responseSchema = buildResponseSchema(expectedTools);
 
   // 3. Build user payload content
