@@ -1,3 +1,7 @@
+/*
+  * This file defines the routing configuration for the Toolsight mobile application using the GoRouter package.
+  * It includes route definitions, redirection logic, and error handling for navigation.
+  */
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +14,9 @@ import 'package:toolsight/pages/manual_entry.dart';
 import 'package:toolsight/pages/scan_toolbox.dart';
 import 'package:toolsight/pages/toolbox_page.dart';
 
+/*
+  Enumeration allowing for easy reference of pages. Each has a path and a name field.
+*/
 enum AppRoute {
   home(path: '/', name: 'home'),
   login(path: '/login', name: 'login'),
@@ -26,20 +33,28 @@ enum AppRoute {
   const AppRoute({required this.path, required this.name});
 }
 
+/*
+  Function to create the GoRouter instance with defined routes, redirection logic, and error handling.
+*/
 GoRouter createRouter() {
   return GoRouter(
+    //Handles errors and redirects to login screen. Prints error.
     onException: (context, state, router) {
       debugPrint("Router Exception: ${state.error}");
       router.go(AppRoute.login.path);
     },
+    //Checks to see if user is logged in. If not, redirects to the login page.
     redirect: (context, state) {
       if (FirebaseAuth.instance.currentUser == null) return AppRoute.login.path;
       return null;
     },
+    //Defines the routes for the application.
     routes: [
       GoRoute(
+        //Defines path and name to the route.
         path: AppRoute.home.path,
         name: AppRoute.home.name,
+        //Context gives widgets, and state is url info. => creates page to return to GoRoute.
         builder: (context, state) => const Home(),
       ),
       GoRoute(
@@ -57,6 +72,7 @@ GoRouter createRouter() {
         name: AppRoute.scanToolbox.name,
         builder: (context, state) => const ScanToolbox(),
       ),
+      // Defines the toolbox route with sub-routes for capture, complete, and drawer.
       GoRoute(
         path: AppRoute.toolbox.path,
         name: AppRoute.toolbox.name,

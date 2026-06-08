@@ -1,3 +1,8 @@
+/*
+  * Function to create audit drawer states from a toolbox.
+  * @param toolbox The toolbox data.
+  * @return A map of drawer states.
+  */
 Map<String, dynamic> createAuditDrawerStatesFromToolbox(Map<String, dynamic> toolbox) {
   final Map<String, dynamic> drawerStates = {};
 

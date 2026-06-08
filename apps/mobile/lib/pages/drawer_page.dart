@@ -211,6 +211,7 @@ class _DrawerPageState extends State<DrawerPage> {
   }
 }
 
+//Builds bounding box overlay.
 class BoundingBoxOverlay extends StatelessWidget {
   final Map<String, dynamic> results;
   final double imageWidth;

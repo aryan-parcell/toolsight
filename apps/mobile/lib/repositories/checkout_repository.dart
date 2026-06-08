@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 class CheckoutRepository {
+  // References to Firestore collections and Firebase services used by the repository.
   final _checkoutsCollection = FirebaseFirestore.instance.collection('checkouts');
   final _usersCollection = FirebaseFirestore.instance.collection('users');
   final _auth = FirebaseAuth.instance;
   final _functions = FirebaseFunctions.instance;
+
 
   Stream<QuerySnapshot> getMyActiveCheckouts() async* {
     final user = _auth.currentUser;
@@ -28,10 +30,12 @@ class CheckoutRepository {
         .snapshots();
   }
 
+  // Returns a stream of checkout data for the given checkout ID.
   Stream<DocumentSnapshot<Map<String, dynamic>>> getCheckoutStream(String checkoutId) {
     return _checkoutsCollection.doc(checkoutId).snapshots();
   }
 
+  // Function to check out a toolbox by calling the 'checkOutToolbox' Cloud Function with the toolbox ID.
   Future<void> checkOutToolbox(String eid) async {
     try {
       await _functions.httpsCallable('checkOutToolbox').call({'toolboxId': eid});
@@ -42,6 +46,7 @@ class CheckoutRepository {
     }
   }
 
+  // Function to close a toolbox by calling the 'returnToolbox' Cloud Function with the toolbox ID.
   Future<void> closeToolbox(String toolboxId) async {
     try {
       await _functions.httpsCallable('returnToolbox').call({'toolboxId': toolboxId});

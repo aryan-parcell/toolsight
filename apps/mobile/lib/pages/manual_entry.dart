@@ -21,7 +21,9 @@ class _ManualEntryState extends State<ManualEntry> {
     final eid = _eidController.text;
 
     try {
+      //checkout toolbox
       await _checkoutRepository.checkOutToolbox(eid);
+      //route and replace on tree accordingly.
       if (mounted) context.pushReplacementNamed(AppRoute.toolbox.name, pathParameters: {'toolbox_id': eid});
     } on StateError catch (e) {
       if (mounted) {

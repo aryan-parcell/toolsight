@@ -24,6 +24,11 @@ export default function EmailManagement() {
                         <div className="font-semibold text-gray-900 dark:text-white">Email:</div>
                         <div className="text-sm text-gray-500">{appUser?.email || "No email provided"}</div>
                     </div>
+
+                    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-lg">
+                        <div className="font-semibold text-gray-900 dark:text-white">Role:</div>
+                        <div className="text-sm text-gray-500">{appUser?.role || "No role provided"}</div>
+                    </div>
                 </div>
             </CardContent>
         </Card>
