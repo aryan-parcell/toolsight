@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toolsight/app.dart';
+import 'package:toolsight/repositories/audit_repository.dart';
 import 'package:toolsight/router.dart';
 import 'package:toolsight/widgets/parcell_header.dart';
 
@@ -10,11 +11,15 @@ class AppScaffold extends StatefulWidget {
   final bool allowBack;
   final bool allowLogout;
 
+  // Used for discarding at-will audit
+  final String? toolboxId;
+
   const AppScaffold({
     super.key,
     required this.child,
     this.allowBack = true,
     this.allowLogout = true,
+    this.toolboxId,
   });
 
   @override
@@ -29,12 +34,7 @@ class _AppScaffoldState extends State<AppScaffold> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: GestureDetector(
-          onLongPress: () {
-            themeNotifier.value = themeNotifier.value == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-          },
-          child: ParcellHeader(),
-        ),
+        title: ParcellHeader(),
         centerTitle: true,
         leading: widget.allowBack
             ? Padding(
@@ -46,17 +46,59 @@ class _AppScaffoldState extends State<AppScaffold> {
               )
             : null,
         actions: [
-          if (widget.allowLogout)
-            Padding(
-              padding: const EdgeInsets.only(right: padding - 8),
-              child: IconButton(
-                icon: const Icon(Icons.logout),
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                  context.goNamed(AppRoute.login.name);
-                },
-              ),
+          Padding(
+            padding: const EdgeInsets.only(right: padding - 8),
+            child: PopupMenuButton<String>(
+              onSelected: (value) async {
+                if (value == 'toggle_theme') {
+                  themeNotifier.value = themeNotifier.value == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+                } else if (value == 'logout') {
+                  await FirebaseAuth.instance.signOut();
+                  if (context.mounted) context.goNamed(AppRoute.login.name);
+                } else if (value == 'discard_audit') {
+                  try {
+                    await AuditRepository().discardActiveAudit(widget.toolboxId!);
+                  } catch (e) {
+                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to discard audit: $e')));
+                  }
+                }
+              },
+              itemBuilder: (context) => [
+                if (widget.toolboxId != null)
+                  const PopupMenuItem(
+                    value: 'discard_audit',
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        Icon(Icons.delete_outline),
+                        Text('Discard Audit'),
+                      ],
+                    ),
+                  ),
+                const PopupMenuItem(
+                  value: 'toggle_theme',
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      Icon(Icons.palette_outlined),
+                      Text('Toggle Theme'),
+                    ],
+                  ),
+                ),
+                if (widget.allowLogout)
+                  const PopupMenuItem<String>(
+                    value: 'logout',
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        Icon(Icons.logout, color: Colors.redAccent),
+                        Text('Logout', style: TextStyle(color: Colors.redAccent)),
+                      ],
+                    ),
+                  ),
+              ],
             ),
+          ),
         ],
       ),
       body: SafeArea(

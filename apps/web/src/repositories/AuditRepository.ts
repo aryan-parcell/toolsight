@@ -1,7 +1,6 @@
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
-import { ref, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../firebase';
 import type { Audit } from '@shared/types';
+import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export const AuditRepository = {
     /**

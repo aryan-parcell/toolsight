@@ -1,72 +1,41 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:toolsight/utils.dart';
 
 class AuditRepository {
   final _storage = FirebaseStorage.instance;
   final _auditsCollection = FirebaseFirestore.instance.collection('audits');
-  final _checkoutsCollection = FirebaseFirestore.instance.collection('checkouts');
-  final _toolboxesCollection = FirebaseFirestore.instance.collection('toolboxes');
+  final _functions = FirebaseFunctions.instance;
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getAuditStream(String auditId) {
     return _auditsCollection.doc(auditId).snapshots();
   }
 
   Future<String> ensureActiveAudit(String toolboxId) async {
-    final auditDoc = _auditsCollection.doc();
-    final toolboxDoc = _toolboxesCollection.doc(toolboxId);
+    try {
+      final result = await _functions.httpsCallable('ensureActiveAudit').call({'toolboxId': toolboxId});
+      return result.data['auditId'] as String;
+    } on FirebaseFunctionsException catch (e) {
+      throw StateError(e.message ?? 'An error occurred while ensuring active audit.');
+    } catch (e) {
+      throw StateError(e.toString());
+    }
+  }
 
-    return FirebaseFirestore.instance.runTransaction((t) async {
-      final toolboxSnap = await t.get(toolboxDoc);
-      if (!toolboxSnap.exists) throw StateError("Invalid toolbox.");
-      final toolbox = toolboxSnap.data()!;
-
-      final currentCheckoutId = toolbox['currentCheckoutId'];
-
-      final checkoutDoc = _checkoutsCollection.doc(currentCheckoutId);
-      final checkoutSnap = await t.get(checkoutDoc);
-      if (!checkoutSnap.exists) throw StateError("Invalid checkout.");
-      final checkout = checkoutSnap.data()!;
-
-      // If an audit is already active, return its ID
-      final currentAuditId = checkout['currentAuditId'];
-      if (currentAuditId != null) return currentAuditId;
-
-      final now = DateTime.now();
-
-      // If not, start a new "At-Will" audit
-      t.set(auditDoc, {
-        'checkoutId': currentCheckoutId,
-        'toolboxId': toolboxId,
-        'startTime': now,
-        'endTime': null,
-        'drawerStates': createAuditDrawerStatesFromToolbox(toolbox),
-        'organizationId': toolbox['organizationId'],
-      });
-
-      t.update(checkoutDoc, {
-        // audit scheduling
-        'nextAuditDue': now,
-        // audit info
-        'currentAuditId': auditDoc.id,
-        'auditStatus': 'active',
-      });
-
-      t.update(toolboxDoc, {
-        'lastAuditId': auditDoc.id,
-      });
-
-      return auditDoc.id;
-    });
+  Future<void> discardActiveAudit(String toolboxId) async {
+    try {
+      await _functions.httpsCallable('discardActiveAudit').call({'toolboxId': toolboxId});
+    } on FirebaseFunctionsException catch (e) {
+      throw StateError(e.message ?? 'An error occurred while discarding active audit.');
+    } catch (e) {
+      throw StateError(e.toString());
+    }
   }
 
   Future<void> uploadDrawerImage(String auditId, String drawerId, String organizationId, File imageFile, double aspectRatio) async {
-    final extension = imageFile.path.split('.').last;
-    final storagePath = 'organizations/$organizationId/audits/$auditId/$drawerId.$extension';
-
-    final ref = _storage.ref().child(storagePath);
+    final ref = _storage.ref('organizations/$organizationId/audits/$auditId/$drawerId.jpg');
     await ref.putFile(imageFile);
 
     final imageUrl = await ref.getDownloadURL();
@@ -91,25 +60,13 @@ class AuditRepository {
     );
 
     if (isAuditComplete) {
-      final now = DateTime.now();
-
-      await auditDoc.update({'endTime': now});
-
-      // Handle Periodic Audit Scheduling
-      final profile = toolboxData['auditProfile'];
-      DateTime? nextDue;
-      if (profile['shiftAuditType'] == 'periodic') {
-        final freq = profile['periodicFrequencyHours'];
-        nextDue = now.add(Duration(hours: freq));
+      try {
+        await _functions.httpsCallable('completeAudit').call({'auditId': auditId});
+      } on FirebaseFunctionsException catch (e) {
+        throw StateError(e.message ?? 'An error occurred during audit finalization.');
+      } catch (e) {
+        throw StateError(e.toString());
       }
-
-      final checkoutDoc = _checkoutsCollection.doc(auditData['checkoutId']);
-      checkoutDoc.update({
-        'currentAuditId': null,
-        'auditStatus': 'complete',
-        'lastAuditTime': now,
-        'nextAuditDue': nextDue,
-      });
     }
   }
 }

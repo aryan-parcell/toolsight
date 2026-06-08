@@ -92,8 +92,13 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
         const data = await discoverTools(image);
         const detectedTools: Detection[] = data?.tools || [];
 
+        // Force status to be present for all tools in template builder
+        const coercedTools = detectedTools.map(d => {
+            return {...d, status: 'present'} as Detection;
+        })
+
         if (detectedTools.length > 0) {
-            setTools(detectedTools);
+            setTools(coercedTools);
         } else {
             alert("No tools detected by AI. Please add tools manually.");
         }

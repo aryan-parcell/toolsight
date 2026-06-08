@@ -4,6 +4,7 @@ import type { Drawer, ToolBox, Tool } from '@shared/types';
 import { AppView } from '../App';
 import { useToolboxes } from '@/hooks/useToolboxes';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFunctions } from '@/hooks/useFunctions';
 
 interface ToolboxWizardProps {
     onNavigate: (view: AppView) => void;
@@ -20,10 +21,12 @@ const foamColors = [
 export default function ToolboxWizard({ onNavigate }: ToolboxWizardProps) {
     const { organization } = useAuth();
     const { createToolbox } = useToolboxes(organization?.id);
+    const { checkToolboxExists } = useFunctions();
 
     const [step, setStep] = useState(1);
     const [activeDrawer, setActiveDrawer] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [eidError, setEidError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         name: '',
         eid: '',
@@ -37,7 +40,17 @@ export default function ToolboxWizard({ onNavigate }: ToolboxWizardProps) {
         auditFrequencyHours: 4,
     });
 
-    const nextStep = () => setStep(s => Math.min(s + 1, 3));
+    const nextStep = async () => {
+        if (step === 1) {
+            const exists = await checkToolboxExists(formData.eid);
+            if (exists) {
+                setEidError("A toolbox with this EID is already registered in the system.");
+                return;
+            }
+        }
+
+        setStep(s => Math.min(s + 1, 3));
+    }
     const prevStep = () => setStep(s => Math.max(s - 1, 1));
 
     const createToolboxFromFormData = () => {
@@ -84,8 +97,17 @@ export default function ToolboxWizard({ onNavigate }: ToolboxWizardProps) {
     const handleCreate = async () => {
         if (isSubmitting) return;
         setIsSubmitting(true);
+        setEidError(null);
 
         try {
+            const exists = await checkToolboxExists(formData.eid);
+            if (exists) {
+                setEidError("A toolbox with this EID is already registered in the system.");
+                setStep(1);
+                setIsSubmitting(false);
+                return;
+            }
+
             const newToolbox: ToolBox = createToolboxFromFormData();
 
             await createToolbox(formData.eid, newToolbox);
@@ -188,10 +210,21 @@ export default function ToolboxWizard({ onNavigate }: ToolboxWizardProps) {
                             <input
                                 type="text"
                                 value={formData.eid}
-                                onChange={e => setFormData({ ...formData, eid: e.target.value })}
-                                className="w-full rounded-lg p-4 border transition-all dark:bg-black/20 dark:border-axiom-borderDark dark:text-white "
+                                onChange={e => {
+                                    setFormData({ ...formData, eid: e.target.value });
+                                    setEidError(null);
+                                }}
+                                className={`w-full rounded-lg p-4 border transition-all dark:bg-black/20 dark:text-white ${eidError
+                                    ? 'border-red-500 ring-2 ring-red-500/20'
+                                    : 'dark:border-axiom-borderDark'
+                                    }`}
                                 placeholder="Enter Equipment ID"
                             />
+                            {eidError && (
+                                <p className="text-red-500 text-sm mt-2 font-medium">
+                                    {eidError}
+                                </p>
+                            )}
                         </div>
 
                     </div>
@@ -452,7 +485,7 @@ export default function ToolboxWizard({ onNavigate }: ToolboxWizardProps) {
                 <button
                     type="button"
                     onClick={step === 3 ? handleCreate : nextStep}
-                    disabled={formData.name.trim().length === 0 || formData.eid.trim().length === 0}
+                    disabled={formData.name.trim().length === 0 || formData.eid.trim().length === 0 || isSubmitting}
                     className="flex items-center gap-3 p-3 rounded-lg bg-axiom-cyan text-black font-bold hover:opacity-80 transition-opacity disabled:opacity-50"
                 >
                     {step === 3 ? 'Create Toolbox' : 'Next'}

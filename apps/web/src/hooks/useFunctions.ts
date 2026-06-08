@@ -102,6 +102,22 @@ export const useFunctions = () => {
         }
     }, []);
 
+    const checkToolboxExists = useCallback(async (toolboxId: string): Promise<boolean> => {
+        setLoading(true);
+        setError(null);
+        try {
+            const result = await FunctionsRepository.checkToolboxExists(toolboxId);
+            return result.exists;
+        } catch (err: any) {
+            const message = err.message || 'Failed to check toolbox existence';
+            setError(message);
+            console.error('Error in checkToolboxExists:', err);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     return {
         loading,
         error,
@@ -111,5 +127,6 @@ export const useFunctions = () => {
         createAdminAndOrganization,
         assignTemplateToDrawer,
         inviteMaintainers,
+        checkToolboxExists,
     };
 };
