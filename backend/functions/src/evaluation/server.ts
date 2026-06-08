@@ -49,7 +49,7 @@ async function evaluateSingleImage(file: string, groundTruthData: Record<string,
   const base64Image = buffer.toString("base64");
 
   console.log(`[API] Running Find Mode for ${file}...`);
-  const findModePredictions = await analyzeToolImage(base64Image, mimeType, []);
+  const findModePredictions = await analyzeToolImage(base64Image, mimeType, [], []);
   const findModeMetrics = matchDetections(findModePredictions, gtDetections);
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -59,7 +59,7 @@ async function evaluateSingleImage(file: string, groundTruthData: Record<string,
     drawerId: "drawer_eval",
     toolInfo: gt.toolInfo,
   }));
-  const matchModePredictions = await analyzeToolImage(base64Image, mimeType, expectedTools);
+  const matchModePredictions = await analyzeToolImage(base64Image, mimeType, expectedTools, []);
   const matchModeMetrics = matchDetections(matchModePredictions, gtDetections);
 
   results[file] = {

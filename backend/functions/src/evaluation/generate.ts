@@ -37,7 +37,7 @@ async function main() {
 
     try {
       // Find mode: expectedTools is empty
-      const detections = await analyzeToolImage(base64Image, mimeType, []);
+      const detections = await analyzeToolImage(base64Image, mimeType, [], []);
       results[file] = detections;
 
       // Save progressively in case of rate limits
