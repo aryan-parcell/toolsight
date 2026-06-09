@@ -33,7 +33,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
 
     // Data State
     const [tools, setTools] = useState<Detection[]>([]);
-    const [anchors, setAnchors] = useState<AnchorPoint[]>([]);
+    //const [anchors, setAnchors] = useState<AnchorPoint[]>([]);
 
     // Editor State
     const [editorMode, setEditorMode] = useState<'tools' | 'anchors'>('tools');
@@ -82,7 +82,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
     const handleImageSelected = (dataUrl: string) => {
         setImage(dataUrl);
         setTools([]);
-        setAnchors([]);
+        //setAnchors([]);
         setStep(BuilderStep.ANALYSIS);
     };
 
@@ -134,6 +134,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
         setSelectedToolIndex(tools.length);
     };
 
+    /*
     const handleAddAnchor = (x: number, y: number) => {
         if (anchors.length >= 4) return;
         const newAnchor: AnchorPoint = {
@@ -143,11 +144,11 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
             label: `Point ${anchors.length + 1}`
         };
         setAnchors([...anchors, newAnchor]);
-    };
+    };*/
 
     const handleCanvasClick = (x: number, y: number) => {
         if (editorMode === 'anchors') {
-            handleAddAnchor(x, y);
+            //handleAddAnchor(x, y);
         } else {
             // Deselect tool if clicking empty space
             setSelectedToolIndex(null);
@@ -193,7 +194,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                 // Reset
                 setImage(null);
                 setTools([]);
-                setAnchors([]);
+                //setAnchors([]);
                 setTemplateName("");
                 setStep(BuilderStep.UPLOAD);
             }
@@ -267,16 +268,18 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                     rounded-lg p-2 flex justify-between items-center
                                 ">
                                     <div className="flex gap-2">
+                                        {/*
                                         <button
                                             onClick={() => {
                                                 setEditorMode('tools');
-                                                setSelectedAnchorId(null);
+                                                //setSelectedAnchorId(null);
                                             }}
                                             className={`p-2 rounded-md text-sm font-medium flex items-center ${editorMode === 'tools' ? 'bg-axiom-cyan text-black' : ''}`}
                                         >
                                             <Edit size={16} className="mr-2" />
                                             Edit Tools
                                         </button>
+                                        
                                         <button
                                             onClick={() => {
                                                 setEditorMode('anchors');
@@ -286,7 +289,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                         >
                                             <Anchor size={16} className="mr-2" />
                                             Edit Anchors
-                                        </button>
+                                        </button>*/}
                                     </div>
                                     <div className="flex gap-2">
                                         {editorMode === 'tools' && (
@@ -322,8 +325,9 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                                     onSelectTool={setSelectedToolIndex}
                                                     containerClassName={`absolute inset-0 ${editorMode === 'tools' ? 'z-20 pointer-events-auto' : 'z-10 pointer-events-none opacity-50'}`}
                                                 />
-
+                                                
                                                 {/* Anchor Overlay */}
+                                                {/*
                                                 <AnchorPointOverlay
                                                     anchorPoints={anchors}
                                                     onAnchorPointsChange={setAnchors}
@@ -332,7 +336,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                                     selectedAnchorId={selectedAnchorId}
                                                     onSelectAnchor={setSelectedAnchorId}
                                                     className={`${editorMode === 'anchors' ? 'z-30 pointer-events-auto' : 'z-10 pointer-events-none'}`}
-                                                />
+                                                />*/}
                                             </>
                                         )}
                                     </div>
@@ -437,7 +441,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                                     )}
                                                 </div>
                                             )
-                                        ) : (
+                                        ) : (<div>{/*
                                             <div className="space-y-2">
                                                 {anchors.length === 0 && <div className="text-gray-500 text-sm text-center">No anchors defined. </div>}
                                                 {anchors.map((anchor, idx) => (
@@ -479,7 +483,7 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                                     <div className="text-gray-500 text-xs text-center">Need {4 - anchors.length} more anchors</div>
                                                 )}
                                             </div>
-                                        )}
+                                        */}</div>)}
                                     </div>
                                 </div>
                             </div>
@@ -492,7 +496,8 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                             rounded-lg p-4 flex justify-between items-center
                         ">
                             <span className="text-gray-500 text-sm font-medium">
-                                {editorMode === 'tools' ? 'Drag to move/resize tools. Click "Add Tool" to create new.' : 'Click 4 distinct points to serve as anchors.'}
+                                {/*{editorMode === 'tools' ? 'Drag to move/resize tools. Click "Add Tool" to create new.' : 'Click 4 distinct points to serve as anchors.'}*/}
+                                Drag to move/resize tools. Click "Add Tool" to create new.
                             </span>
                             <div className="flex gap-4">
                                 {!templateToEdit && (
@@ -599,10 +604,11 @@ export default function TemplateBuilder({ templateToEdit, onComplete }: Template
                                     <span className="text-gray-500">Total Tools</span>
                                     <span className="text-black dark:text-white">{tools.length}</span>
                                 </div>
+                                {/*
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Anchors</span>
                                     <span className="text-black dark:text-white">{anchors.length}</span>
-                                </div>
+                                </div>*/}
                             </div>
 
                             <div className="flex gap-4">
