@@ -1,9 +1,9 @@
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import {DocumentSnapshot} from "firebase-functions/firestore";
-import {Checkout, ToolBox} from "@shared/types";
+import {Checkout} from "@shared/types";
 import {db} from "./firebase";
-import {createDrawerStates, sendPushNotification} from "./utils";
+import {createDrawerStates, sendPushNotification, getToolBox} from "./utils";
 
 /**
  * Creates and issues a new periodic audit for a given checkout.
@@ -21,13 +21,7 @@ async function issuePeriodicAudit(checkoutDoc: DocumentSnapshot, now: Date) {
     const checkout = checkoutSnap.data() as Checkout;
 
     // 1. Fetch Toolbox to generate accurate drawer states
-    const toolboxRef = db.collection("toolboxes").doc(checkout.toolboxId);
-    const toolboxSnap = await t.get(toolboxRef);
-    if (!toolboxSnap.exists) {
-      throw new Error(`Toolbox ${checkout.toolboxId} not found`);
-    }
-
-    const toolbox = toolboxSnap.data() as ToolBox;
+    const {toolboxRef, toolbox} = await getToolBox(t, checkout.toolboxId);
 
     // 2. Create new Audit Document
     const newAuditRef = db.collection("audits").doc();

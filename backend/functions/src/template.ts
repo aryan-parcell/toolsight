@@ -1,6 +1,7 @@
+import {Drawer, Tool} from "@shared/types";
 import {HttpsError, onCall} from "firebase-functions/v2/https";
 import {db} from "./firebase";
-import {Drawer, Template, Tool, ToolBox, User} from "@shared/types";
+import {getTemplate, getToolBox, getUser} from "./utils";
 
 export const assignTemplateToDrawer = onCall(async (request) => {
   if (!request.auth) {
@@ -14,29 +15,9 @@ export const assignTemplateToDrawer = onCall(async (request) => {
   }
 
   await db.runTransaction(async (transaction) => {
-    const toolboxRef = db.collection("toolboxes").doc(toolboxId);
-    const templateRef = db.collection("templates").doc(templateId);
-    const userRef = db.collection("users").doc(request.auth!.uid);
-
-    const toolboxSnap = await transaction.get(toolboxRef);
-    const templateSnap = await transaction.get(templateRef);
-    const userSnap = await transaction.get(userRef);
-
-    if (!toolboxSnap.exists || !templateSnap.exists || !userSnap.exists) {
-      throw new HttpsError("not-found", "Data not found");
-    }
-
-    const toolboxData = toolboxSnap.data();
-    const templateData = templateSnap.data();
-    const userData = userSnap.data();
-
-    if (!toolboxData || !templateData || !userData) {
-      throw new HttpsError("data-loss", "Failed to get data");
-    }
-
-    const toolbox = toolboxData as ToolBox;
-    const template = templateData as Template;
-    const user = userData as User;
+    const {toolboxRef, toolbox} = await getToolBox(transaction, toolboxId);
+    const {template} = await getTemplate(transaction, templateId);
+    const {user} = await getUser(transaction, request.auth!.uid);
 
     // Critical: Verify user permissions; Firebase Security Rules don't apply to function calls.
     const userOrgId = user.organizationId;

@@ -1,5 +1,7 @@
-import {Tool, Drawer, ToolBox, DrawerState, Detection} from "@shared/types";
+import {Tool, Drawer, ToolBox, DrawerState, Detection, User, Checkout, Audit, Template} from "@shared/types";
 import {db, messaging} from "./firebase";
+import {DocumentReference, Transaction} from "firebase-admin/firestore";
+import {HttpsError} from "firebase-functions/v2/https";
 
 /**
  * Finds the best matching AI detection for a given expected tool.
@@ -118,3 +120,63 @@ export async function sendPushNotification(
     console.error(`Failed to send notification to ${userId}`, error);
   }
 }
+
+export const getToolBox = async (
+  t: Transaction,
+  toolboxId: string
+): Promise<{toolboxRef: DocumentReference; toolbox: ToolBox}> => {
+  const toolboxRef = db.collection("toolboxes").doc(toolboxId);
+  const snap = await t.get(toolboxRef);
+  if (!snap.exists) throw new HttpsError("not-found", "ToolBox not found");
+  const data = snap.data();
+  if (!data) throw new HttpsError("data-loss", "Failed to get toolbox data");
+  return {toolboxRef, toolbox: data as ToolBox};
+};
+
+export const getUser = async (
+  t: Transaction,
+  userId: string
+): Promise<{userRef: DocumentReference; user: User}> => {
+  const userRef = db.collection("users").doc(userId);
+  const snap = await t.get(userRef);
+  if (!snap.exists) throw new HttpsError("not-found", "User not found");
+  const data = snap.data();
+  if (!data) throw new HttpsError("data-loss", "Failed to get user data");
+  return {userRef, user: data as User};
+};
+
+export const getCheckout = async (
+  t: Transaction,
+  checkoutId: string
+): Promise<{checkoutRef: DocumentReference; checkout: Checkout}> => {
+  const checkoutRef = db.collection("checkouts").doc(checkoutId);
+  const snap = await t.get(checkoutRef);
+  if (!snap.exists) throw new HttpsError("not-found", "Checkout session not found");
+  const data = snap.data();
+  if (!data) throw new HttpsError("data-loss", "Failed to get checkout data");
+  return {checkoutRef, checkout: data as Checkout};
+};
+
+export const getAudit = async (
+  t: Transaction,
+  auditId: string
+): Promise<{auditRef: DocumentReference; audit: Audit}> => {
+  const auditRef = db.collection("audits").doc(auditId);
+  const snap = await t.get(auditRef);
+  if (!snap.exists) throw new HttpsError("not-found", "Audit not found");
+  const data = snap.data();
+  if (!data) throw new HttpsError("data-loss", "Failed to get audit data");
+  return {auditRef, audit: data as Audit};
+};
+
+export const getTemplate = async (
+  t: Transaction,
+  templateId: string
+): Promise<{templateRef: DocumentReference; template: Template}> => {
+  const templateRef = db.collection("templates").doc(templateId);
+  const snap = await t.get(templateRef);
+  if (!snap.exists) throw new HttpsError("not-found", "Template not found");
+  const data = snap.data();
+  if (!data) throw new HttpsError("data-loss", "Failed to get template data");
+  return {templateRef, template: data as Template};
+};
