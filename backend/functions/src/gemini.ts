@@ -374,7 +374,7 @@ function buildSystemPrompt(expectedTools: Tool[], hasTemplate: boolean,
     `The toolbox has two layers of foam. The foam surrounding tools is colored ${primaryColor}.` : ""}
     ${secondaryColor != "" ?
     `The foam underneath the tools is colored ${secondaryColor}.
-    Excess of this color may signify absence of a tool.` : ""}
+    Excess of ${secondaryColor} may signify absence of a tool.` : ""}
 
     INSTRUCTIONS:
     1. Analyze the TARGET AUDIT IMAGE of a tool drawer and identify tools.
