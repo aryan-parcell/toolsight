@@ -13,6 +13,7 @@ import 'package:toolsight/pages/login.dart';
 import 'package:toolsight/pages/manual_entry.dart';
 import 'package:toolsight/pages/scan_toolbox.dart';
 import 'package:toolsight/pages/toolbox_page.dart';
+import 'package:toolsight/pages/camera_overlay.dart';
 
 /*
   Enumeration allowing for easy reference of pages. Each has a path and a name field.
@@ -25,7 +26,8 @@ enum AppRoute {
   toolbox(path: '/toolbox/:toolbox_id', name: 'toolbox'),
   capture(path: 'capture', name: 'capture'), // Sub-route
   complete(path: 'complete', name: 'complete'), // Sub-route
-  drawer(path: ':drawer_id', name: 'drawer'); // Sub-route
+  drawer(path: ':drawer_id', name: 'drawer'), // Sub-route
+  cameraOverlay(path: 'camera', name: 'cameraOverlay'); // Sub-route
 
   final String path;
   final String name;
@@ -100,6 +102,14 @@ GoRouter createRouter() {
             builder: (context, state) {
               final params = state.pathParameters;
               return DrawerPage(params['toolbox_id']!, params['drawer_id']!);
+            },
+          ),
+          GoRoute(
+            path: AppRoute.cameraOverlay.path,
+            name: AppRoute.cameraOverlay.name,
+            builder: (context, state) {
+              final referenceImageUrl = state.extra as String?;
+              return CameraOverlay(referenceImageUrl: referenceImageUrl);
             },
           ),
         ],

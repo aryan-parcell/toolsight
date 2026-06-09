@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:go_router/go_router.dart';
+import 'package:toolsight/router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Drawer;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toolsight/repositories/audit_repository.dart';
+import 'package:toolsight/repositories/template_repository.dart';
 import 'package:toolsight/repositories/toolbox_repository.dart';
 import 'package:toolsight/widgets/app_scaffold.dart';
 import 'package:toolsight/widgets/wide_button.dart';
@@ -24,8 +27,11 @@ class DrawerCapture extends StatefulWidget {
 class _DrawerCaptureState extends State<DrawerCapture> {
   final _toolboxRepo = ToolboxRepository();
   final _auditRepo = AuditRepository();
+  final _templateRepo = TemplateRepository();
   int _currentIndex = 0;
   late Map<String, dynamic> _toolbox;
+  String _templateId = '';
+  Map<String, dynamic> _template = {};
   Stream<DocumentSnapshot<Map<String, dynamic>>>? _drawerAuditStream;
 
   File? _localDrawerImage;
@@ -41,6 +47,11 @@ class _DrawerCaptureState extends State<DrawerCapture> {
       _currentIndex = _toolbox['drawers'].indexWhere((drawer) => drawer['drawerId'] == widget.initialDrawerId);
     }
 
+    _templateId = _toolbox['drawers'][_currentIndex]['templateId'] ?? '';
+    if (_templateId != ''){
+      _template = await _templateRepo.getTemplate(_templateId);
+    }
+
     //Re-renders.
     setState(() {});
   }
@@ -53,7 +64,15 @@ class _DrawerCaptureState extends State<DrawerCapture> {
 
   Future<void> _captureAndUploadImage(String drawerId) async {
     //Picks image dependent on debug or non-debug mode.
-    final image = await ImagePicker().pickImage(source: kDebugMode ? ImageSource.gallery : ImageSource.camera);
+
+    final XFile? image; 
+    if (kDebugMode){
+      image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    }
+    else{
+      image = await context.pushNamed<XFile>(AppRoute.cameraOverlay.name, extra: _template['imageUrl'],);
+    }
+
     if (image == null) return;
 
     //Cropping function.
